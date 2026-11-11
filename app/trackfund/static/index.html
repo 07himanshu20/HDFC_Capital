@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TrackFund · Fund operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --navy:#0E1C38; --navy-2:#1B2E55; --navy-3:#152648; --navy-ink:#D4DBEA; --navy-mute:#7D8BA7;
+  --ink:#131A27; --ink-2:#384255; --mute:#6A7386; --faint:#9AA1AF;
+  --line:#E4E7ED; --line-2:#EEF0F4; --bg:#FFFFFF; --bg-2:#F7F8FA; --bg-3:#F0F2F5;
+  --accent:#A3162B; --accent-2:#87101F; --accent-soft:#FBEDEF;
+  --pos:#0E7A4D; --pos-bar:#17834F; --pos-soft:#E7F4EC;
+  --neg:#C42B2B; --neg-bar:#D52A30; --neg-soft:#FCECEC;
+  --warn:#B45309; --warn-soft:#FDF3E3; --warn-line:#F2D9A9;
+  --blue:#2D5AA6; --teal:#159584; --amber:#E08A2B;
+  --z:.8;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{zoom:var(--z)}
+@media (max-width:1180px){:root{--z:.88}}
+@media (max-width:900px){:root{--z:1}}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.ic{flex:none;display:inline-block;vertical-align:middle}
+.mono{font-family:var(--mono)}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .warn{color:var(--warn)} .muted{color:var(--mute)} .faint{color:var(--faint)}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-rows:64px 1fr;grid-template-columns:248px 1fr;height:calc(100vh / var(--z));height:calc(100dvh / var(--z))}
+.top{grid-column:1/-1;display:flex;align-items:center;gap:18px;padding:0 22px 0 26px;border-bottom:1px solid var(--line);background:#fff;z-index:20}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:var(--navy);display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;letter-spacing:-.02em;position:relative}
+.brand-mark::after{content:"";position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:3px;background:var(--accent);border:2px solid #fff}
+.brand-name{font-size:21px;font-weight:700;letter-spacing:-.03em;color:var(--navy)}
+.brand-name b{color:var(--accent);font-weight:700}
+.brand-sep{width:1px;height:30px;background:var(--line);margin:0 6px}
+.brand-tag{font-size:10.5px;font-weight:600;letter-spacing:.09em;color:var(--mute);line-height:1.35;text-transform:uppercase}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.gsearch{position:relative}
+.gsearch input{width:300px;height:38px;border:1px solid var(--line);border-radius:9px;padding:0 12px 0 36px;background:var(--bg-2);outline:none}
+.gsearch input:focus{background:#fff;border-color:#C9CED8}
+.gsearch .ic{position:absolute;left:11px;top:10px;color:var(--faint)}
+.gsearch kbd{position:absolute;right:9px;top:9px;font-family:var(--mono);font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:5px;padding:1px 5px;background:#fff}
+.gs-res{position:absolute;top:44px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(14,28,56,.12);padding:6px;display:none;max-height:380px;overflow:auto}
+.gs-res.on{display:block}
+.gs-res a{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:7px}
+.gs-res a:hover,.gs-res a.hl{background:var(--bg-2)}
+.gs-res small{color:var(--mute)}
+.gs-grp{font-size:11px;color:var(--faint);padding:6px 10px 2px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.icon-btn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;position:relative;color:var(--ink-2)}
+.icon-btn:hover{background:var(--bg-2)}
+.dot-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;border:2px solid #fff}
+.menu-btn{display:none}
+
+.side{background:var(--navy);color:var(--navy-ink);display:flex;flex-direction:column;min-height:0}
+.side-scroll{flex:1;overflow-y:auto;padding:14px 12px 10px;scrollbar-width:thin;scrollbar-color:#2C3F66 transparent}
+.fund-pick{position:relative;margin:0 2px 14px}
+.fund-pick select{appearance:none;width:100%;background:var(--navy-3);border:1px solid #263A62;color:#fff;border-radius:10px;padding:10px 32px 10px 12px;font-weight:600;font-size:13.5px;cursor:pointer}
+.fund-pick small{display:block;font-size:11px;color:var(--navy-mute);margin:0 0 6px 4px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.fund-pick .ic{position:absolute;right:10px;bottom:11px;color:var(--navy-mute);pointer-events:none}
+.nav-h{font-size:11.5px;font-weight:600;letter-spacing:.08em;color:var(--navy-mute);padding:16px 12px 6px;text-transform:uppercase}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:9px;color:var(--navy-ink);font-size:15px;font-weight:500;margin-bottom:2px}
+.nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav a.on{background:var(--navy-2);color:#fff;font-weight:600}
+.nav a .cnt{margin-left:auto;font-size:11px;font-family:var(--mono);background:rgba(255,255,255,.1);border-radius:6px;padding:1px 6px}
+.nav a.on .cnt{background:var(--accent)}
+.side-user{margin:10px 12px;background:var(--navy-3);border-radius:12px;padding:12px;display:flex;gap:11px;align-items:center}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:600;font-size:13px;flex:none}
+.side-user .em{font-size:13.5px;color:#fff;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.role-badge{display:inline-block;margin-top:4px;background:#5C1220;color:#FFD9DE;font-size:10.5px;font-weight:600;letter-spacing:.06em;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+.signout{display:flex;align-items:center;gap:12px;padding:12px 24px 18px;color:var(--navy-ink);font-size:15px;cursor:pointer}
+.signout:hover{color:#fff}
+
+.main{overflow-y:auto;min-width:0;scroll-behavior:auto}
+.page{padding:30px 34px 60px;max-width:1440px;margin:0 auto}
+
+/* ---------- page head ---------- */
+.ph{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 20px}
+.ph-l{display:flex;align-items:center;gap:18px;min-width:0}
+.ph-icon{width:46px;height:46px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.eyebrow{font-size:12.5px;font-weight:600;letter-spacing:.09em;color:var(--accent);text-transform:uppercase}
+.ph h1{font-size:25px;font-weight:600;letter-spacing:-.02em;margin:3px 0 0;line-height:1.2}
+.ph-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
+.ph.has-tabs .ph-r{flex-basis:100%;flex-wrap:nowrap;min-width:0}
+.ph.has-tabs .tabs{min-width:0;flex:0 1 auto}
+.detail-in .t td{white-space:nowrap}
+.tabs{display:flex;gap:2px;border:1px solid var(--line);border-radius:11px;padding:4px;background:#fff;overflow-x:auto;max-width:100%;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a,.tabs button{white-space:nowrap;padding:7px 13px;border-radius:8px;color:var(--ink-2);font-size:14.5px;border:1px solid transparent;background:none;cursor:pointer}
+.tabs a:hover,.tabs button:hover{color:var(--ink)}
+.tabs a.on,.tabs button.on{background:#fff;border-color:var(--line);box-shadow:0 1px 2px rgba(14,28,56,.08);color:var(--ink);font-weight:600}
+.tabs.sm a,.tabs.sm button{font-size:13.5px;padding:6px 11px}
+.vsep{width:1px;height:30px;background:var(--line)}
+.sel{position:relative;display:inline-flex}
+.sel select{appearance:none;height:40px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:0 34px 0 13px;font-size:14.5px;cursor:pointer}
+.sel .ic{position:absolute;right:10px;top:11px;pointer-events:none;color:var(--ink-2)}
+.sel.sm select{height:34px;font-size:13.5px}
+.sel.sm .ic{top:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 15px;border:1px solid var(--line);border-radius:9px;background:#fff;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--bg-2)}
+.btn.sm{height:34px;padding:0 12px;font-size:13px}
+.btn.xs{height:28px;padding:0 10px;font-size:12.5px;border-radius:7px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-2)}
+.btn.primary:disabled{background:#D8A3AB;border-color:#D8A3AB;cursor:not-allowed}
+.btn.ghost{border-color:transparent;background:none}
+.btn.ghost:hover{background:var(--bg-2)}
+.lede{color:var(--ink-2);font-size:15px;margin:14px 0 0 64px;max-width:80ch}
+.back{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2);font-size:14.5px;margin:18px 0 0 64px}
+.back:hover{color:var(--accent)}
+.link{color:var(--accent);font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:none;border:0;padding:0}
+.link:hover{text-decoration:underline}
+
+/* ---------- layout ---------- */
+.sec{margin-top:26px}
+.g{display:grid;gap:20px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g21{grid-template-columns:minmax(0,1.65fr) minmax(0,1fr)}
+.g12{grid-template-columns:minmax(0,1fr) minmax(0,1.65fr)}
+.g31{grid-template-columns:minmax(0,2.2fr) minmax(0,1fr)}
+
+/* ---------- cards ---------- */
+.card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:22px 22px}
+.card.flush{padding:0}
+.card.flush .card-hd{padding:22px 22px 0}
+.card-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+.card-t{font-size:17px;font-weight:600;letter-spacing:-.01em;margin:0}
+.card-s{color:var(--mute);font-size:14px;margin-top:3px;max-width:72ch}
+.card-meta{font-family:var(--mono);font-size:13.5px;color:var(--ink-2);white-space:nowrap}
+
+.kpi{border:1px solid var(--line);border-radius:12px;padding:20px 18px 18px;background:#fff;cursor:pointer;text-align:left;transition:border-color .15s}
+.kpi:hover{border-color:#C9CED8}
+.kpi-l{font-size:12.5px;font-weight:500;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase}
+.kpi-v{font-family:var(--mono);font-size:25px;font-weight:600;margin:9px 0 6px;letter-spacing:-.02em;white-space:nowrap}
+.kpi-s{font-size:13px;color:var(--mute)}
+.strip{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.strip button{border:0;border-right:1px solid var(--line);background:#fff;padding:14px 14px 13px;text-align:left;cursor:pointer}
+.strip button:last-child{border-right:0}
+.strip button:hover{background:var(--bg-2)}
+.strip .l{font-size:11.5px;color:var(--mute);letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+.strip .v{font-family:var(--mono);font-weight:600;font-size:16px;margin-top:5px;white-space:nowrap}
+.strip .s{font-size:12px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse}
+.t th{font-size:12px;font-weight:500;letter-spacing:.05em;color:var(--ink-2);text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap;background:#fff}
+.t td{padding:13px 14px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+.t tr:last-child td{border-bottom:0}
+.t tbody tr.row:hover td{background:#FAFBFC}
+.t tr.click{cursor:pointer}
+.t .r{text-align:right}
+.t .c{text-align:center}
+.t td.num,.t td .num{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+.t .nm{font-weight:500;font-size:14.5px}
+.t .nm a:hover{color:var(--accent)}
+.t .sub{font-size:12.5px;color:var(--mute);margin-top:2px}
+.t.compact td{padding:10px 14px}
+.t tfoot td{border-top:1px solid var(--line);font-weight:600;background:var(--bg-2)}
+.t-pad th:first-child,.t-pad td:first-child{padding-left:22px}
+.t-pad th:last-child,.t-pad td:last-child{padding-right:22px}
+.expander{width:22px;height:22px;border-radius:5px;display:inline-grid;place-items:center;color:var(--ink-2);transition:transform .15s;margin-right:8px;vertical-align:middle}
+tr.open .expander{transform:rotate(90deg)}
+tr.detail>td{background:#FBFBFC;padding:0;border-bottom:1px solid var(--line)}
+tr.detail{display:none}
+tr.detail.on{display:table-row}
+.detail-in{padding:22px 24px 24px 50px}
+
+.tag{display:inline-block;font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:5px;border:1px solid var(--warn-line);background:var(--warn-soft);color:var(--warn);vertical-align:middle;margin-left:6px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.g{background:var(--pos-soft);color:var(--pos)}
+.pill.r{background:var(--neg-soft);color:var(--neg)}
+.pill.a{background:var(--warn-soft);color:var(--warn)}
+.pill.n{background:var(--bg-3);color:var(--ink-2)}
+.pill.b{background:#EAF0FA;color:var(--blue)}
+.cur{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;background:#fff}
+.cur i{width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.sdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:9px;vertical-align:1px}
+
+/* ---------- drivers ---------- */
+.drv{display:grid;grid-template-columns:150px 1fr 110px 70px;align-items:center;gap:4px 16px;padding:11px 0}
+.drv+.drv{border-top:0}
+.drv .dn{font-size:15px;font-weight:500}
+.drv .dv{font-family:var(--mono);font-size:13.5px;text-align:right}
+.drv .ds{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--ink-2)}
+.drv .dd{grid-column:2/-1;font-size:12.5px;color:var(--mute);margin-top:-4px}
+.dtrack{position:relative;height:9px}
+.dtrack .ax{position:absolute;left:50%;top:-8px;bottom:-8px;width:1px;background:var(--line)}
+.dtrack .bar{position:absolute;top:0;height:9px;border-radius:5px}
+.dsimple{display:flex;flex-direction:column;gap:6px;padding:10px 0}
+.dsimple .dtop{display:flex;justify-content:space-between;align-items:baseline}
+.dsimple .nm{font-size:15px;font-weight:500}
+.dsimple .vv{font-family:var(--mono);font-size:13.5px}
+.dsimple .tr{height:9px;background:var(--bg-3);border-radius:5px;overflow:hidden}
+.dsimple .tr i{display:block;height:100%;border-radius:5px}
+.dsimple .ex{font-size:12.5px;color:var(--mute)}
+.drv-legend{display:grid;grid-template-columns:150px 1fr 110px 70px;gap:16px;font-size:12.5px;color:var(--mute);padding-bottom:2px}
+.drv-legend .lg{display:flex;justify-content:space-between}
+.drv-total{border-top:1px solid var(--line);margin-top:6px;padding-top:14px}
+
+/* ---------- allocation ---------- */
+.alloc{display:flex;height:11px;border-radius:6px;overflow:hidden;gap:2px;margin:6px 0 14px}
+.alloc i{display:block;height:100%}
+.acc-row{border-bottom:1px solid var(--line-2)}
+.acc-row:last-child{border-bottom:0}
+.acc-h{display:grid;grid-template-columns:18px 1fr auto auto;gap:10px;align-items:center;padding:10px 2px;cursor:pointer;width:100%;background:none;border:0;text-align:left}
+.acc-h:hover .acc-n{color:var(--accent)}
+.acc-h .chev{color:var(--faint);transition:transform .15s}
+.acc-row.open .chev{transform:rotate(90deg)}
+.acc-n{font-weight:500;font-size:14.5px}
+.acc-n small{color:var(--mute);font-weight:400;margin-left:6px}
+.acc-v{font-family:var(--mono);font-size:13px;color:var(--ink-2);text-align:right;white-space:nowrap}
+.acc-p{font-family:var(--mono);font-size:13px;width:52px;text-align:right}
+.acc-body{display:none;padding:0 0 12px 28px}
+.acc-row.open .acc-body{display:block}
+.acc-co{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:8px 10px;border-radius:8px;font-size:13.5px}
+.acc-co:hover{background:var(--bg-2)}
+.acc-co .cn{font-weight:500}
+.acc-co .cn small{display:block;color:var(--mute);font-weight:400;font-size:12px}
+.acc-foot{padding:6px 10px 0}
+
+/* ---------- misc ---------- */
+.banner{display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:12px;padding:18px 22px;cursor:pointer}
+.banner:hover{border-color:#C9CED8}
+.banner .ic.w{color:var(--warn)}
+.banner b{font-size:16px;font-weight:600}
+.banner p{margin:2px 0 0;color:var(--mute)}
+.banner .go{margin-left:auto;color:var(--ink-2)}
+.spark{display:block}
+.legend{display:flex;justify-content:center;gap:18px;font-size:12.5px;color:var(--ink-2);margin-top:8px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.legend i.sq{width:10px;height:10px;border-radius:2px}
+.legend i.dash{background:repeating-linear-gradient(90deg,currentColor 0 4px,transparent 4px 7px)!important;height:2px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{font-family:var(--sans);font-size:11.5px;fill:var(--mute)}
+.chart .hov{fill:transparent;cursor:crosshair}
+.chart .hov:hover{fill:rgba(14,28,56,.035)}
+#tip{position:fixed;z-index:100;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:9px;box-shadow:0 10px 28px rgba(14,28,56,.14);padding:10px 12px;font-size:12.5px;display:none;min-width:150px}
+#tip .tt{font-weight:600;margin-bottom:5px;font-size:13px}
+#tip .tr{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-top:3px}
+#tip .tr span{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
+#tip .tr i{width:8px;height:8px;border-radius:50%}
+#tip .tr b{font-family:var(--mono);font-weight:500}
+.panel{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.panel-h{font-size:12px;font-weight:500;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase;margin-bottom:8px}
+.roll{display:grid;grid-template-columns:1fr auto;gap:6px 18px;font-size:14px}
+.roll span{color:var(--ink-2)}
+.roll .num{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--ink-2)}
+.roll .tot{font-weight:600;color:var(--ink);border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.kv .l{font-size:12px;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase;font-weight:500}
+.kv .v{font-family:var(--mono);font-size:19px;font-weight:600;margin-top:4px}
+.kv .s{font-size:12.5px;color:var(--mute);margin-top:2px}
+.split{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:14px}
+.split:last-child{border-bottom:0}
+.split .num{font-family:var(--mono);font-size:13px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.inp{height:40px;border:1px solid var(--line);border-radius:9px;padding:0 13px;background:#fff;outline:none;min-width:0}
+.inp:focus{border-color:#B9BFCB}
+.search{position:relative;display:inline-flex}
+.search .inp{padding-left:38px;width:300px}
+.search .ic{position:absolute;left:12px;top:11px;color:var(--faint)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;background:#fff}
+.seg button{border:1px solid transparent;background:none;padding:6px 12px;border-radius:7px;cursor:pointer;color:var(--ink-2);font-size:13.5px}
+.seg button.on{border-color:var(--line);box-shadow:0 1px 2px rgba(14,28,56,.08);color:var(--ink);font-weight:600}
+.note{background:#F2F7FC;border:1px solid #D3E3F3;border-radius:12px;padding:16px 20px;color:#203A5C;font-size:14.5px;line-height:1.55}
+.form{border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px;display:none;background:#fff}
+.form.on{display:block}
+.fgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 18px}
+.fld label{display:block;font-size:12px;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase;font-weight:500;margin-bottom:7px}
+.fld .inp,.fld select,.fld textarea{width:100%}
+.fld select{height:40px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:#fff}
+.fld textarea{border:1px solid var(--line);border-radius:9px;padding:10px 13px;min-height:70px;resize:vertical}
+.factions{display:flex;gap:14px;align-items:center;margin-top:18px}
+.ferr{color:var(--neg);font-size:13px}
+.empty{text-align:center;color:var(--mute);padding:34px 20px}
+.bar-in{height:7px;background:var(--bg-3);border-radius:4px;overflow:hidden;min-width:70px}
+.bar-in i{display:block;height:100%;border-radius:4px}
+.hm{display:grid;gap:3px}
+.hm div{border-radius:5px;font-size:12px;font-family:var(--mono);display:grid;place-items:center;height:34px;cursor:pointer}
+.hm .hh{background:none;color:var(--ink-2);font-family:var(--sans);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;cursor:default;height:auto;padding-bottom:4px}
+.hm .rn{justify-content:start;place-items:center start;font-family:var(--sans);font-size:13.5px;font-weight:500;color:var(--ink);background:none;padding-right:8px}
+.hm .rn:hover{color:var(--accent)}
+.kan{display:grid;grid-template-columns:repeat(5,minmax(176px,1fr));gap:14px;overflow-x:auto;padding-bottom:6px}
+.kcol{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:200px}
+.kcol h4{margin:2px 4px 12px;font-size:13.5px;display:flex;justify-content:space-between;font-weight:600}
+.kcol h4 span{font-family:var(--mono);color:var(--mute);font-weight:500}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;cursor:pointer}
+.kcard:hover{border-color:#C9CED8}
+.kcard b{font-weight:600;font-size:14px}
+.kcard .m{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mute);margin-top:6px}
+.chat{display:grid;grid-template-columns:250px 1fr;border:1px solid var(--line);border-radius:12px;height:620px;overflow:hidden}
+.chat-l{border-right:1px solid var(--line);background:var(--bg-2);padding:14px;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.chat-l a{padding:9px 11px;border-radius:8px;font-size:13.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-l a.on{background:#fff;border:1px solid var(--line);color:var(--ink);font-weight:500}
+.chat-r{display:flex;flex-direction:column;min-width:0}
+.msgs{flex:1;overflow:auto;padding:24px 28px;display:flex;flex-direction:column;gap:16px}
+.msg{max-width:78%;padding:12px 15px;border-radius:12px;font-size:14.5px;line-height:1.55}
+.msg.u{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.msg.a{align-self:flex-start;background:var(--bg-2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.a table{margin-top:8px;font-size:13px;border-collapse:collapse}
+.msg.a td{padding:3px 12px 3px 0}
+.msg.a td:last-child{font-family:var(--mono);text-align:right}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 28px 12px}
+.chips button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 13px;font-size:13px;cursor:pointer}
+.chips button:hover{border-color:var(--accent);color:var(--accent)}
+.composer{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--line)}
+.composer .inp{flex:1}
+.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--faint);margin-right:4px;animation:bl 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,100%{opacity:.25}50%{opacity:1}}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cal .dh{background:var(--bg-2);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);padding:8px 10px;border-bottom:1px solid var(--line)}
+.cal .d{min-height:96px;border-right:1px solid var(--line-2);border-bottom:1px solid var(--line-2);padding:7px 8px;font-size:12px}
+.cal .d:nth-child(7n){border-right:0}
+.cal .d .n{font-family:var(--mono);color:var(--ink-2);font-size:12px}
+.cal .d.x .n{color:var(--faint)}
+.cal .d.today .n{background:var(--accent);color:#fff;border-radius:5px;padding:1px 6px}
+.cal .ev{display:block;margin-top:4px;padding:3px 6px;border-radius:5px;font-size:11.5px;line-height:1.3;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tree-f{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px;width:100%;border:0;background:none;text-align:left}
+.tree-f:hover{background:var(--bg-2)}
+.tree-f .chev{transition:transform .15s;color:var(--faint)}
+.tree-n.open>.tree-f .chev{transform:rotate(90deg)}
+.tree-c{display:none;padding-left:20px}
+.tree-n.open>.tree-c{display:block}
+.drop{border:1.5px dashed #C5CBD6;border-radius:12px;padding:36px;text-align:center;background:var(--bg-2);cursor:pointer}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.switch{position:relative;width:38px;height:22px;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;inset:0;background:#CBD0DA;border-radius:22px;cursor:pointer;transition:.15s}
+.switch span::before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+.switch input:checked+span{background:var(--accent)}
+.switch input:checked+span::before{transform:translateX(16px)}
+.range-row{display:grid;grid-template-columns:1fr 110px;gap:4px 14px;align-items:center;margin-bottom:16px}
+.range-row label{font-size:13.5px;color:var(--ink-2)}
+.range-row output{font-family:var(--mono);text-align:right;font-weight:600}
+.range-row input{grid-column:1/-1;accent-color:var(--accent);width:100%}
+.hash{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.ring{display:block}
+
+/* overlays */
+.scrim{position:fixed;inset:0;background:rgba(14,28,56,.32);z-index:60;display:none}
+.scrim.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100vw);background:#fff;z-index:61;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(14,28,56,.14)}
+.drawer.on{transform:none}
+.drawer-h{padding:22px 24px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}
+.drawer-b{padding:20px 24px;overflow:auto;flex:1}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%);opacity:0;pointer-events:none;width:min(760px,94vw);max-height:88vh;background:#fff;border-radius:14px;z-index:61;display:flex;flex-direction:column;transition:.18s;box-shadow:0 24px 60px rgba(14,28,56,.22)}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.modal-b{padding:24px 26px;overflow:auto}
+.notif{position:absolute;top:46px;right:0;width:380px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 40px rgba(14,28,56,.14);display:none;z-index:40}
+.notif.on{display:block}
+.notif-h{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.notif a{display:flex;gap:11px;padding:12px 16px;border-bottom:1px solid var(--line-2);font-size:13.5px}
+.notif a:hover{background:var(--bg-2)}
+.notif a .d{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}
+.notif a.read .d{background:transparent}
+.notif small{color:var(--mute);display:block;margin-top:2px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);background:var(--navy);color:#fff;padding:11px 18px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;z-index:90;pointer-events:none;display:flex;align-items:center;gap:10px}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.stmt td{padding:9px 14px}
+.stmt .h td{font-weight:600;background:var(--bg-2);font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2)}
+.stmt .tot td{font-weight:600;border-top:1px solid var(--line)}
+.stmt .ind td:first-child{padding-left:30px}
+
+@media (max-width:1280px){
+  .g5{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .strip{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .strip button:nth-child(4){border-right:0}
+  .strip button:nth-child(-n+4){border-bottom:1px solid var(--line)}
+}
+@media (max-width:1100px){
+  .g21,.g12,.g31{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gsearch input{width:220px}
+}
+@media (max-width:900px){
+  .ph.has-tabs .ph-r{flex-wrap:wrap;justify-content:flex-start}
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;top:64px;left:0;bottom:0;width:270px;z-index:50;transform:translateX(-100%);transition:transform .2s}
+  .side.on{transform:none}
+  .menu-btn{display:grid}
+  .brand-sep,.brand-tag{display:none}
+  .page{padding:22px 16px 50px}
+  .lede,.back{margin-left:0}
+  .g3,.g2{grid-template-columns:1fr}
+  .chat{grid-template-columns:1fr}.chat-l{display:none}
+  .gsearch{display:none}
+}
+@media (max-width:600px){
+  .g4,.g5{grid-template-columns:1fr 1fr}
+  .strip{grid-template-columns:1fr 1fr}
+  .strip button{border-bottom:1px solid var(--line)}
+  .fgrid{grid-template-columns:1fr}
+  .drv,.drv-legend{grid-template-columns:110px 1fr 90px}
+  .drv .ds,.drv-legend>:last-child{display:none}
+  .kpi-v{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  .side,.top,.ph-r,.toolbar,.btn,.tabs{display:none!important}
+  .app{display:block;height:auto}.main{overflow:visible}
+  .card,.kpi{break-inside:avoid}
+}
+
+/* ---------- deep-dive dropdowns ---------- */
+.t .xcol{width:34px;padding-right:0!important}
+.t-pad th.xcol,.t-pad td.xcol{padding-left:16px!important}
+tr.xr:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+tr.xr.open>td{background:#FBF6F7}
+tr.xr.open>td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+tr.detail>td{background:linear-gradient(180deg,#FBF6F7 0,#FCFCFD 40px)}
+.detail-in{padding:6px 22px 24px 50px;animation:dd .22s ease}
+@keyframes dd{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+td[data-metric]{cursor:pointer;position:relative}
+td[data-metric]:hover{background:#F4F0F1!important;box-shadow:inset 0 -2px 0 var(--accent)}
+td[data-metric].mon{background:#F6E9EC!important;box-shadow:inset 0 -2px 0 var(--accent)}
+.deep{border:1px solid #EADDE0;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 6px 24px rgba(91,18,32,.06)}
+.deep-h{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line-2);background:linear-gradient(90deg,#FFF 0,#FBF6F7 100%);flex-wrap:wrap}
+.deep-h .ttl{display:flex;gap:12px;align-items:center}
+.deep-h .ttl .ph-icon{width:38px;height:38px;border-radius:10px}
+.deep-h b{font-size:16px;font-weight:600}
+.deep-h small{display:block;color:var(--mute);font-size:12.5px;margin-top:1px}
+.dchips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;padding:3px 9px;border-radius:20px;background:var(--bg-3);color:var(--ink-2);white-space:nowrap}
+.chip.r{background:var(--neg-soft);color:var(--neg)}.chip.g{background:var(--pos-soft);color:var(--pos)}.chip.a{background:var(--warn-soft);color:var(--warn)}.chip.b{background:#EAF0FA;color:var(--blue)}.chip.k{background:var(--accent-soft);color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));border-bottom:1px solid var(--line-2)}
+.tile{padding:14px 18px;border-right:1px solid var(--line-2)}
+.tile:last-child{border-right:0}
+.tile .l{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.tile .v{font-family:var(--mono);font-size:18px;font-weight:600;margin-top:4px;white-space:nowrap}
+.tile .s{font-size:12px;color:var(--faint);margin-top:2px}
+.deep-g{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:0}
+.deep-g>div{padding:16px 20px}
+.deep-g>div+div{border-left:1px solid var(--line-2)}
+.deep-g.one{grid-template-columns:1fr}
+.deep-g.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.deep-f{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 20px;border-top:1px solid var(--line-2);background:var(--bg-2);font-size:12.5px;color:var(--mute);flex-wrap:wrap}
+.deep-f .acts{display:flex;gap:8px;flex-wrap:wrap}
+.src{display:inline-flex;align-items:center;gap:6px}
+.src code{font-family:var(--mono);font-size:11.5px;background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink-2)}
+.mini-h{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:0 0 10px}
+.steps{display:flex;flex-direction:column;gap:0;position:relative;margin-left:6px}
+.step{display:grid;grid-template-columns:18px 1fr auto;gap:10px;align-items:start;padding:0 0 14px;position:relative;font-size:13.5px}
+.step:not(:last-child)::before{content:"";position:absolute;left:5px;top:14px;bottom:0;width:2px;background:var(--line)}
+.step i{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);background:#fff;margin-top:3px;z-index:1}
+.step.done i{background:var(--pos-bar);border-color:var(--pos-bar)}
+.step.now i{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 4px rgba(224,138,43,.18)}
+.step.late i{background:var(--neg-bar);border-color:var(--neg-bar)}
+.step small{color:var(--mute);display:block;font-size:12px}
+.step .d{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.qstrip{position:relative;height:46px;margin:8px 0 26px}
+.qstrip .rail{position:absolute;left:0;right:0;top:18px;height:10px;border-radius:6px;background:linear-gradient(90deg,#F6C2A8 0,#FBE9C7 33%,#CFE9D9 66%,#9AD3B4 100%)}
+.qstrip .tk{position:absolute;top:30px;font-size:11px;color:var(--mute);transform:translateX(-50%);white-space:nowrap;font-family:var(--mono)}
+.qstrip .tk::before{content:"";position:absolute;left:50%;top:-14px;width:1px;height:12px;background:#B8BEC9}
+.qstrip .me{position:absolute;top:4px;transform:translateX(-50%);text-align:center}
+.qstrip .me b{display:block;font-size:11px;font-family:var(--mono);background:var(--accent);color:#fff;border-radius:5px;padding:1px 6px;white-space:nowrap}
+.qstrip .me i{display:block;width:2px;height:18px;background:var(--accent);margin:0 auto}
+.checklist .ci{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.checklist .ci:last-child{border-bottom:0}
+.checklist .ci .b{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;flex:none;color:#fff}
+.checklist .ci .b.y{background:var(--pos-bar)}.checklist .ci .b.n{background:#fff;border:1.5px solid #C5CBD6}.checklist .ci .b.w{background:var(--amber)}
+.hbar{display:grid;grid-template-columns:130px 1fr 74px;gap:10px;align-items:center;font-size:13px;padding:4px 0}
+.hbar .tr{height:8px;background:var(--bg-3);border-radius:4px;overflow:hidden}
+.hbar .tr i{display:block;height:100%;border-radius:4px}
+.hbar .v{font-family:var(--mono);font-size:12.5px;text-align:right}
+.flag{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--warn-soft);border:1px solid var(--warn-line);font-size:13px;color:#6B3A07;margin-top:10px}
+.flag.r{background:var(--neg-soft);border-color:#F2C4C4;color:#7A1C1C}
+.flag.b{background:#EEF3FB;border-color:#C9D7EE;color:#1E3F78}
+.asof{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 13px;border:1px solid var(--line);border-radius:9px;background:var(--bg-2);font-size:13.5px;color:var(--ink-2);white-space:nowrap}
+.asof b{font-family:var(--mono);color:var(--ink);font-weight:600}
+/* ---------- reports ---------- */
+.modal.wide{width:min(1000px,96vw);max-height:94vh}
+.modal.wide .rp-wrap{flex:1;min-height:0}
+.rp-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:#fff;border-radius:14px 14px 0 0;flex-wrap:wrap}
+.rp-bar b{font-size:17px}
+.rp-wrap{background:#E9ECF1;padding:26px;overflow:auto;border-radius:0 0 14px 14px}
+.rp{width:794px;max-width:100%;min-height:1123px;margin:0 auto 24px;background:#fff;box-shadow:0 8px 28px rgba(14,28,56,.12);display:flex;flex-direction:column;font-size:12.5px;color:var(--ink)}
+.rp-h{display:flex;align-items:center;gap:12px;padding:22px 40px 16px;border-bottom:2px solid var(--navy)}
+.rp-h .brand-mark{width:30px;height:30px;font-size:12px;border-radius:8px}
+.rp-h b{font-size:14px}.rp-h small{display:block;color:var(--mute);font-size:11px}
+.rp-h .rp-d{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-2);text-align:right}
+.rp-b{padding:22px 40px;flex:1}
+.rp-b h2{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+.rp-b h3{font-size:13.5px;margin:20px 0 8px;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line);padding-bottom:5px}
+.rp-b p{line-height:1.6;margin:8px 0}
+.rp-b .lead{color:var(--ink-2);font-size:13.5px;margin-top:2px}
+.rp-b table{width:100%;border-collapse:collapse;font-size:11.5px;margin:6px 0 4px}
+.rp-b th{text-align:left;font-weight:600;color:var(--ink-2);border-bottom:1.5px solid var(--ink);padding:5px 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+.rp-b td{padding:5px 6px;border-bottom:1px solid var(--line-2)}
+.rp-b td.n,.rp-b th.n{text-align:right;font-family:var(--mono)}
+.rp-b tr.tot td{font-weight:700;border-top:1.5px solid var(--ink);border-bottom:0}
+.rp-b .kp{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.rp-b .kp div{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.rp-b .kp small{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+.rp-b .kp b{font-family:var(--mono);font-size:16px;display:block;margin-top:3px}
+.rp-b .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.rp-b .note{font-size:11.5px;padding:10px 12px}
+.rp-b .sig{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px}
+.rp-b .sig div{border-top:1px solid var(--ink);padding-top:6px;font-size:11px;color:var(--ink-2)}
+.rp-f{display:flex;justify-content:space-between;padding:12px 40px 18px;border-top:1px solid var(--line);font-size:10.5px;color:var(--mute)}
+.rp .chart text{font-size:10px}
+/* ---------- ERP ---------- */
+.erp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.erp{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .15s}
+.erp:hover{border-color:#C9CED8}
+.erp.on{border-color:#A7D8BE;background:linear-gradient(180deg,#F6FBF8,#fff)}
+.erp-top{display:flex;gap:12px;align-items:center}
+.erp-logo{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;letter-spacing:-.02em;flex:none}
+.erp b{font-size:14.5px;font-weight:600}
+.erp small{color:var(--mute);font-size:12px;display:block}
+.erp .m{font-size:12.5px;color:var(--ink-2)}
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin:6px 0 4px}
+.pipe .pn{position:relative;text-align:center;padding:0 6px}
+.pipe .pn .c{width:44px;height:44px;border-radius:12px;margin:0 auto 8px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);position:relative;z-index:1}
+.pipe .pn:not(:last-child)::after{content:"";position:absolute;top:22px;left:calc(50% + 26px);right:calc(-50% + 26px);height:2px;background:repeating-linear-gradient(90deg,var(--accent) 0 6px,transparent 6px 11px);animation:flow 1.2s linear infinite;background-size:22px 2px}
+@keyframes flow{to{background-position:22px 0}}
+.pipe .pn b{font-size:13px;display:block}.pipe .pn small{font-size:11.5px;color:var(--mute)}
+.wiz-steps{display:flex;gap:6px;margin-bottom:18px}
+.wiz-steps span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.wiz-steps span.on{background:var(--accent)}
+.map-row{display:grid;grid-template-columns:1fr 26px 1fr 90px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px}
+.map-row code{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.log{font-family:var(--mono);font-size:12px;background:var(--navy);color:#CFE3D6;border-radius:10px;padding:12px 14px;max-height:220px;overflow:auto;line-height:1.7}
+.log .w{color:#F5C77A}.log .e{color:#F49B9B}.log .k{color:#9CC0FF}
+@media (max-width:1100px){.deep-g,.deep-g.three{grid-template-columns:1fr}.deep-g>div+div{border-left:0;border-top:1px solid var(--line-2)}.pipe{grid-template-columns:repeat(3,1fr);row-gap:16px}}
+@media print{
+  body{zoom:1}
+  body.printing-report .app,body.printing-report .scrim,body.printing-report .rp-bar{display:none!important}
+  body.printing-report .modal{position:static;transform:none;opacity:1;width:auto;max-height:none;box-shadow:none}
+  body.printing-report .rp-wrap{background:#fff;padding:0;overflow:visible}
+  body.printing-report .rp{box-shadow:none;margin:0;page-break-after:always;width:auto;min-height:auto}
+}
+
+/* ---------- empty states ---------- */
+.empty-card{position:relative}
+.empty-card.flat{border:1px dashed var(--line);box-shadow:none;padding:14px}
+.skel{display:flex;flex-direction:column;gap:12px;padding:6px 0 16px}
+.skel span{display:block;height:11px;border-radius:6px;background:linear-gradient(90deg,#F1F3F6 0,#F8F9FB 40%,#F1F3F6 80%);background-size:300% 100%;animation:sk 1.6s ease-in-out infinite}
+@keyframes sk{0%{background-position:100% 0}100%{background-position:0 0}}
+.empty-msg{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--bg-2);border:1px solid var(--line-2);font-size:13.5px;color:var(--ink-2)}
+.empty-msg>div{flex:1}.empty-msg b{font-weight:600;color:var(--ink)}
+.empty-msg .ic{color:var(--accent)}
+.kpi-empty{cursor:default;background:repeating-linear-gradient(135deg,#fff 0 10px,#FAFBFC 10px 20px)}
+.hero-empty{border:1px solid var(--line);border-radius:16px;padding:42px 40px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:36px;align-items:center;background:radial-gradient(1200px 300px at 0 0,#FBEDEF 0,transparent 60%),#fff}
+.hero-empty h2{font-size:26px;letter-spacing:-.02em;margin:10px 0 8px}
+.hero-empty p{color:var(--ink-2);font-size:15px;line-height:1.6;margin:0 0 18px;max-width:56ch}
+.slots{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.slot{border:1px dashed #C9CED8;border-radius:9px;padding:9px 8px;font-size:11.5px;color:var(--mute);text-align:center;min-height:56px;display:flex;flex-direction:column;justify-content:center;gap:4px;background:#fff}
+.slot .ic{margin:0 auto;color:var(--faint)}
+.slot.on{border:1px solid #A7D8BE;background:var(--pos-soft);color:var(--pos)}
+.slot.on .ic{color:var(--pos)}
+.slot.stg{border:1px solid var(--warn-line);background:var(--warn-soft);color:var(--warn)}
+.slot.stg .ic{color:var(--warn)}
+.ds-strip{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:12px 16px;background:#fff}
+.ds-bar{flex:1;min-width:160px;height:8px;border-radius:5px;background:var(--bg-3);overflow:hidden}
+.ds-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#D9475B)}
+/* ---------- consolidation run ---------- */
+.modal.run{width:min(1080px,96vw);max-height:94vh}
+.run-h{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 26px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#fff,#FBF6F7)}
+.run-h h2{margin:2px 0 0;font-size:20px}
+.ai-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(163,22,43,.5);animation:pulse 1.4s infinite;display:inline-block;margin-right:8px}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(163,22,43,.45)}70%{box-shadow:0 0 0 10px rgba(163,22,43,0)}100%{box-shadow:0 0 0 0 rgba(163,22,43,0)}}
+.run-b{padding:20px 26px;overflow:auto;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px}
+.pbar-wrap{grid-column:1/-1}
+.pbar-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.pbar-top b{font-family:var(--mono);font-size:28px;letter-spacing:-.02em}
+.pbar{height:14px;border-radius:8px;background:var(--bg-3);overflow:hidden;position:relative}
+.pbar i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--accent),#D9475B);position:relative;transition:width .12s linear}
+.pbar i::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.22) 0 10px,transparent 10px 20px);animation:bars .8s linear infinite}
+@keyframes bars{to{background-position:28px 0}}
+.pbar.done i::after{animation:none;background:none}
+.stages{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px}
+.stg{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px;color:var(--mute);background:#fff;position:relative;overflow:hidden}
+.stg b{display:block;font-size:12.5px;color:var(--ink-2);margin-top:4px;font-weight:600}
+.stg .n{font-family:var(--mono);font-size:11px}
+.stg .sb{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);width:0}
+.stg.on{border-color:#E9B8C0;background:#FFF7F8}.stg.on b{color:var(--accent)}
+.stg.ok{border-color:#A7D8BE;background:var(--pos-soft)}.stg.ok b{color:var(--pos)}.stg.ok .sb{background:var(--pos-bar);width:100%}
+.flist{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow:auto;padding-right:4px}
+.fr{display:grid;grid-template-columns:30px 1fr 64px;gap:10px;align-items:center;border:1px solid var(--line-2);border-radius:10px;padding:8px 10px;font-size:12.5px}
+.fr .fi{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--bg-3);color:var(--ink-2)}
+.fr.ok .fi{background:var(--pos-soft);color:var(--pos)}
+.fr.on .fi{background:var(--accent-soft);color:var(--accent)}
+.fr .nm{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr .st{color:var(--mute);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr .mb{height:4px;border-radius:3px;background:var(--bg-3);overflow:hidden;margin-top:5px}
+.fr .mb i{display:block;height:100%;background:var(--accent);width:0}
+.fr.ok .mb i{background:var(--pos-bar)}
+.fr .pc{font-family:var(--mono);font-size:12px;text-align:right;color:var(--ink-2)}
+.ailog{font-family:var(--mono);font-size:12px;background:var(--navy);color:#CFE3D6;border-radius:12px;padding:14px 16px;height:420px;overflow:auto;line-height:1.75}
+.ailog div{animation:dd .25s ease}
+.ailog .t{color:#7D8BA7;margin-right:8px}.ailog .lg-k{color:#9CC0FF}.ailog .lg-w{color:#F5C77A}.ailog .lg-g{color:#8FE0B0}.ailog .lg-a{color:#F2A7B4}
+.run-f{display:flex;justify-content:space-between;align-items:center;padding:14px 26px;border-top:1px solid var(--line);background:var(--bg-2);border-radius:0 0 14px 14px}
+.done-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;grid-column:1/-1}
+.done-grid div{border:1px solid var(--line);border-radius:12px;padding:14px}
+.done-grid small{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+.done-grid b{font-family:var(--mono);font-size:22px;display:block;margin-top:4px}
+@media (max-width:900px){.run-b{grid-template-columns:1fr}.stages{grid-template-columns:repeat(3,1fr)}.hero-empty{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}}
+
+/* as-of calendar */
+.asof-wrap{position:relative}
+.asof-btn{cursor:pointer;font:inherit}
+.asof-btn:hover{border-color:#C9CED8;background:#fff}
+.calpop{position:absolute;right:0;top:48px;width:340px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 44px rgba(14,28,56,.16);padding:14px;z-index:35;display:none}
+.calpop.on{display:block;animation:dd .18s ease}
+.cp-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.cp-h b{font-size:14.5px}
+.cp-y{display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px}.cp-y b{font-family:var(--mono);font-size:15px}
+.cp-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cp-m{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 4px 6px;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px}
+.cp-m:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.cp-m:disabled{color:var(--faint);background:var(--bg-2);cursor:not-allowed}
+.cp-m.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.cp-d{display:flex;gap:2px;height:5px}.cp-d i,.cp-lg i{width:5px;height:5px;border-radius:50%;display:inline-block}
+.cp-d i.b,.cp-lg i.b{background:var(--blue)}.cp-d i.t,.cp-lg i.t{background:var(--teal)}.cp-d i.g,.cp-lg i.g{background:var(--pos-bar)}.cp-d i.a,.cp-lg i.a{background:var(--amber)}.cp-d i.k,.cp-lg i.k{background:var(--accent)}
+.cp-m.on .cp-d i{background:#fff}
+.cp-lg{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:11px;color:var(--mute);margin:10px 0 0}.cp-lg span{display:inline-flex;align-items:center;gap:5px}
+.cp-q{display:flex;gap:8px;margin-top:12px}
+.cp-n{font-size:11.5px;color:var(--mute);margin:10px 0 0;line-height:1.45}
+/* top-bar user */
+.userchip{display:flex;align-items:center;gap:10px;height:42px;padding:0 10px 0 5px;border:1px solid var(--line);border-radius:22px;background:#fff;cursor:pointer;font:inherit}
+.userchip:hover{background:var(--bg-2)}
+.userchip .avatar{width:32px;height:32px;font-size:12px}
+.uc-t{display:flex;flex-direction:column;line-height:1.2;text-align:left}.uc-t b{font-size:13px;font-weight:600}.uc-t small{font-size:11.5px;color:var(--mute)}
+.userchip .role-badge{margin:0;background:var(--accent-soft);color:var(--accent)}
+.umenu{position:absolute;top:50px;right:0;width:270px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 40px rgba(14,28,56,.14);display:none;z-index:40;padding:6px}
+.umenu.on{display:block}
+.umenu .um-h{padding:12px 12px 10px;border-bottom:1px solid var(--line-2);margin-bottom:4px}
+.umenu a,.umenu button.um-i{display:flex;gap:10px;align-items:center;width:100%;padding:9px 12px;border-radius:8px;font-size:14px;background:none;border:0;cursor:pointer;text-align:left;color:var(--ink)}
+.umenu a:hover,.umenu button.um-i:hover{background:var(--bg-2)}
+@media (max-width:1100px){.uc-t,.userchip .role-badge{display:none}}
+/* data ingestion drop zone */
+label.drop{display:block}
+
+/* activity tracker */
+.funnel{display:grid;gap:8px}
+.fn{position:relative;overflow:hidden;border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px 10px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.fn:hover{border-color:#C9CED8}
+.fn .fn-n{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--ink)}
+.fn b{font-size:12.5px;font-weight:600;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fn small{font-size:11px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fn i{position:absolute;left:0;bottom:0;height:3px;background:var(--accent)}
+.fn.on{border-color:var(--accent);background:#FFF7F8;box-shadow:0 0 0 3px rgba(163,22,43,.08)}
+.fn.ok .fn-n{color:var(--pos)}.fn.bad .fn-n{color:var(--neg)}
+.dots{display:inline-flex;gap:4px;vertical-align:middle}
+.dots i{width:10px;height:10px;border-radius:50%;background:#E4E7ED}
+.dots i.d{background:var(--pos-bar)}.dots i.n{background:var(--amber);box-shadow:0 0 0 3px rgba(224,138,43,.18)}.dots i.b{background:var(--neg-bar);box-shadow:0 0 0 3px rgba(213,42,48,.15)}
+.vt-cycle{background:radial-gradient(900px 200px at 100% 0,#FBEDEF 0,transparent 60%),#fff}
+/* SEBI categories */
+.catcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.catcard{display:grid;grid-template-columns:44px 1fr;gap:4px 14px;text-align:left;border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.catcard:hover{border-color:#C9CED8}
+.catcard.on{border-color:var(--accent);box-shadow:0 0 0 3px rgba(163,22,43,.08);background:linear-gradient(180deg,#FFF8F9,#fff)}
+.catcard .ph-icon{grid-row:span 3;width:44px;height:44px}
+.cc-t{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.cc-t b{font-size:16px}
+.cc-d{font-size:13px;color:var(--ink-2);line-height:1.45}
+.cc-s{font-family:var(--mono);font-size:12.5px;color:var(--accent);font-weight:600}
+.cmp-me{background:#FBF6F7}
+@media (max-width:900px){.catcards{grid-template-columns:1fr}}
+/* risk heatmap */
+.hmg{display:grid;gap:4px;align-items:stretch}
+.hm-h{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);font-weight:600;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:0 2px 6px;line-height:1.25}
+.hm-h:first-child{justify-content:flex-start}
+.hm-n{border:0;background:none;text-align:left;cursor:pointer;padding:6px 8px;border-radius:8px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.hm-n b{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hm-n small{font-size:11.5px;color:var(--mute)}
+.hm-n:hover,.hm-n.on{background:var(--accent-soft)}.hm-n:hover b,.hm-n.on b{color:var(--accent)}
+.hm-c{border:0;border-radius:7px;font-family:var(--mono);font-size:13px;font-weight:600;cursor:pointer;min-height:42px;transition:transform .1s,box-shadow .1s}
+.hm-c:hover{transform:scale(1.06);box-shadow:0 4px 12px rgba(14,28,56,.15);z-index:1}
+.hm-c.on{box-shadow:0 0 0 2.5px var(--accent);transform:scale(1.06)}
+.hm-c.na{background:#F6F7F9;color:var(--faint);font-weight:400;font-size:11px;border:1px dashed #D6DAE1}
+.hm-c.foot{cursor:default;font-size:12px;min-height:34px;display:grid;place-items:center}.hm-c.foot:hover{transform:none;box-shadow:none}
+.hm-n.foot{cursor:default}.hm-n.foot:hover{background:none}.hm-n.foot b{color:var(--ink-2);font-size:12.5px}
+.hm-t{display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:14px}
+.hm-det{grid-column:1/-1;padding:6px 0 10px;animation:dd .22s ease}
+.hm-scale{display:flex;gap:4px}.hm-scale span{width:34px;height:26px;border-radius:6px;display:grid;place-items:center;font-family:var(--mono);font-size:12px}.hm-scale span.me{box-shadow:0 0 0 2.5px var(--accent);font-weight:700}
+
+.tile .v.txt{white-space:normal;font-family:var(--sans);font-size:15px;line-height:1.3}
+.rk{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 30px;gap:12px;align-items:center;padding:7px 8px;border-radius:8px}
+.rk.me{background:var(--accent-soft)}
+.rk-n{display:flex;flex-direction:column;min-width:0}.rk-n b{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rk-n small{font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk.me .rk-n b{color:var(--accent);font-weight:600}
+.rk-b{height:9px;border-radius:5px;background:var(--bg-3);overflow:hidden}.rk-b i{display:block;height:100%;border-radius:5px}
+.rk-s{font-family:var(--mono);font-weight:600;font-size:13px;text-align:right}
+
+/* ---------- additions for the fund-operations demo (same tokens, same component language) ---------- */
+.page{max-width:1500px}
+.kr{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:20px}
+.kpi{position:relative;display:flex;flex-direction:column;font:inherit;color:inherit;transition:border-color .15s,box-shadow .15s,transform .15s}
+.kpi:hover{box-shadow:0 8px 22px rgba(14,28,56,.07);transform:translateY(-1px)}
+.kpi .kc{font-size:12px;font-weight:600;color:var(--accent);margin-top:10px;display:flex;align-items:center;gap:4px;opacity:.55}
+.kpi:hover .kc,.kpi.open .kc{opacity:1}
+.kpi.open{border-color:var(--accent);background:#FFF7F8;box-shadow:0 0 0 3px rgba(163,22,43,.08)}
+.kpi.open .kc .ic{transform:rotate(90deg)}
+.kpi.open::after{content:"";position:absolute;left:50%;bottom:-9px;width:14px;height:14px;background:#FFF7F8;border-right:1px solid var(--accent);border-bottom:1px solid var(--accent);transform:translateX(-50%) rotate(45deg)}
+.kpi.bad .kpi-v{color:var(--neg)}.kpi.wrn .kpi-v{color:var(--warn)}.kpi.ok .kpi-v{color:var(--pos)}
+.kpi-v small{font-size:14px;font-weight:500;color:var(--mute);letter-spacing:0}
+.drill{display:none;margin-top:18px}.drill.open{display:block;animation:dd .22s ease}
+.grid{display:grid;gap:20px;margin-top:20px}
+.grid.g2{grid-template-columns:repeat(auto-fit,minmax(460px,1fr))}.grid.g3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.kvg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 24px}
+.kvg div{border-bottom:1px dashed var(--line);padding-bottom:8px;min-width:0}
+.kvg span{display:block;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.kvg b{display:block;font-weight:500;font-size:14px;margin-top:3px;overflow-wrap:anywhere}
+.mini-h{margin-top:20px}
+.mini-h:first-child,.run-b .mini-h{margin-top:0}
+.acc{border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.acc:hover{border-color:#C9CED8}
+.acc.open{border-color:#EADDE0;box-shadow:0 6px 24px rgba(91,18,32,.06)}
+.ah{display:flex;align-items:center;gap:6px;width:100%;padding:14px 18px 14px 12px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.ah b{font-size:15px;font-weight:600;flex:1 1 34%;min-width:150px}
+.ah:hover b{color:var(--accent)}
+.ah .r{flex:1 1 50%;display:flex;gap:10px;justify-content:flex-end;align-items:center;text-align:right}
+.t .mono{white-space:nowrap}
+.acc.open>.ah{background:linear-gradient(90deg,#fff 0,#FBF6F7 100%);border-bottom:1px solid var(--line-2)}
+.acc.open>.ah .expander{transform:rotate(90deg);color:var(--accent)}
+.ab{display:none;padding:18px 20px 20px}.acc.open>.ab{display:block;animation:dd .22s ease}
+.ck{width:20px;height:20px;border-radius:6px;background:var(--pos-bar);color:#fff;display:grid;place-items:center;font-size:12px;flex:none}
+.wfr{display:grid;grid-template-columns:200px 1fr 120px;gap:14px;align-items:center;padding:7px 0;font-size:14px}
+.wfr>span:last-child{font-family:var(--mono);font-size:13px;text-align:right}
+.wft{height:9px;position:relative;background:var(--bg-3);border-radius:5px}
+.wft i{position:absolute;top:0;bottom:0;border-radius:5px;background:var(--navy);min-width:3px}
+.wft i.g{background:var(--pos-bar)}.wft i.r{background:var(--neg-bar)}.wft i.c{background:var(--accent)}
+.bar{height:8px;border-radius:4px;background:var(--bg-3);overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--navy)}
+.bar i.g{background:var(--pos-bar)}.bar i.r{background:var(--neg-bar)}.bar i.a{background:var(--amber)}
+.spv{display:flex;gap:12px;align-items:flex-end;height:92px}
+.spv div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;font:500 12px var(--mono);color:var(--mute);height:100%}
+.spv i{display:block;width:100%;max-width:44px;border-radius:5px 5px 0 0;background:var(--navy)}.spv i.r{background:var(--neg-bar)}
+.paper{border:1px solid var(--line);border-radius:4px;background:#fff;box-shadow:0 8px 28px rgba(14,28,56,.10);font-size:13px;padding:0 0 14px}
+.paper .lh{display:flex;gap:12px;align-items:center;padding:16px 22px 12px;border-bottom:2px solid var(--navy)}
+.paper .lh::before{content:"TF";width:28px;height:28px;border-radius:8px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px;flex:none}
+.paper .lh b{font-size:14px;display:block}.paper .lh .muted{font-size:11px}
+.paper h4{margin:16px 22px 8px;font-size:12.5px;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line);padding-bottom:5px}
+.paper .row{display:flex;justify-content:space-between;gap:14px;padding:5px 22px;border-bottom:1px solid var(--line-2)}
+.paper .row span{color:var(--ink-2)}.paper .row b{font-family:var(--mono);font-weight:500;font-size:12.5px;text-align:right}
+.paper p{margin:10px 22px 0!important}
+.t tr.xr{cursor:pointer}
+.detail-in .t td{white-space:normal}
+.detail-in .t td.num{white-space:nowrap}
+.t td.xcol .expander{margin:0}
+.card.flush>.tw+*,.card.flush>.pad{padding:0 22px 22px}
+.card.flush{overflow:hidden}
+.pad{padding:0 22px 22px}
+.fundcard{display:block;width:100%;text-align:left;background:var(--navy-3);border:1px solid #263A62;border-radius:10px;padding:10px 12px;color:#fff;margin-bottom:8px;cursor:pointer;font:inherit;transition:.15s}
+.fundcard b{font-size:14px;display:block}
+.fundcard .fs{font-size:11.5px;color:var(--navy-mute);margin-top:2px}
+.fundcard .fb{height:4px;border-radius:3px;background:#263A62;margin-top:8px;overflow:hidden}
+.fundcard .fb i{display:block;height:100%;background:var(--navy-mute)}
+.fundcard.on{border-color:#3A5187;background:var(--navy-2);box-shadow:inset 3px 0 0 var(--accent)}
+.fundcard.on .fb i{background:var(--accent)}
+.fundcard:not(.on){opacity:.72}.fundcard:not(.on):hover{opacity:1}
+.asof input[type=date]{border:0;background:none;font:600 13px var(--mono);color:var(--ink);outline:none;padding:0;width:128px}
+.strip button{font:inherit;color:inherit}
+.umenu .um-i.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.umenu .um-i small{color:var(--mute);margin-left:auto;font-size:12px}
+.notif a{cursor:pointer}
+.seg button{font:inherit}
+.modal.run .flist,.modal.run .ailog{height:340px;max-height:340px}
+.rp{min-height:0}
+.rp-b .t th{background:none}
+.link{font:inherit;font-weight:600}
+.drop{padding:26px}
+@media (max-width:900px){.wfr{grid-template-columns:120px 1fr 90px}.grid.g2{grid-template-columns:1fr}}
+
+
+/* ---------- app: sign-in, upload ---------- */
+.login{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:var(--bg,#F4F6FA)}
+.login.on{display:flex}
+.login form{width:min(380px,92vw);background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 26px;box-shadow:0 18px 50px rgba(14,28,56,.12)}
+.login h1{font-size:20px;margin:0 0 4px}.login p{margin:0 0 18px;color:var(--mute);font-size:13.5px}
+.login label{display:block;font-size:12.5px;font-weight:600;margin:12px 0 6px;color:var(--ink-2)}
+.btn.danger{background:#B42318;border-color:#B42318;color:#fff}.btn.danger:disabled{opacity:.45;cursor:default}
+.adm-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.adm-row select,.login select{height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:#fff}
+.login select{width:100%;height:40px}
+.login input{width:100%;box-sizing:border-box;height:42px;border:1px solid var(--line);border-radius:9px;padding:0 12px;font-size:14px;background:#fff}
+.login .err{color:#B42318;font-size:13px;min-height:18px;margin-top:10px}
+.login button{width:100%;margin-top:14px}
+.up-zone{border:1.5px dashed var(--line);border-radius:12px;padding:22px;text-align:center;cursor:pointer;background:var(--bg-2)}
+.up-zone.drag{border-color:#2F6FED;background:#EEF4FF}
+.up-files{font-family:var(--mono);font-size:12px;max-height:120px;overflow:auto;margin-top:10px;text-align:left}
+.up-opts{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:13.5px;align-items:center}
+.up-opts select{height:36px;border:1px solid var(--line);border-radius:8px;padding:0 8px;background:#fff}
+.uplog{font-family:var(--mono);font-size:12px;background:var(--navy,#0E1C38);color:#CFE3D6;border-radius:10px;padding:12px 14px;max-height:300px;overflow:auto;line-height:1.7;margin-top:14px}
+.uplog .w{color:#F5C77A}.uplog .r{color:#F49B9B}.uplog .k{color:#9CC0FF}
+.prev-frame{width:100%;height:60vh;border:1px solid var(--line);border-radius:10px;background:#fff}
+.empty-state{max-width:560px;margin:60px auto;text-align:center}
+.empty-state h2{font-size:22px;margin:0 0 8px}.empty-state p{color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="icon-btn menu-btn" id="menu" aria-label="Open menu"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <a class="brand" href="#home" aria-label="TrackFundAI home"><span class="brand-mark">TF</span><span class="brand-name">TrackFund<b>AI</b></span></a>
+    <span class="brand-sep"></span>
+    <span class="brand-tag" id="brandtag"></span>
+    <div class="top-r">
+      <div class="gsearch">
+        <svg class="ic" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="gs" placeholder="Search pages, investors, instruments" autocomplete="off" aria-label="Search"><kbd>/</kbd>
+        <div class="gs-res" id="gsr"></div>
+      </div>
+      <label class="asof" title="Every countdown and status follows this date">As of <input type="date" id="clock" aria-label="As-of date"></label>
+      <div style="position:relative"><button class="icon-btn" id="bell" aria-label="Exceptions"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="dot-badge" id="nb">0</span></button><div class="notif" id="notif"></div></div>
+      <div style="position:relative"><button class="userchip" id="uchip" aria-haspopup="menu" aria-label="Account"></button><div class="umenu" id="umenu" role="menu"></div></div>
+    </div>
+  </header>
+  <aside class="side" id="side"></aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="scrim" id="ov"></div>
+<aside class="drawer" id="dw" aria-live="polite"><div class="drawer-h"><div><h2 id="dwt" style="margin:0;font-size:18px;overflow-wrap:anywhere"></h2><small id="dws" class="muted"></small></div><button class="icon-btn" id="dwx" aria-label="Close" style="flex:none">&#10005;</button></div><div class="drawer-b" id="dwb"></div></aside>
+<div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+<div id="toast"></div>
+
+<div class="login" id="login"><form id="loginf" autocomplete="on"><h1>TrackFund</h1><p>Sign in to fund operations</p>
+<label for="lu">Username</label><input id="lu" name="username" autocomplete="username" required>
+<label for="lp">Password</label><input id="lp" name="password" type="password" autocomplete="current-password" required>
+<div class="err" id="lerr" role="alert"></div><button class="btn primary" type="submit">Sign in</button></form></div>
+<input type="file" id="upin" multiple hidden accept=".zip,.pdf,.xlsx,.xls,.csv,.xml,.mt940,.json">
+<script>
+
+/* ---------- period and people helpers ---------- */
+const PER=()=>M().period,PL=()=>PER().label,NV=()=>((st.navv||{})[st.s]||{}).version||1;
+const QE=()=>dt(PER().end),QO=()=>dt(PER().open),QS=()=>new Date(PER().start+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const QEs=()=>new Date(PER().end+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const QM15=()=>dt(new Date(new Date(PER().end+'T00:00:00').getTime()-15*864e5).toISOString().slice(0,10));
+const NQ=()=>{const m=PER().code.match(/Q(\d)FY(\d+)/);if(!m)return 'the next quarter';const q=+m[1]%4+1,y=+m[2]+(+m[1]===4?1:0);return `Q${q} FY${String(y).padStart(2,'0')}`};
+const RN=r=>(ROLES.find(x=>x[0]===r)||[0,'—'])[1],MK=()=>((st.navv||{})[st.s]||{}).submitted_by||RN('FIN_MAKER'),CK=()=>((st.navv||{})[st.s]||{}).approved_by||RN('FIN_CHECKER');
+const BND=()=>{const b=S().obligations.find(o=>/breach notice/i.test(o.title));return b?b.due:null};
+const ICONS = {
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  trend:'<polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/>',
+  building:'<rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3"/>',
+  coins:'<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.4 3.4-5.5 6.5-5.5s5.7 2.1 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.8c1.6.8 2.6 2.6 3 5.2"/>',
+  shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+  lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/>',
+  upload:'<path d="M12 15V3M7 8l5-5 5 5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>',
+  folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  file:'<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/>',
+  doc:'<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/>',
+  warn:'<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.2v.3"/>',
+  right:'<path d="M9 6l6 6-6 6"/>', down:'<path d="M6 9l6 6 6-6"/>',
+  left:'<path d="M19 12H5M11 6l-6 6 6 6"/>', arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  download:'<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>', plus:'<path d="M12 5v14M5 12h14"/>',
+  logout:'<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H3"/>',
+  check:'<path d="M5 12l5 5L20 7"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>', search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  print:'<path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  pulse:'<path d="M3 12h4l3-8 4 16 3-8h4"/>'
+};
+const ic = (n, s = 18, sw = 1.8) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
+const $=s=>document.querySelector(s), chev='';
+let ROLES=[['PO','—','Principal Officer'],['CRO','—','Chief Risk Officer'],['FIN_MAKER','—','Finance maker'],['FIN_CHECKER','—','Finance checker'],['AML_PO','—','AML officer'],['IR','—','Investor relations'],['INV_TEAM','—','Investment team'],['TRUSTEE_RO','—','Trustee (read + approve)'],['AUDITOR_RO','—','Auditor (read only)']];
+const st={s:'A',v:'home',role:'',clock:new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10),nav:{},navv:{},tab:{},jf:'ALL',audit:[],reports:[],str:[],appr:{},ing:false,mapOk:{},valOk:{},notice:{},regrep:{}};
+const S=()=>DATA.schemes[st.s], M=()=>S().meta, isA=()=>st.s==='A';
+const f=(x,d=4)=>Number(x).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sg=(x,d=4)=>x<0?`<span class="neg">(${f(-x,d)})</span>`:f(x,d);
+const U=()=>M().unit, cu=x=>`${isA()?'USD':'₹'} ${f(x)}${isA()?'m':' cr'}`;
+const full=x=>(isA()?'USD ':'INR ')+Number(Math.round(x*M().scale*100)/100).toLocaleString(isA()?'en-US':'en-IN',{minimumFractionDigits:2});
+const dt=s=>s?new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+const days=(a,b)=>Math.round((new Date(a)-new Date(b))/864e5);
+const pill=(t,c='')=>`<span class="pill ${c||"n"}">${t}</span>`, tag=t=>`<span class="chip">${t}</span>`;
+const sum=(a,fn)=>a.reduce((t,x)=>t+fn(x),0), glName=g=>DATA.gl[g][0];
+const inv=id=>S().investors.find(i=>i.id===id), short=n=>n.replace(/ \(.*\)/,'').replace(/(,? Ltd\.?| K\.K\.| LLC| Co\. Ltd| Pvt Ltd)$/,'');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const role=()=>ROLES.find(r=>r[0]===st.role)||[st.role,ME?ME.full_name:'',ME?ME.role_label:st.role];
+/* access: the server sends only the data of the pages this role can open; these helpers hide what the role cannot use */
+const CAN=p=>!!ACC&&ACC.pages.includes(p), CANDO=a=>!!ACC&&ACC.actions.includes(a);
+const SACT={navsubmit:1,navlock:1,valok:1,trypost:1,apprbank:1,obl:1,str:1,strnext:1,mapok:1,notice:1,gen:1,ack:1,verify:1};
+const allowed=(act,arg)=>SACT[act]?CANDO(act):(act==='go'||act==='gsgo')?CAN(arg):act==='recon'?CAN('ingestion'):act==='upload'?CANUP:act==='delfiles'?CANDEL:true;
+const canObl=b=>CANDO('obl')&&(ME.is_admin||st.role==='PO'||({CO:'PO'}[b.owner]||b.owner)===st.role);
+function hash(s){let h=2166136261,g=5381;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),16777619);g=(g*33)^s.charCodeAt(i)}return (h>>>0).toString(16).padStart(8,'0')+(g>>>0).toString(16).padStart(8,'0')}
+function log(){} /* audit events are written by the server */
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),3200)}
+function drawer(t,sub,html){$('#dwt').textContent=t;$('#dws').textContent=sub||'';$('#dwb').innerHTML=html;$('#dw').classList.add('on');$('#ov').classList.add('on')}
+function closeDrawer(){$('#dw').classList.remove('on');$('#ov').classList.remove('on')}
+
+/* ---------- components (existing TrackFundAI component language) ---------- */
+Object.assign(ICONS,{bars:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',layers:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',bank:'<path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/>',swap:'<path d="M4 8h14l-4-4M20 16H6l4 4"/>',book:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>',flow:'<path d="M4 4h7v5H4zM13 15h7v5h-7zM7.5 9v3.5a3 3 0 0 0 3 3H13"/>',link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>'});
+const HICON={'Overview':'grid','Data':'upload','Fund accounting':'coins','Fund administration':'users','Reporting':'doc','Compliance':'shield','Administration':'key'};
+function deep({icon='pulse',title,sub='',chips=[],left='',src='',acts=''}){return `<div class="deep"><div class="deep-h"><div class="ttl"><span class="ph-icon">${ic(icon,18)}</span><div><b>${title}</b>${sub?`<small>${sub}</small>`:''}</div></div><div class="dchips">${chips.map(([t,c])=>`<span class="chip ${c||''}">${t}</span>`).join('')}</div></div><div class="deep-g one"><div>${left}</div></div>${src||acts?`<div class="deep-f"><span>${src}</span><span class="acts">${acts}</span></div>`:''}</div>`}
+function kpis(id,items){return `<div class="kr">${items.map((k,i)=>`<button class="kpi ${k.t||''}" data-drill="${id}-${i}"><span class="kpi-l">${k.l}</span><span class="kpi-v">${k.v}</span><span class="kpi-s">${k.s||''}</span><span class="kc">Open details ${ic('right',13,2.2)}</span></button>`).join('')}</div>${items.map((k,i)=>`<div class="drill" id="${id}-${i}">${deep({title:k.l,sub:k.s,left:k.d,chips:[[''+PL()+'','k'],['Reconciled','g']],src:`<span class="src">${ic('link',13)} Every figure traces to a source file</span>`})}</div>`).join('')}`}
+function xt(cols,rows,o={}){return `<div class="tw"><table class="t t-pad"><thead><tr><th class="xcol"></th>${cols.map(c=>`<th class="${c.n?'r':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="row ${r.d?'click xr':''}" ${r.d?'data-x tabindex="0"':''}><td class="xcol">${r.d?`<span class="expander">${ic('right',14)}</span>`:''}</td>${r.c.map((v,i)=>`<td class="${cols[i].n?'num r':''}">${v}</td>`).join('')}</tr>${r.d?`<tr class="detail"><td colspan="${cols.length+1}"><div class="detail-in">${r.d}</div></td></tr>`:''}`).join('')}</tbody>${o.foot?`<tfoot><tr><td></td>${o.foot.map((v,i)=>`<td class="${cols[i].n?'num r':''}">${v}</td>`).join('')}</tr></tfoot>`:''}</table></div>`}
+function xtPlain(h,rows,nums=[]){return `<div class="tw"><table class="t compact"><thead><tr>${h.map((x,i)=>`<th class="${nums.includes(i)?'r':''}">${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="row">${r.map((v,i)=>`<td class="${nums.includes(i)?'num r':''}">${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+const card=(t,b,r='',np=true)=>`<section class="card ${np?'flush':''}"><div class="card-hd"><h3 class="card-t">${t}</h3><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end">${r}</div></div>${b}</section>`;
+const kvg=p=>`<div class="kvg">${p.map(([k,v])=>`<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
+const acc=(h,r,b,open)=>`<div class="acc ${open?'open':''}"><button class="ah" data-acc><span class="expander">${ic('right',14)}</span><b>${h}</b><span class="r">${r||''}</span></button><div class="ab">${b}</div></div>`;
+const head=(c,h,p,r='')=>`<div class="ph"><div class="ph-l"><span class="ph-icon">${ic(HICON[c]||'grid',22)}</span><div><div class="eyebrow">${c} · ${M().name}</div><h1>${h}</h1></div></div><div class="ph-r"><span id="tabslot"></span>${r}<span class="asof">${ic('calendar',15)} As on <b>${QE()}</b> · ${S().files.length}/${S().files.length} files</span></div></div>${p?`<p class="lede">${p}</p>`:''}<div style="height:26px"></div>`;
+const BI={ingest:'refresh',recon:'check',gen:'doc',src:'file',navsubmit:'send',navlock:'lock',verify:'shield',str:'warn',go:'arrow',notice:'doc'};
+const btn=(l,act,c='',arg='')=>!allowed(act,arg)?'':`<button class="btn ${c.includes('p')?'primary':''} ${c.includes('s')?'sm':''}" data-act="${act}" data-arg="${arg}">${BI[act]&&!/<span/.test(l)?ic(BI[act],15):''}${l}</button>`;
+const lk=(l,act,arg='')=>!allowed(act,arg)?'':`<button class="link" data-act="${act}" data-arg="${esc(arg)}">${l}</button>`;
+const steps=a=>`<div class="stages" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:0 0 6px">${a.map(([l,s,c],i)=>`<div class="stg ${c==='d'?'ok':c==='c'?'on':''}"><span class="n">${String(i+1).padStart(2,'0')}</span><b>${l.replace(/^\d+ · /,'')}</b>${s||''}<span class="sb"></span></div>`).join('')}</div>`;
+function tabs(id,items){const cur=items.some(i=>i[0]===st.tab[id])?st.tab[id]:items[0][0];render.tabs=`<div class="tabs">${items.map(([k,l])=>`<button class="${k===cur?'on':''}" data-act="tab" data-arg="${id}|${k}">${l}</button>`).join('')}</div>`;return items.find(i=>i[0]===cur)[2]()}
+function bridge(rows,max){return rows.map(([l,a,b,c,v])=>`<div class="wfr"><span>${l}</span><div class="wft"><i class="${c||''}" style="left:${Math.min(a,b)/max*100}%;width:${Math.abs(b-a)/max*100}%"></i></div><span>${v}</span></div>`).join('')}
+function paper(issuer,sub,title,rows,foot=''){return `<div class="paper"><div class="lh"><div><b>${issuer}</b><div class="muted">${sub}</div></div></div><h4>${title}</h4>${rows.map(([k,v])=>`<div class="row"><span>${k}</span><b>${v}</b></div>`).join('')}<p class="muted" style="font-size:11.5px">${foot}</p></div>`}
+
+/* journal helpers */
+const J=()=>S().journals, jv=no=>J().find(j=>j.no===no);
+function jlines(j){return xtPlain(['GL','Account','Tag','Debit','Credit'],j.lines.map(l=>[l.gl,glName(l.gl),[l.instrument,l.investor].filter(Boolean).map(tag).join(' ')+(l.txn_amt?` <span class="muted">INR ${f(l.txn_amt)} cr @ ${l.rate}</span>`:''),l.amt>0?f(l.amt):'',l.amt<0?f(-l.amt):'']),[3,4])}
+function jdetail(j){const b=j.bank?S().bank.find(x=>x.jv===j.no):null;return `<div class="mini-h">Journal lines (${U()})</div>${jlines(j)}<div class="mini-h">Where this came from</div>${kvg([['Source document',j.src?lk(esc(j.src),'src',j.src):'engine'],['Bank statement line',b?`${j.bank} · ${esc(b.ref)}`:'no cash leg'],['Tally voucher',j.tally||(isA()?'not in Tally (see bridge)':'—')],['Maker / checker',''+MK()+' / '+CK()+''],['Reference',j.ref],['Period',''+PL()+' · '+(st.nav[st.s]==='locked'?'locked':'open')]])}${b?`<div class="mini-h">Bank narration</div><div class="mono" style="font-size:11.5px">${esc(b.narr)}</div>`:''}`}
+function jrows(list){return list.map(j=>({c:[dt(j.date),`<span class="mono">${j.no}</span>`,esc(j.desc),tag(j.kind),f(sum(j.lines,l=>l.amt>0?l.amt:0))],d:jdetail(j)}))}
+const jtable=list=>xt([{h:'Date'},{h:'Journal'},{h:'Description'},{h:'Type'},{h:'Amount',n:1}],jrows(list));
+
+/* ---------- derived ---------- */
+function exceptions(){const o=[],s=S();
+  if(CAN('projects')&&s.instruments)s.instruments.forEach(x=>x.cov.tests.filter(t=>!t.ok).forEach(t=>o.push({sev:'High',title:`Covenant breach: ${x.spv} ${t.name.split(' (')[0]}`,body:`${x.spv_name}: actual ${f(t.actual,2)} against minimum ${f(t.min,2)} at ${QE()}. Breach notice to investors is required.`,owner:'IR',area:'Project monitoring',go:'projects'})));
+  (s.obligations||[]).filter(b=>b.status==='Open').forEach(b=>{const d=days(b.due,st.clock);if(d<0)o.push({sev:'High',title:`Overdue: ${b.title}`,body:`Due ${dt(b.due)}, ${-d} days ago. Owner ${b.owner}. Basis: ${b.basis}.`,owner:b.owner,area:'Calendar',go:'calendar'});else if(d<=14)o.push({sev:'Medium',title:`Due in ${d} days: ${b.title}`,body:`Due ${dt(b.due)}. Owner ${b.owner}.`,owner:b.owner,area:'Calendar',go:'calendar'})});
+  (CAN('ingestion')&&s.rules||[]).filter(r=>r.status==='WARN').forEach(r=>o.push({sev:'Medium',title:r.rule==='R19'?'Single-investee limit needs a decision':'Management fee base needs a decision',body:`${r.left}. ${r.detail}`,owner:'CRO',area:'Reconciliation',go:'ingestion'}));
+  (CAN('valuation')&&s.instruments||[]).filter(x=>x.val.note.startsWith('WATCH')).forEach(x=>o.push({sev:'Medium',title:`Valuation watch: ${x.id}`,body:x.val.note,owner:'CRO',area:'Valuation',go:'valuation'}));
+  if(isA()&&CAN('deals'))o.push({sev:'Low',title:'FC-GPR route for an NCD to be confirmed',body:'I-A1 is a secured NCD; FC-GPR is the form for equity instruments. Finance to confirm the FEMA reporting route before client use.',owner:'INV_TEAM',area:'Deals',go:'deals'});
+  if(st.nav[st.s]!=='locked'&&CAN('nav-close'))o.push({sev:'Low',title:''+'NAV v'+NV()+' not yet locked',body:'Quarter close is complete but the NAV is '+st.nav[st.s]+'. Reports generate only from a locked NAV.',owner:'FIN_CHECKER',area:'Quarter close',go:'nav-close'});
+  return o.filter(e=>CAN(e.go))}
+const NAVG=[['Overview',[['home','Command centre']]],['Data',[['ingestion','Data ingestion']]],
+ ['Fund accounting',[['nav-close','Quarter close & NAV'],['ledger','Ledger & trial balance'],['instruments','Instruments & accruals'],['fx','FX & translation'],['valuation','Valuation'],['capital','Capital accounts'],['waterfall','Waterfall'],['tally','Tally bridge']]],
+ ['Fund administration',[['investors','Investors'],['kyc','KYC / AML / FATCA'],['calls','Capital calls'],['distributions','Distributions'],['bank','Bank & custody'],['deals','Deals, CPs & filings'],['approvals','Approvals & controls']]],
+ ['Reporting',[['reports','Report centre'],['projects','Project monitoring']]],['Compliance',[['calendar','Calendar'],['exceptions','Exceptions'],['audit','Audit log']]],['Administration',[['admin','Users and access']]]];
+const MYNAV=()=>NAVG.map(([g,items])=>[g,items.filter(([k])=>CAN(k))]).filter(([,items])=>items.length);
+/* ---------- views ---------- */
+const V={};
+function navBridge(){const s=S(),c=s.investors.map(i=>i.ca),t=k=>sum(c,x=>x[k]);const o=s.nav_open;let r=o;const rows=[['Opening NAV 30 Jun',0,o,'',f(o)]];
+  [['Contributions','contributions','g'],['Distributions (income)','distributions_income','c'],['Income','income_alloc','g'],['Management fee','fee_alloc','r'],['Expenses','expense_alloc','r'],['Fair-value change','fv_alloc','g'],['FX translation','fx_alloc','r']].forEach(([l,k,cl])=>{const v=t(k);if(!v)return;rows.push([l,r,r+v,v<0?'r':cl==='c'?'c':'g',sg(v)]);r+=v});
+  rows.push(['Closing NAV 30 Sep',0,s.nav_close,'',`<b>${f(s.nav_close)}</b>`]);return bridge(rows,Math.max(o,s.nav_close)*1.06)}
+function sal(){const s=S(),tb=s.close_tb,rows=Object.keys(tb).filter(g=>g<3000).map(g=>({c:[g,glName(g),sg(s.open_tb[g]||0),sg(tb[g])],d:glJ(+g)}));return xt([{h:'GL'},{h:'Account'},{h:''+QO()+'',n:1},{h:''+QE()+'',n:1}],rows,{foot:['','Net asset value',f(s.nav_open),f(s.nav_close)]})}
+function glJ(g){const l=J().filter(j=>j.lines.some(x=>x.gl===g));return l.length?`<div class="mini-h">${l.length} journals on ${g} ${glName(g)} this quarter</div>${jtable(l)}`:'<span class="muted">No movement this quarter.</span>'}
+function cashMove(){const m={};S().bank.forEach(b=>{const k={FEE_PAY:'Management fee paid',EXP_PAY:'Vendor invoices paid',CALL_RCPT:'Capital call receipts',LPI:'Late-payment interest',DISB:'Investment disbursed',DIST_PAY:'Distribution paid (net)',CPN_RCPT:'Coupons received',BANK_INT:'Bank interest',BANK_CHG:'Bank charges'}[jv(b.jv).kind];m[k]=(m[k]||0)+b.amt});
+  let r=S().open_cash;const rows=[['Opening balance',0,r,'',f(r)]];Object.entries(m).forEach(([k,v])=>{rows.push([k,r,r+v,v<0?'r':'g',sg(v)]);r+=v});rows.push(['Closing balance',0,r,'',`<b>${f(r)}</b>`]);return bridge(rows,Math.max(...rows.map(x=>Math.max(x[1],x[2])))*1.05)}
+function oblRows(list){return list.map(b=>{const d=days(b.due,st.clock),done=b.status!=='Open';return {c:[`<span class="mono">${b.ref}</span>`,esc(b.title)+(b.verify?' <span class="pill a" title="Date reconstructed, not yet verified">verify</span>':''),tag(b.reg),`<span style="white-space:nowrap">${dt(b.due)}</span>`,done?pill(b.status+' '+dt(b.done),'g'):d<0?pill(`Overdue ${-d}d`,'r'):pill(`Due in ${d}d`,d<=14?'a':'b')],
+  d:kvg([['Period',b.period],['Owner role',b.owner],['Basis',b.basis],['Evidence',b.evidence?lk(esc(b.evidence),'src',b.evidence):'none yet'],['Completed',dt(b.done)],['Date status',b.verify?'Reconstructed from the circular; to be verified':'Confirmed']])+(done||!canObl(b)?'':`<div style="margin-top:10px">${btn('Mark as filed and attach evidence','obl','p s',b.ref)}</div>`)}})}
+const oblCols=[{h:'Ref'},{h:'Obligation'},{h:'Regulator'},{h:'Due'},{h:'Status'}];
+V.home=()=>{const s=S(),m=M(),ex=exceptions(),T=[],C=[];
+ if(CAN('nav-close'))T.push({l:'Net asset value',v:f(s.nav_close)+` <small>${U()}</small>`,s:`from ${f(s.nav_open)} at 30 Jun`,d:`<div class="grid g2" style="margin:0"><div><div class="mini-h">NAV bridge for the quarter (${U()})</div>${navBridge()}</div><div><div class="mini-h">Assets and liabilities · click a line for its journals</div>${sal()}</div></div>`});
+ if(s.classes&&s.investors&&s.investors[0]&&s.investors[0].ca)T.push({l:'NAV per unit · Class A',v:f(s.classes.A.nav_per_unit),s:`Class B ${f(s.classes.B.nav_per_unit)} · par ${m.par}`,d:`<div class="mini-h">NAV by class</div>${classTable()}<p class="muted">Management fee is charged to Class A units only, so Class B carries a higher NAV per unit.</p>`});
+ if(CAN('bank'))T.push({l:'Cash at bank',v:f(s.close_tb[1100]),s:`${full(s.close_tb[1100])} = statement`,t:'ok',d:`<div class="mini-h">Cash movement, ${QS()+' to '+QEs()} (${U()})</div>${cashMove()}<p>${lk('Open bank reconciliation','go','bank')}</p>`});
+ if(CAN('calls')){const tc=sum(s.call.rows,r=>r.cum);T.push({l:'Capital called',v:(tc/m.committed*100).toFixed(0)+'%',s:`${f(tc,2)} of ${f(m.committed,2)} committed`,d:`<div class="mini-h">Called and unfunded by investor (${U()})</div>${s.investors.map(i=>{const r=s.call.rows.find(x=>x.id===i.id);return `<div class="wfr"><span>${i.id} ${short(i.name)}</span><div class="bar"><i style="width:${r.cum/i.commit*100}%"></i></div><span class="n">${f(r.cum,2)} / ${f(i.commit,2)}</span></div>`}).join('')}`})}
+ if(CAN('waterfall')&&s.expected){const p=s.expected.performance;T.push({l:'Net IRR · TVPI',v:(p.irr*100).toFixed(2)+'% <small>'+Number(p.tvpi).toFixed(3)+'x</small>',s:`DPI ${Number(p.dpi).toFixed(3)} · RVPI ${Number(p.rvpi).toFixed(3)}`,d:`<div class="mini-h">Cash flows used (call due dates, gross distributions, closing NAV)</div>${xtPlain(['Date','Flow',U()],[...s.calls_perf.map(c=>[dt(c[0]),'Capital call',sg(-c[1])]),...s.dists_perf.map(c=>[dt(c[0]),'Distribution',f(c[1])]),[''+QE()+'','Closing NAV',f(s.nav_close)]],[2])}`})}
+ if(CAN('kyc')){const iv=s.investors,soon=iv.filter(i=>i.refresh&&days(i.refresh,st.clock)<=90),hi=iv.filter(i=>/high/i.test(i.risk||'')||/yes/i.test(i.pep||'')),open=st.str.filter(x=>x.stage!=='Closed'&&x.s===st.s);
+  T.push({l:'KYC and AML',v:`${hi.length} <small>EDD</small>`,s:`${soon.length} refresh due in 90 days · ${open.length} STR open`,t:hi.length?'wrn':'ok',d:xtPlain(['Investor','Risk','PEP','Next refresh'],iv.map(i=>[`${i.id} ${esc(i.name)}`,esc(i.risk||''),esc(i.pep||''),dt(i.refresh)]))+`<p>${lk('Open KYC register','go','kyc')}</p>`})}
+ if(!CAN('nav-close')&&s.instruments)T.push({l:'Portfolio',v:s.instruments.length+' <small>instruments</small>',s:`${s.instruments.filter(x=>!x.cov.tests.every(t=>t.ok)).length} covenant breach`,t:s.instruments.every(x=>x.cov.tests.every(t=>t.ok))?'ok':'bad',d:xtPlain(['Instrument','Project','Principal INR cr','Fair value INR cr'],s.instruments.map(x=>[x.id,esc(x.spv_name),f(x.principal),f(x.val.fv_inr)]),[2,3])});
+ if(CAN('exceptions'))T.push({l:'Open exceptions',v:ex.length,s:`${ex.filter(e=>e.sev==='High').length} high · ${ex.filter(e=>e.sev==='Medium').length} medium`,t:ex.some(e=>e.sev==='High')?'bad':ex.length?'wrn':'ok',d:exTable(ex)});
+ const nxt=(s.obligations||[]).filter(b=>b.status==='Open').sort((a,b)=>a.due<b.due?-1:1).slice(0,5);
+ if(CAN('calendar'))C.push(card('Next deadlines',xt(oblCols,oblRows(nxt)),lk('Full calendar','go','calendar')));
+ if(CAN('nav-close'))C.push(card('Quarter close',`<div class="pad">${closeList()}</div>`,lk('Open quarter close','go','nav-close')));
+ if(s.instruments&&(CAN('projects')||CAN('instruments')))C.push(card('Portfolio',xt([{h:'Instrument'},{h:'Project'},{h:'Principal INR cr',n:1},{h:'Fair value INR cr',n:1},{h:'Covenants'}],s.instruments.map(x=>({c:[`<b>${x.id}</b> ${tag(x.kind)}`,`${x.spv_name}<div class="muted">${x.micro}, ${x.city}</div>`,f(x.principal),f(x.val.fv_inr),x.cov.tests.every(t=>t.ok)?pill('Pass','g'):pill('Breach','r')],d:spvDetail(x)}))),lk('Project monitoring','go','projects')));
+ if(CAN('ingestion')&&s.rules){const pass=s.rules.filter(r=>r.status==='PASS').length;C.push(card('Reconciliation status',`<div class="pad"><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><div><div class="kpi-v">${pass}/${s.rules.length}</div><div class="muted">checks pass</div></div><div style="flex:1;min-width:180px"><div class="bar" style="height:12px"><i class="g" style="width:${pass/s.rules.length*100}%"></i></div><p class="muted" style="margin:8px 0 0">Bank, custody, Tally, notices, valuation and registers are tied to the ledger. ${s.rules.length-pass} items carry a flag for a finance decision.</p></div>${btn('Open reconciliation','recon','k')}</div></div>`))}
+ C.push(card('Your access',`<div class="pad">${myAccess()}</div>`,ME.is_admin?lk('Users and access','go','admin'):''));
+ const full_strip=CAN('nav-close')&&CAN('calls')&&CAN('distributions')&&s.instruments&&s.call&&s.dist;
+ return head('Overview','Command centre',`${m.category}, regulated by ${m.regulator}. Quarter ended ${QE()}. You are signed in as ${esc(role()[2])}: this page shows the parts of the fund your role works with.`,pill(''+'NAV v'+NV()+' '+st.nav[st.s],st.nav[st.s]==='locked'?'g':'a'))+
+  (T.length?kpis('h',T):'')+(full_strip?strip():'')+
+  C.reduce((a,c,i)=>a+(i%2?'':'<div class="grid g2">')+c+(i%2||i===C.length-1?'</div>':''),'')+
+  (CAN('exceptions')?`<div class="banner" data-act="go" data-arg="exceptions" style="margin-top:20px">${ic('warn',22).replace('class="ic"','class="ic w"')}<div><b>${ex.length} items waiting on a decision</b><p>Raised from the data your role works with: ${CAN('projects')?'covenant breaches, ':''}filings falling due${CAN('ingestion')?' and items flagged by reconciliation':''}.</p></div><span class="go">${ic('arrow',18)}</span></div>`:'')};
+const ACT_LABEL={navsubmit:'Submit the NAV for approval',navlock:'Approve and lock the NAV',valok:'Approve the valuation',trypost:'Test the period lock',apprbank:'Approve bank-detail changes',obl:'Mark obligations you own as filed',str:'Raise suspicious transaction reports',strnext:'Move STRs through review',mapok:'Accept column mappings at ingestion',notice:'Issue covenant breach notices',gen:'Generate reports',gen_regulator:'Generate the regulator workbook',ack:'Acknowledge and assign exceptions',verify:'Verify the audit chain',upload:'Upload source files',delete_files:'Delete source files',manage_users:'Manage users and roles'};
+function myAccess(){const acts=ACC.actions.map(a=>ACT_LABEL[a]).filter(Boolean);
+ return `<div class="mini-h" style="margin-top:0">Pages you can open</div><div style="display:flex;flex-wrap:wrap;gap:6px">${MYNAV().flatMap(([,it])=>it).map(([k,l])=>`<button class="chip" data-act="go" data-arg="${k}" style="cursor:pointer">${esc(l)}</button>`).join('')}</div>
+ <div class="mini-h">What you can do</div>${acts.length?`<ul style="margin:0;padding-left:18px;line-height:1.7">${acts.map(a=>`<li>${a}</li>`).join('')}</ul>`:'<p class="muted" style="margin:0">Read only.</p>'}
+ ${ME.is_admin?'':`<p class="muted" style="margin:10px 0 0">Other pages and their data are not sent to your browser. Ask an administrator if you need more access.</p>`}`}
+function classTable(){const s=S();return xt([{h:'Class'},{h:'Units',n:1},{h:`NAV ${U()}`,n:1},{h:'NAV per unit',n:1}],['A','B'].map(c=>({c:[`Class ${c} ${c==='A'?'· external investors':'· '+(isA()?'FME contribution':'sponsor')}`,s.classes[c].units.toLocaleString(),f(s.classes[c].nav,6),f(s.classes[c].nav_per_unit)],d:xtPlain(['Investor','Units','Closing capital','NAV per unit'],s.investors.filter(i=>i.cls===c).map(i=>[`${i.id} ${esc(i.name)}`,i.ca.units.toLocaleString(),f(i.ca.closing,6),f(i.ca.nav_per_unit)]),[1,2,3])})),{foot:['Total',s.expected.units_total.toLocaleString(),f(s.nav_close),s.expected.nav_per_unit_fund]})}
+function closeItems(){const s=S(),q=s.expected.quarter,w=-s.close_tb[2500];return [
+ ['Bank reconciled',`${s.bank.length} of ${s.bank.length} statement lines matched; statement ${full(s.close_tb[1100])} = GL 1100`,()=>`${kvg([['Statement closing',full(s.close_tb[1100])],['GL 1100 closing',f(s.close_tb[1100])+' '+U()],['Unmatched lines','0'],['Formats compared',isA()?'MT940 = PDF = CSV':'XLS = PDF']])}<p>${lk('Open bank lines','go','bank')}</p>`],
+ ['Interest accruals',`Coupons ${f(-(s.close_tb[4100]||0))}${s.close_tb[4110]?' and PIK '+f(-s.close_tb[4110]):''} accrued and received; nothing unpaid`,()=>jtable(J().filter(j=>/ACCR_INT|ACCR_PIK|PIK_CAP|CPN/.test(j.kind)))],
+ [isA()?'FX translation':'FX translation (not applicable)',isA()?`INR assets translated at 89.40; movement ${f(q.fx)}`:'INR scheme, no foreign currency',()=>isA()?fxWork():'<span class="muted">Scheme B keeps INR books.</span>'],
+ ['Valuation',`Valuer report received ${dt(M().val_dates.received)}; fair-value movement ${f(q.fv)}`,()=>jtable(J().filter(j=>j.kind==='VALUATION'))||''],
+ ['Fees and expenses',`Management fee ${f(-q.fee)} and expenses ${f(-q.expense)} accrued`,()=>jtable(J().filter(j=>/ACCR_FEE|ACCR_EXP|BANK_CHG/.test(j.kind)))],
+ [`${M().tax_name} payable`,`${f(w)} withheld on ${s.dist.label}; held as a liability at 30 Sep, deposited ${dt(s.dist.deposit)}`,()=>kvg([['GL 2500 at 30 Sep',f(w)+' '+U()],['Challan',s.dist.challan],['Deposit date',dt(s.dist.deposit)],['In cash at 30 Sep?','Yes. The tax sits in 2500, not netted from cash']])],
+ ['Carry provision','Hypothetical liquidation at NAV: below hurdle, provision nil',()=>`<p>NAV plus distributions is below contributed capital compounded at ${(M().hurdle*100).toFixed(0)}%. ${lk('Open the waterfall','go','waterfall')}</p>`]]}
+const closeList=()=>closeItems().map(([h,s,d])=>acc(h,`<span class="muted" style="font-size:11.5px;text-align:right">${s}</span><span class="ck">✓</span>`,d())).join('');
+function exTable(ex){return ex.length?xt([{h:'Severity'},{h:'Exception'},{h:'Area'},{h:'Owner'}],ex.map(e=>({c:[pill(e.sev,e.sev==='High'?'r':e.sev==='Medium'?'a':'b'),esc(e.title),e.area,tag(e.owner)],d:`<p style="margin:0 0 10px;max-width:80ch">${esc(e.body)}</p>${btn('Go to '+e.area,'go','s',e.go)} ${btn('Assign and acknowledge','ack','s',e.title)}`}))):'<p class="muted">No open exceptions.</p>'}
+function spvDetail(x){const mx=Math.max(...x.mis.map(m=>m.sold));return `<div class="grid g3" style="margin:0"><div><div class="mini-h">Units sold per month</div><div class="spv">${x.mis.map(m=>`<div>${m.sold}<i class="${x.cov.tests[0].ok?'':'r'}" style="height:${m.sold/mx*48}px"></i>${m.label}</div>`).join('')}</div></div>
+ <div><div class="mini-h">Covenant tests at 30 Sep</div>${x.cov.tests.map(t=>`<div class="wfr" style="grid-template-columns:1fr 70px 70px"><span>${t.name}</span><span class="n">${f(t.actual,2)} / ${f(t.min,2)}</span>${t.ok?pill('Pass','g'):pill('Breach','r')}</div>`).join('')}</div>
+ <div><div class="mini-h">Project</div>${kvg([['Developer',x.developer],['RERA',x.rera],['Homes planned',x.homes],['Construction',x.mis[2].cons+'%']])}</div></div>
+ <div class="mini-h">Monthly MIS (developer's own file, mapped at ingestion)</div>${xtPlain(['Month','Units sold','Cumulative','Sales value','Collections','Escrow balance','Construction %','Cost to date','Cost to complete'],x.mis.map(m=>[m.label,m.sold,m.cum,f(m.value,2),f(m.coll,2),f(m.esc,2),m.cons,f(m.cost,2),f(m.ctc,2)]),[1,2,3,4,5,6,7,8])}`}
+/* ingestion */
+const FCAT=[['Bank',/Statement.*(USD|INR)/],['Custody',/Demat/],['Books (Tally)',/Tally/],['Capital calls',/CapitalCall/],['Distributions and tax',/Distribution|WHT|TDS|Form16A|Form64C/],['Valuation',/Valuation_/],['Deals and filings',/Deal_Master|DTD|CCD_|Tranche|CP_|FCGPR|Pricing|Charge/],['Developer MIS and covenants',/Developer_MIS|Covenant/],['KYC / AML / FATCA',/KYC|FINGate|AML|FATCA/],['Compliance',/Calendar|Quarterly|Submission|CTR|Evidence/],['Invoices',/Invoice/],['Registers and terms',/Register|PPM|Side_Letter|Opening|FX_Rates/]];
+const MAPS={mis2:[['Nos. booked','units_sold',.97],['Cum. nos.','cum_sold',.95],['Booking value (Rs cr)','sales_value',.93],['Receipts (Rs cr)','collections',.91],['Escrow bal. (Rs cr)','escrow_balance',.96],['% complete','construction_pct',.94],['Spent to date (Rs cr)','cost_incurred',.88],['Balance cost (Rs cr)','cost_to_complete',.86]],
+ mis1:[['Units sold','units_sold',.99],['Cumulative units sold','cum_sold',.99],['Sales value (INR cr)','sales_value',.98],['Collections (INR cr)','collections',.99],['RERA escrow balance (INR cr)','escrow_balance',.97],['Construction %','construction_pct',.99],['Cost incurred to date (INR cr)','cost_incurred',.96],['Cost to complete (INR cr)','cost_to_complete',.97]],
+ bankA:[['Txn Date','txn_date',.99],['Value Date','value_date',.99],['Narration','narration',.99],['Ref No','ref',.97],['Debit','debit',.99],['Credit','credit',.99],['Balance','balance',.99]],
+ bankB:[['Date','txn_date',.98],['Narration','narration',.99],['Chq/Ref','ref',.95],['Withdrawal','debit',.94],['Deposit','credit',.94],['Balance','balance',.99]],
+ alloc:[['Investor ID','investor_id',.99],['Amount called','amount',.97],['Investment component','investment_component',.98],['Fee component','fee_component',.98],['Expense component','expense_component',.97]]};
+function fmap(fl){const n=fl.file;if(/MIS/.test(n))return /A2|B2/.test(n)?MAPS.mis2:MAPS.mis1;if(/Statement.*\.csv/.test(n))return MAPS.bankA;if(/Statement.*\.xls/.test(n))return MAPS.bankB;if(/Allocation/.test(n))return MAPS.alloc;return null}
+function fileDetail(fl){const mp=fmap(fl),ok=st.mapOk[fl.file]!==false;return kvg([['Format detected',fl.format.toUpperCase()],['Normally produced by',fl.who],['Feeds tables',fl.feeds.map(tag).join(' ')],['Used on page',fl.page],['SHA-256',`<span class="hash">${fl.sha}…</span>`],['Status','Loaded · rows carry a source pointer']])+
+ (mp?`<div class="mini-h">AI mapping proposal · header names read, numbers never generated</div>${xtPlain(['Column in the file','Mapped to','Confidence','Decision'],mp.map(([a,b,c])=>[`<b>${a}</b>`,tag(b),`<div style="display:flex;gap:8px;align-items:center;justify-content:flex-end"><div class="bar" style="width:70px"><i class="${c<.9?'a':'g'}" style="width:${c*100}%"></i></div>${(c*100).toFixed(0)}%</div>`,c<.9?pill('Review','a'):pill('Accepted','g')]),[2])}${/MIS/.test(fl.file)?`<div class="note" style="margin-top:10px">The two developers use different layouts and header names for the same data (for example <b>Units sold</b> and <b>Nos. booked</b>). Both map to the same field, so the covenant engine reads them the same way.</div>`:''}<div style="margin-top:10px">${btn('Accept mapping','mapok','p s',fl.file)} ${btn('Correct a column','toastx','s','In the full system you pick the right field from a list; the correction is remembered for this sender.')}</div>`:`<div class="mini-h">Extraction</div><p class="muted" style="margin:0">${fl.format==='pdf'?'Key fields are read from the document text and shown for a person to confirm.':fl.format==='xml'?'Tally vouchers read by tag; no mapping needed.':fl.format==='mt940'?'SWIFT MT940 tags read by a standard parser; no mapping needed.':'Known layout; headers located by content, not by position.'}</p>`)+`<div style="margin-top:10px">${btn('Preview file','src','s',fl.file)} ${btn('Delete this file','delfiles','s',fl.file)}</div>`}
+V.ingestion=()=>{const s=S();return head('Data','Ingestion and reconciliation','Source files arrive in the format each party really sends. Each file is classified by type, its headers are mapped to the fund schema, and the books engine computes every number from them.',(CANUP?btn(st.ing?'<span class="spin"></span> Running':'Upload files','upload','p'):'')+(CANDEL?btn('Delete files','delfiles','s'):''))+
+ tabs('ing',[['files',`Files (${s.files.length})`,()=>`${CANUP?`<div class="drop" id="dropz" data-act="upload">Drop files here or ${lk('browse','upload')} · PDF, XLSX, XLS, CSV, XML, MT940</div>`:`<p class="muted" style="margin:0">${ME.is_admin?'':'Files used on the pages your role can open. '}Read only.</p>`}<div style="margin-top:12px">${FCAT.map(([c,re])=>{const fs=s.files.filter(x=>re.test(x.file)&&FCAT.find(y=>y[1].test(x.file))[0]===c);return fs.length?acc(c,`${tag(fs.length+' files')}${pill(st.ing?'Parsing':'Loaded',st.ing?'a':'g')}`,xt([{h:'File'},{h:'Format'},{h:'Produced by'},{h:'Mapping'}],fs.map(x=>({c:[`<span class="mono" style="font-size:11.5px">${esc(x.file)}</span>`,tag(x.format),x.who,fmap(x)?pill(st.mapOk[x.file]?'Accepted by '+st.mapOk[x.file]:'AI proposal accepted','g'):pill('Not needed')],d:fileDetail(x)})))):''}).join('')}</div>`],
+  ['runs','Ingestion runs',()=>runsCard()],['recon',`Reconciliation (${s.rules.filter(r=>r.status==='PASS').length}/${s.rules.length})`,()=>card('Control checks, re-run after every ingestion',xt([{h:'Rule'},{h:'Check'},{h:'Status'}],s.rules.map(r=>({c:[`<b>${r.rule}</b>`,esc(r.title),pill(r.status,{PASS:'g',WARN:'a',PARTIAL:'a',FAIL:'r'}[r.status]||'')],d:kvg([['Left side',esc(r.left)],['Right side',esc(r.right)],['Detail',esc(r.detail)||'—'],['Source pointers',esc(r.src)||'—']])}))),(s.rules.some(r=>r.status==='FAIL')?pill(s.rules.filter(r=>r.status==='FAIL').length+' failing','r'):pill('0 failures','g')))]])};
+V['nav-close']=()=>{const s=S(),n=st.nav[st.s];return head('Fund accounting','Quarter close and NAV','Each step shows the figures behind it. The maker submits '+'NAV v'+NV()+', the checker approves, and the period locks.',(n==='draft'?(btn('Submit '+'NAV v'+NV()+' for approval','navsubmit','p')||pill('NAV v'+NV()+' draft','a')):n==='submitted'?(btn('Approve and lock '+PL()+'','navlock','p')||pill('Waiting for the checker','a')):pill(''+PL()+' locked','g')))+
+ steps([['1 · Close checklist','7 of 7 complete','d'],['2 · '+'NAV v'+NV()+' computed',f(s.nav_close)+' '+U(),'d'],['3 · Maker submits',n==='draft'?'waiting':''+MK()+'',n==='draft'?'c':'d'],['4 · Checker approves',n==='locked'?''+CK()+'':'waiting',n==='submitted'?'c':n==='locked'?'d':''],['5 · Period locked',n==='locked'?'later changes post in Q3':'not yet',n==='locked'?'d':'']])+
+ `<div class="grid g2">${card('Close checklist',`<div class="pad">${closeList()}</div>`)}<div>${card('NAV statement by class',classTable())}<div style="height:14px"></div>${card('Statement of assets and liabilities',sal())}</div></div>`};
+V.ledger=()=>{const s=S(),kinds=['ALL',...new Set(J().map(j=>j.kind))],list=J().filter(j=>st.jf==='ALL'||j.kind===st.jf);
+ return head('Fund accounting','Ledger and trial balance',`${J().length} journals this quarter. Open a journal to see its lines, source document, bank line and Tally voucher.`,['journals','trial-balance','capital-accounts','bank','rules'].map(k=>`<a class="btn s" href="/api/export/${st.s}/${k}.csv">${k.replace('-',' ')} CSV</a>`).join(' '))+
+ tabs('led',[['j','Journals',()=>`<div class="seg" style="margin-bottom:16px;flex-wrap:wrap">${kinds.map(k=>`<button class="${k===st.jf?'on':''}" data-act="jf" data-arg="${k}">${k==='ALL'?'All':k}</button>`).join('')}</div>${card(`${list.length} journals`,jtable(list))}`],
+  ['tb','Trial balance',()=>card(`Trial balance (${U()}, debit positive)`,xt([{h:'GL'},{h:'Account'},{h:'Type'},{h:''+QO()+'',n:1},{h:'Movement',n:1},{h:''+QE()+'',n:1}],Object.keys(s.close_tb).map(g=>({c:[`<b>${g}</b>`,glName(g),DATA.gl[g][1],sg(s.open_tb[g]||0),sg(s.close_tb[g]-(s.open_tb[g]||0)),sg(s.close_tb[g])],d:glJ(+g)})),{foot:['','Total (debits = credits)','',sg(0),sg(0),sg(0)]}),pill('Balanced','g'))]])};
+function accrDetail(x,a){const tot=sum(a.segs,g=>g.p*x.cash*g.d/365);return `<div class="mini-h">How the coupon is computed (ACT/365)</div>${xtPlain(['Slice','Principal INR cr','Rate','Days','Interest INR cr'],a.segs.map(g=>[g.n,f(g.p),(x.cash*100).toFixed(2)+'%',g.d,f(g.p*x.cash*g.d/365,6)]),[1,2,3,4])}${kvg([['Cash coupon',`INR ${f(a.cash)} cr`+(isA()?` @ ${a.rate} = USD ${f(a.fn)}m`:'')],['PIK capitalised',a.pik?`INR ${f(a.pik)} cr`:'none'],['Closing principal',`INR ${f(a.closing)} cr`],['Accrued unpaid','0.0000']])}`}
+V.instruments=()=>head('Fund accounting','Instruments and accruals','Terms, tranches and the interest schedule for each instrument. Open a period to see the day-count working.')+S().instruments.map((x,i)=>acc(`${x.id} · ${x.spv_name}`,`${tag(x.kind_long)}${tag('INR '+f(x.principal)+' cr')}${x.cash?tag((x.cash*100).toFixed(1)+'% cash'):''}${x.pik?tag((x.pik*100).toFixed(0)+'% PIK'):''}`,
+ `${kvg([['ISIN',x.isin],['Face value','INR '+x.fv.toLocaleString('en-IN')],['Tenor',x.tenor+' months'],['Day count','ACT/365'],['Security',x.security],['Charge filing',x.chg],['Units held',x.qty.toLocaleString()],[`Cost (${U()})`,f(x.cost)]])}
+ <div class="mini-h">Tranches</div>${xtPlain(['Tranche','Date','INR cr',isA()?'FX rate':'',isA()?'USD m':'','Units'],x.tranches.map(t=>['T'+t.no,dt(t.date),f(t.inr,2),isA()?t.rate:'',isA()?f(t.fn):'',t.units.toLocaleString()]),[2,3,4,5])}
+ <div class="mini-h">Accrual schedule</div>${x.accr.length?xt([{h:'Period'},{h:'From'},{h:'To'},{h:'Opening INR cr',n:1},{h:'Cash coupon',n:1},{h:'PIK',n:1},{h:'Closing INR cr',n:1}],x.accr.map(a=>({c:[`<b>${a.period}</b>`,dt(a.start),dt(a.end),f(a.opening),f(a.cash),f(a.pik),f(a.closing)],d:accrDetail(x,a)}))):'<p class="muted">No coupon. Return comes through conversion and project profit share.</p>'}
+ <div class="mini-h">Journals this quarter</div>${jtable(J().filter(j=>j.lines.some(l=>l.instrument===x.id)))}`,i===0)).join('');
+function fxWork(){const s=S();return xtPlain(['Instrument','INR cr','Closing rate','Translated USD m','Cost USD m','Cumulative translation'],s.fx_work.map(w=>[w.instrument,f(w.inr,2),w.rate,f(w.translated),f(w.cost),sg(w.cumulative)]),[1,2,3,4,5])+kvg([['Opening balance on 1220',sg(s.open_tb[1220])],['Movement for the quarter',sg(s.close_tb[1220]-s.open_tb[1220])],['Closing balance on 1220',sg(s.close_tb[1220])],['Split','All unrealised; nothing sold in the quarter']])}
+V.fx=()=>{if(!isA())return head('Fund accounting','FX and translation','')+'<div class="note">Residential Growth Fund II keeps its books in INR and holds INR assets. There is no FX translation. Switch to the GIFT scheme to see this page.</div>';
+ const r=S().fx,mn=Math.min(...r.map(x=>x[1])),mx=Math.max(...r.map(x=>x[1])),W=860,H=170,px=i=>30+i/(r.length-1)*(W-50),py=v=>H-22-(v-mn)/(mx-mn)*(H-40),ev={'2026-08-05':'T2 disbursed 89.15','2026-09-30':'Closing 89.40'};
+ const path=r.map((x,i)=>(i?'L':'M')+px(i).toFixed(1)+' '+py(x[1]).toFixed(1)).join(' ');
+ return head('Fund accounting','FX and translation','One locked daily rate table feeds every conversion. No rate is typed anywhere else.',pill('Rates locked','g'))+
+ card('USD/INR reference rate, 1 Jul to '+QE()+'',`<div class="pad"><svg class="chart" viewBox="0 0 ${W} ${H}"><path d="${path} L${px(r.length-1)} ${H-22} L30 ${H-22} Z" fill="rgba(14,28,56,.06)"/><path d="${path}" fill="none" stroke="#0E1C38" stroke-width="1.8"/>${[mn,(mn+mx)/2,mx].map(v=>`<line x1="30" x2="${W-20}" y1="${py(v)}" y2="${py(v)}" stroke="#E4E7ED"/><text x="0" y="${py(v)+3}" font-size="10" fill="#6A7386" font-family="JetBrains Mono">${v.toFixed(2)}</text>`).join('')}${r.map((x,i)=>ev[x[0]]?`<circle cx="${px(i)}" cy="${py(x[1])}" r="4.5" fill="#A3162B" stroke="#fff" stroke-width="2"/><text x="${px(i)-8}" y="${py(x[1])-10}" text-anchor="end" font-size="10.5" font-weight="600" fill="#A3162B">${ev[x[0]]}</text>`:'').join('')}<text x="30" y="${H-6}" font-size="10" fill="#6A7386"${'>'+QS()+'<'}/text><text x="${W-20}" y="${H-6}" text-anchor="end" font-size="10" fill="#6A7386">30 Sep</text></svg></div>`)+
+ `<div class="grid g2">${card('Translation working at '+QE()+'',`<div class="pad">${fxWork()}</div>`)}${card('Journals that used a rate',jtable(J().filter(j=>j.lines.some(l=>l.rate)||j.kind==='FX_TRANSL')))}</div><div style="margin-top:14px">${acc(`Daily rate table (${r.length} business days)`,pill('Locked','g'),xtPlain(['Date','USD/INR','Source'],r.map(x=>[dt(x[0]),x[1].toFixed(4),'FBIL reference rate (synthetic)']),[1]))}</div>`};
+V.valuation=()=>{const s=S(),vd=M().val_dates,ok=st.valOk[st.s],lim=new Date(new Date(vd.received).getTime()+15*864e5).toISOString().slice(0,10);
+ return head('Fund accounting','Valuation',`${M().providers.valuer} valued the portfolio at ${QE()}. Fields are read from the valuer's PDF, reviewed against the prior cycle, approved, and only then posted.`,ok?pill('Approved and posted','g'):btn('Approve valuation','valok','p'))+
+ steps([['Report dated',dt(vd.report),'d'],['Received',dt(vd.received),'d'],['Fields extracted','from PDF, confirmed','d'],['Reviewed vs prior cycle',''+dt(M().val_dates.prior)+'','d'],['Approved · journals posted',ok?'done':'waiting',ok?'d':'c'],['Sent to investors',dt(vd.dispatched)+' · limit '+dt(lim),'d']])+
+ `<div class="grid">${card('Fair value by instrument (INR cr)',xt([{h:'Instrument'},{h:'Method'},{h:'Principal',n:1},{h:'FV adjustment',n:1},{h:'Fair value',n:1},{h:'Prior adj.',n:1},{h:'Change',n:1},{h:'Review'}],s.instruments.map(x=>{const v=x.val;return {c:[`<b>${x.id}</b>`,v.method,f(v.principal_inr),sg(v.adj_inr),f(v.fv_inr),sg(v.prior_adj_inr),sg(v.adj_inr-v.prior_adj_inr),v.note.startsWith('WATCH')?pill('Watch','a'):pill('OK','g')],
+  d:`${kvg([['Yield / discount rate',`${v.y} (prior ${v.y_prior})`],['Hierarchy','Level '+v.level],['Sales velocity',(x.cov.vel/3).toFixed(2)+' units a month'],['Cost to complete','INR '+f(x.mis[2].ctc,2)+' cr'],[`Adjustment in ${U()}`,f(v.adj_fn)],[`Movement posted (${U()})`,sg(v.movement_fn)]])}<div class="${v.note.startsWith('WATCH')?'flag':'flag b'}" style="margin-top:10px">${esc(v.note)}</div><div class="mini-h">Journal</div>${jtable(J().filter(j=>j.kind==='VALUATION'&&j.lines.some(l=>l.instrument===x.id)))||''}<p>${lk('Open valuer report','src','Valuation_Report')}</p>`}}),{foot:['Total','',f(sum(s.instruments,x=>x.val.principal_inr)),sg(sum(s.instruments,x=>x.val.adj_inr)),f(sum(s.instruments,x=>x.val.fv_inr)),'','','']}))}</div>`};
+function caRoll(i){const c=i.ca,rows=[['Opening capital',c.opening],['Contributions ('+S().call.label+')',c.contributions],['Distributions: income',c.distributions_income],['Distributions: return of capital',c.distributions_roc],['Income allocated',c.income_alloc],['Management fee',c.fee_alloc],['Expenses',c.expense_alloc],['Fair-value change',c.fv_alloc],['FX translation',c.fx_alloc],['Carry',c.carry_alloc]];
+ return `<div class="grid g2" style="margin:0"><div><div class="mini-h">Roll-forward (${U()})</div>${xtPlain(['Line',U()],[...rows.map(([l,v])=>[l,sg(v,6)]),['<b>Closing capital</b>',`<b>${f(c.closing,6)}</b>`]],[1])}</div><div><div class="mini-h">Units</div>${kvg([['Units at 30 Jun',c.units_open.toLocaleString()],['Issued in quarter',(c.units-c.units_open).toLocaleString()+' at par '+M().par],['Units at 30 Sep',c.units.toLocaleString()],['NAV per unit',f(c.nav_per_unit)],['Share of class '+c.cls,(c.units/S().classes[c.cls].units*100).toFixed(2)+'%'],['Commitment',f(i.commit,2)+' '+U()]])}</div></div>`}
+V.capital=()=>{const s=S(),t=k=>sum(s.investors,i=>i.ca[k]);return head('Fund accounting','Capital accounts','One account per investor. The accounts add up to the NAV, and units agree with the unit register.',pill('Sum of accounts = NAV','g'))+
+ `<div class="note" style="margin-bottom:14px">Unit policy: units are issued at par on each contribution. Income distributions do not change units. Return-of-capital distributions redeem units at par.</div>`+
+ card(`Capital accounts for ${PL()} (${U()})`,xt([{h:'Investor'},{h:'Class'},{h:'Opening',n:1},{h:'Contributions',n:1},{h:'Distributions',n:1},{h:'Net result',n:1},{h:'Closing',n:1},{h:'Units',n:1},{h:'NAV / unit',n:1}],s.investors.map(i=>{const c=i.ca,nr=c.income_alloc+c.fee_alloc+c.expense_alloc+c.fv_alloc+c.fx_alloc;return {c:[`<b>${i.id}</b> ${esc(short(i.name))}`,tag(c.cls),f(c.opening),f(c.contributions),sg(c.distributions_income),sg(nr),f(c.closing),c.units.toLocaleString(),f(c.nav_per_unit)],d:caRoll(i)}}),{foot:['Total','',f(t('opening')),f(t('contributions')),sg(t('distributions_income')),sg(s.nav_close-s.nav_open-t('contributions')-t('distributions_income')),f(s.nav_close),s.expected.units_total.toLocaleString(),s.expected.nav_per_unit_fund]}))};
+function wf(nav){const s=S(),h=M().hurdle,c=M().carry,as=new Date('2026-09-30'),g=([d,a])=>a*Math.pow(1+h,(as-new Date(d))/864e5/365),paid=sum(s.calls_perf,x=>x[1]),dist=sum(s.dists_perf,x=>x[1]);
+ const hur=Math.max(sum(s.calls_perf,g)-sum(s.dists_perf,g)-(paid-dist),0);let rem=nav;const t1=Math.min(rem,paid-dist);rem-=t1;const t2=Math.min(rem,hur);rem-=t2;const t3=Math.min(rem,hur*c/(1-c));rem-=t3;const gp=rem*c;return {t1,t2,t3,lp:rem-gp,gp,carry:t3+gp,hur,paid,dist}}
+function wfOut(pct){const nav=S().nav_close*(1+pct/100),w=wf(nav);let a=0;const rows=[['1 · Return of capital',w.t1,''],['2 · Hurdle '+(M().hurdle*100).toFixed(0)+'% to investors',w.t2,'g'],['3 · Catch-up 100% to manager',w.t3,'c'],['4 · 80% to investors',w.lp,'g'],['4 · 20% to manager',w.gp,'c']].map(([l,v,c])=>{const r=[l,a,a+v,c,f(v)];a+=v;return r});
+ return `<div class="kr" style="margin-bottom:14px">${[['Distributable (NAV)',f(nav)],['Investors receive',f(w.t1+w.t2+w.lp)],['Carried interest',f(w.carry)],['Carry as % of profit',nav+w.dist>w.paid?(w.carry/(nav+w.dist-w.paid)*100).toFixed(1)+'%':'no profit']].map(([l,v],i)=>`<div class="kpi ${i===2&&w.carry>0?'bad':''}" style="cursor:default"><span class="kpi-l">${l}</span><span class="kpi-v">${v}</span><span class="kpi-s">${U()}</span></div>`).join('')}</div>${bridge(rows,nav*1.02)}
+ <p class="muted" style="margin-top:10px">${w.carry>0?`Hurdle is cleared. The manager catches up ${f(w.t3)} and then shares the rest 80/20.`:`At this NAV investors have not yet received their capital plus the ${(M().hurdle*100).toFixed(0)}% hurdle (${f(w.hur)} still due), so carry is nil.`}</p>`}
+V.waterfall=()=>head('Fund accounting','Waterfall',`European whole-fund waterfall: capital back, ${(M().hurdle*100).toFixed(0)}% hurdle, 100% catch-up, then 80/20. The provision is a hypothetical sale of everything at NAV.`,pill('Actual carry provision: nil','g'))+
+ card('What if the NAV were higher?',`<div class="pad"><label for="wfs" style="display:flex;justify-content:space-between;font-weight:600;margin-bottom:6px"><span>NAV uplift</span><span class="mono" id="wfp">+0%</span></label><input type="range" id="wfs" min="0" max="40" step="1" value="0"><div id="wfo" style="margin-top:16px">${wfOut(0)}</div></div>`)+
+ `<div class="grid">${card('Cash flows behind the hurdle',xtPlain(['Date','Flow',U()],[...S().calls_perf.map(c=>[dt(c[0]),'Capital call (due date)',f(c[1],2)]),...S().dists_perf.map(c=>[dt(c[0]),'Distribution',f(c[1],2)])],[2]))}</div>`;
+V.tally=()=>{const s=S(),t=s.tally,tb=xt([{h:'Ledger'},{h:'Group'},{h:'Opening INR',n:1},{h:'Debit',n:1},{h:'Credit',n:1},{h:'Closing INR',n:1}],t.tb.map(l=>({c:[esc(l.name),tag(l.group),sg(l.open,2),f(l.dr,2),f(l.cr,2),sg(l.close,2)],d:xtPlain(['Voucher','Date','Narration','INR'],t.vouchers.filter(v=>v.lines.some(x=>x[0]===l.name)).map(v=>[v.no,dt(v.date),esc(v.narr),sg(v.lines.find(x=>x[0]===l.name)[1],2)]),[3])})),{foot:['Total','',sg(0,2),f(sum(t.tb,l=>l.dr),2),f(sum(t.tb,l=>l.cr),2),sg(0,2)]});
+ const vt=list=>xt([{h:'Voucher'},{h:'Date'},{h:'Type'},{h:'Narration'},{h:'GL journal'},{h:'Match'}],list.map(v=>{const j=J().find(x=>x.tally===v.no);return {c:[`<b>${v.no}</b>`,dt(v.date),tag(v.type),esc(v.narr),j?`<span class="mono">${j.no}</span>`:'—',pill('Matched','g')],d:`<div class="grid g2" style="margin:0"><div><div class="mini-h">Tally voucher (INR)</div>${xtPlain(['Ledger','Debit','Credit'],v.lines.map(l=>[esc(l[0]),l[1]>0?f(l[1],2):'',l[1]<0?f(-l[1],2):'']),[1,2])}<div class="hash" style="margin-top:6px">GUID ${v.guid}</div></div><div><div class="mini-h">GL journal (${U()})</div>${j?jlines(j):''}</div></div>`}}));
+ if(!isA())return head('Fund accounting','Tally bridge','For the onshore fund, Tally is the statutory book. Every voucher must match one ledger journal, and every ledger balance must agree.',pill(`${t.vouchers.length} of ${t.vouchers.length} vouchers matched`,'g'))+tabs('tl',[['v','Vouchers',()=>card('Day book, '+PL()+'',vt(t.vouchers))],['tb','Tally trial balance',()=>card('Trial balance as exported from Tally',tb,pill('Balanced','g'))]]);
+ const br=t.bridge,code={M:['Memo-rate restatement','Tally records every USD item at one rate, 89.40. The ledger uses the daily rate.'],A:['Accrual not in Tally','Tally is kept on a cash basis. Fees, expenses, interest and call receivables are accrued only in the ledger.'],F:['FX translation','Translation of INR assets is booked only in the ledger.']};
+ const bt=c=>xtPlain(['Voucher','Journal','Date','Difference','Reason'],br.filter(b=>b.code.includes(c)).map(b=>[b.voucher,b.journal,b.date?dt(b.date):'opening',b.difference_inr?'INR '+b.difference_inr:'USD m '+b.difference_usd_m,esc(b.reason)]),[3]);
+ return head('Fund accounting','Tally bridge','The GIFT scheme keeps Tally in INR at a single memo rate. The bridge explains every difference from the USD ledger with one of three reasons.',pill('Unexplained difference: nil','g'))+
+ kpis('tb',Object.entries(code).map(([c,[l,d]])=>({l:'Code '+c,v:br.filter(b=>b.code.includes(c)).length+' <small>lines</small>',s:l,d:`<p style="margin-top:0">${d}</p>${bt(c)}`})))+`<div style="height:14px"></div>`+
+ tabs('tl',[['v','Vouchers',()=>card(`Day book, ${PL()} · ${t.vouchers.length} vouchers, all matched`,vt(t.vouchers))],['tb','Tally trial balance',()=>card('Trial balance as exported from Tally (INR at 89.40)',tb,pill('Balanced','g'))],['nt','Ledger journals not in Tally',()=>card('Booked in the ledger only',jtable(J().filter(j=>!j.tally)))]])};
+V.investors=()=>{const s=S();return head('Fund administration','Investors and commitments','Register of investors, classes, closes and side letters.',pill('Feeder: not in this dataset'))+
+ card('Investor register at '+QE()+'',xt([{h:'Investor'},{h:'Type'},{h:'Country'},{h:'Class'},{h:`Commitment ${U()}`,n:1},{h:'Called',n:1},{h:'Unfunded',n:1},{h:M().tax_name,n:1}],s.investors.map(i=>{const r=s.call.rows.find(x=>x.id===i.id),sl=s.side_letters.filter(x=>x[0]===i.id);return {c:[`<b>${i.id}</b> ${esc(i.name)}`,esc(i.type),i.country,tag(i.cls),f(i.commit,2),f(r.cum,2),f(r.unf,2),(i.wht*100).toFixed(0)+'%'],
+  d:`<div class="wfr" style="grid-template-columns:120px 1fr 120px"><span>Called ${(r.cum/i.commit*100).toFixed(0)}%</span><div class="bar"><i style="width:${r.cum/i.commit*100}%"></i></div><span class="n">${f(r.unf,2)} unfunded</span></div>${kvg([['Admitted at','First close · '+dt(M().first_close)],['Equalisation interest','0.00 (single close)'],['Fee applies',i.cls==='A'?'Yes':'No'],['Carry applies',i.cls==='A'?'Yes':'No'],['Tax ID',i.tin],['Remitting bank',i.bank],['KYC',`${i.risk} risk · refresh ${dt(i.refresh)}`],['Transfers of units','Out of scope in this dataset']])}<div class="mini-h">Side-letter terms</div>${sl.length?xtPlain(['Clause','Term','MFN status'],sl.map(x=>[tag(x[1]),esc(x[2]),x[3]])):'<span class="muted">No side letter.</span>'}<p>${lk('Capital account','go','capital')} · ${lk('KYC file','go','kyc')}</p>`}}),{foot:['Total','','','',f(M().committed,2),f(sum(s.call.rows,r=>r.cum),2),f(sum(s.call.rows,r=>r.unf),2),'']}))+
+ `<div class="grid g2">${card('Unit classes',xtPlain(['Class','For','Fee','Carry','Par'],[['A','External investors','Yes','Yes',M().par],['B',isA()?'FME contribution':'Sponsor commitment','No','No',M().par]]))}${card('Service providers',`<div class="pad">${kvg(Object.entries(M().providers).filter(([k])=>k!=='valuer_reg').map(([k,v])=>[k,v]))}</div>`)}</div>`};
+V.kyc=()=>{const s=S(),ext=s.investors.slice(0,3),docs=isA()?['Checklist','Screening report','CRS self-certification','FATCA W-8BEN-E summary','Beneficial ownership declaration']:['Checklist','Screening report','CKYC record','Beneficial ownership declaration','FATCA / CRS self-certification'];
+ return head('Fund administration','KYC, AML and FATCA','Register, document vault, screening log and tax classification. A capital call cannot go to an investor whose KYC is not complete.',btn('Raise suspicious transaction report','str','k'))+
+ card('KYC register',xt([{h:'Investor'},{h:'Risk'},{h:'PEP'},{h:'Last screening'},{h:'Next refresh'},{h:'Status'}],s.investors.map((i,k)=>{const due=days(i.refresh,st.clock),fp=k===2;return {c:[`<b>${i.id}</b> ${esc(i.name)}`,pill(i.risk,i.risk==='Low'?'g':'a'),esc(i.pep),'12 Oct 2026',dt(i.refresh),due<=60?pill(`Refresh due in ${due}d`,'a'):pill('Complete','g')],
+  d:`${kvg([['Beneficial ownership',esc(i.bo)],['FATCA status',esc(i.fatca)],['CRS status',esc(i.crs)],['GIIN',i.giin||'not applicable'],['Tax ID',i.tin],['Reportable',isA()&&i.cls==='A'?'Yes (Form 61B)':'No']])}<div class="mini-h">Document vault</div>${k<3?xtPlain(['Document','Received','Verified by',''],docs.map(d=>[d,dt('2025-09-19'),'Farhan Qureshi-Menon',lk('Open','src','KYC_Pack')])):'<span class="muted">Held on the manager\'s own KYC file.</span>'}<div class="mini-h">Screening log</div>${xtPlain(['Run date','Lists','Hits','Outcome'],[['12 Oct 2026',isA()?'UNSC / OFAC / local':'UNSC / MHA-UAPA / SEBI debarred',fp?1:0,fp?'False positive: name similarity only; date of birth and nationality differ; closed':'No hits']])}`}})))+
+ `<div class="grid g2">${card('Suspicious transaction reports',st.str.length?xt([{h:'Ref'},{h:'Raised by'},{h:'Stage'}],st.str.map((r,i)=>({c:[r.ref,r.by,pill(r.stage,r.stage==='Closed'?'g':'a')],d:`<p style="margin-top:0">Workflow: create, review by the Principal Officer, then file through FINGate or close with reasons. Tipping-off is prohibited.</p>${r.stage!=='Closed'?btn('Move to next stage','strnext','s',i):''}`}))):`<div class="pad muted">None raised. Use the button above to see the workflow.</div>`)}
+ ${card(isA()?'FIU registration and Form 61B':'FATCA / CRS',`<div class="pad">${isA()?kvg([['FINGate 2.0 registration','FIUREID/IFSC/9999999 · Active'],['Principal Officer','Farhan Qureshi-Menon'],['Designated Director','Sharvari Deodhar'],['Form 61B CY2025','Filed 28 May 2026'],['Reportable accounts','3 (LP-A1, LP-A2, LP-A3)'],['Evidence',lk('FINGate_Registration_Evidence.pdf','src','FINGate')]]):kvg([['Self-certifications on file','3 of 3 external investors'],['Reportable accounts','None (resident investors)'],['CKYC references','On file for all four'],['Net-worth certificate','LP-B3 · INR 412.60 cr']])}</div>`)}</div>`};
+function noticeDoc(kind,i){const s=S(),m=M(),c=s.call,d=s.dist;if(kind==='call'){const r=c.rows.find(x=>x.id===i.id);return paper(m.name,`${m.category} · ${m.regulator} Reg. No. ${m.reg_no}`,`DRAWDOWN NOTICE ${c.label}`,[['Investor',esc(i.name)],['Notice date',dt(c.notice)],['Due date',dt(c.due)],['Commitment',full(i.commit)],['Percentage called',(c.pct*100).toFixed(0)+'%'],['Amount now called',`<b>${full(r.amt)}</b>`],['of which investment',full(r.inv)],['of which fees',full(r.fee)],['of which expenses and reserves',full(r.exp)],['Cumulative called',full(r.cum)],['Unfunded after this call',full(r.unf)],['Pay to',`${m.bank.name}, A/c ${m.bank.acct}`],['Reference',`CALL ${c.code} ${i.id}`]],`Late payment bears interest at ${(m.late_rate*100).toFixed(0)}% a year from the due date.`)}
+ const L=d.rows.find(x=>x.investor===i.id);return paper(m.name,`${m.category} · ${m.regulator} Reg. No. ${m.reg_no}`,`DISTRIBUTION NOTICE ${d.label}`,[['Investor',esc(i.name)],['Declared',dt(d.decl)],['Paid',dt(d.pay)],['Character','Income (coupons)'],['Gross',full(L.gross)],[`${m.tax_name} at ${(L.wht_rate*100).toFixed(0)}%`,full(L.wht)],['Net paid',`<b>${full(L.net)}</b>`],['Return of capital','Nil'],['Effect on units','None']],'A tax certificate follows after deposit.')}
+V.calls=()=>{const s=S(),c=s.call,tot=sum(c.rows,r=>r.amt),lpi=J().filter(j=>j.kind==='LPI');return head('Fund administration','Capital calls',`${c.label}: ${(c.pct*100).toFixed(0)}% of commitments for ${c.purpose}.`,pill('Fully received','g'))+
+ steps([['Computed from register',(c.pct*100).toFixed(0)+'% × commitments','d'],['Checker approved',''+CK()+'','d'],['Notices issued',dt(c.notice),'d'],['Due',dt(c.due),'d'],['Receipts matched to bank',`${c.rows.length} of ${c.rows.length}`,'d'],['Units issued',((tot*M().scale)/M().par).toLocaleString()+' at par','d']])+
+ `<div class="grid">${card(`${c.label} by investor (${U()})`,xt([{h:'Investor'},{h:'Called',n:1},{h:'Investment',n:1},{h:'Fees',n:1},{h:'Expenses',n:1},{h:'Received'},{h:'Status'}],c.rows.map(r=>{const i=inv(r.id),j=J().find(x=>x.ref===`${c.code}/${r.id}`),lj=lpi.find(x=>x.ref.endsWith(r.id));return {c:[`<b>${r.id}</b> ${esc(short(i.name))}`,f(r.amt),f(r.inv),f(r.fee),f(r.exp),dt(r.rc),r.late>0?pill(`${r.late} days late`,'a'):pill('On time','g')],
+  d:`<div class="grid g2" style="margin:0"><div><div class="mini-h">Notice sent</div>${noticeDoc('call',i)}</div><div><div class="mini-h">Receipt matched to bank</div>${jdetail(j)}${r.late>0?`<div class="mini-h">Late-payment interest</div><div class="flag">${f(r.amt)} × ${(M().late_rate*100).toFixed(0)}% × ${r.late} / 365 = <b>${f(r.amt*M().late_rate*r.late/365)}</b> ${U()}, received ${dt(c.lpi_date)} and matched to bank (${lj.no}).</div>`:''}</div></div>`}}),{foot:['Control total',f(tot),f(sum(c.rows,r=>r.inv)),f(sum(c.rows,r=>r.fee)),f(sum(c.rows,r=>r.exp)),'','']}))}</div>`};
+V.distributions=()=>{const s=S(),d=s.dist,m=M(),w=sum(d.rows,r=>r.wht),dep=days(d.deposit,st.clock)<=0;return head('Fund administration','Distributions',`${d.label}: income distribution from ${d.source.toLowerCase()}.`,pill('Paid '+dt(d.pay),'g'))+
+ kpis('d',[{l:'Gross distribution',v:f(d.gross),s:'100% income · no return of capital',d:`<div class="mini-h">Character</div>${kvg([['Income',f(d.gross)],['Return of capital','0.0000'],['Capital gain','0.0000'],['Recallable','Nil'],['Units','Unchanged']])}`},
+  {l:`${m.tax_name} withheld`,v:f(w),s:`rate taken from each investor's record`,d:xtPlain(['Investor','Gross','Rate',m.tax_name,'Net'],d.rows.map(r=>[r.investor,f(r.gross),(r.wht_rate*100).toFixed(0)+'%',f(r.wht),f(r.net)]),[1,2,3,4])},
+  {l:'Net paid from bank',v:f(d.gross-w),s:`${d.rows.length} payments on ${dt(d.pay)}`,d:jtable(J().filter(j=>j.kind==='DIST_PAY'))},
+  {l:`${m.tax_name} payable (GL 2500)`,v:f(-s.close_tb[2500]),s:dep?`deposited ${dt(d.deposit)}`:'liability at 30 Sep',t:'wrn',d:`${kvg([['Liability at '+QE()+'',f(w)+' '+U()],['Section',m.tax_section],['Challan',d.challan],['Deposit date',dt(d.deposit)],['Certificates',`${isA()?'WHT certificates':'Form 16A'} issued ${dt(d.cert_date)} to 3 investors`],['Where it sits','In GL 2500. Cash at 30 Sep still includes it.']])}<p>${lk('Open challan','src',isA()?'WHT_Deposit_Challan':'TDS_194LBB')}</p>`}])+
+ `<div class="grid">${card(`${d.label} by investor (${U()})`,xt([{h:'Investor'},{h:'Gross',n:1},{h:`${m.tax_name} rate`,n:1},{h:m.tax_name,n:1},{h:'Net paid',n:1},{h:'Bank match'}],d.rows.map(r=>{const i=inv(r.investor),j=J().find(x=>x.ref===`${d.code}/${r.investor}`);return {c:[`<b>${r.investor}</b> ${esc(short(i.name))}`,f(r.gross),(r.wht_rate*100).toFixed(0)+'%',f(r.wht),f(r.net),pill('Matched','g')],d:`<div class="grid g2" style="margin:0"><div><div class="mini-h">Notice sent</div>${noticeDoc('dist',i)}</div><div><div class="mini-h">Payment matched to bank</div>${jdetail(j)}</div></div>`}}),{foot:['Control total',f(d.gross),'',f(w),f(d.gross-w),'']}))}</div>`};
+V.bank=()=>{const s=S(),m=M();return head('Fund administration','Bank and custody reconciliation',`${m.bank.name}, account ${m.bank.acct}. Every statement line is matched to one journal.`,pill(`${s.bank.length} of ${s.bank.length} matched`,'g'))+
+ tabs('bk',[['b','Bank statement',()=>card(`Statement 1 Jul to ${QE()} (${isA()?'USD':'INR'})`,xt([{h:'Date'},{h:'Narration'},{h:'Debit',n:1},{h:'Credit',n:1},{h:'Balance',n:1},{h:'Journal'}],s.bank.map(b=>({c:[dt(b.date),`<span class="mono" style="font-size:11px">${esc(b.narr)}</span>`,b.amt<0?full(-b.amt).slice(4):'',b.amt>0?full(b.amt).slice(4):'',full(b.bal).slice(4),`<span class="mono">${b.jv}</span>`],d:jdetail(jv(b.jv))})),{foot:['','Opening '+full(s.open_cash).slice(4)+' → closing',full(-sum(s.bank,b=>b.amt<0?b.amt:0)).slice(4),full(sum(s.bank,b=>b.amt>0?b.amt:0)).slice(4),full(s.close_tb[1100]).slice(4),'= GL 1100']}),isA()?tag('MT940 = PDF = CSV'):tag('XLS = PDF'))],
+  ['c','Custody',()=>card(`Demat holdings · ${m.dp.name} · DP ${m.dp.dp_id} / client ${m.dp.client}`,xt([{h:'ISIN'},{h:'Instrument'},{h:''+QO()+'',n:1},{h:'Credits',n:1},{h:''+QE()+'',n:1},{h:'Register',n:1},{h:'Result'}],s.instruments.map(x=>({c:[`<span class="mono">${x.isin}</span>`,`${x.id} ${esc(x.spv_name)}`,x.qty_open.toLocaleString(),(x.qty-x.qty_open).toLocaleString(),x.qty.toLocaleString(),sum(x.tranches,t=>t.units).toLocaleString(),pill('Ties','g')],d:xtPlain(['Tranche','Allotment date','Units','Demat credit'],x.tranches.map(t=>['T'+t.no,dt(t.date),t.units.toLocaleString(),dt(t.date)]),[2])}))))]])};
+V.deals=()=>{const s=S();return head('Fund administration','Deals, conditions and filings','Tranche release checklist with evidence, and the statutory filings that follow each disbursement.')+
+ s.instruments.map(x=>{const t2=x.tranches.find(t=>t.date>='2026-07-01');const cps=t2?[['Investment committee approval for tranche release',-12],['Board and shareholder resolutions of the issuer',-9],['Drawdown request signed by two directors',-7],['No-default and covenant compliance certificate',-5],['RERA registration valid; escrow account operational',-5],...(isA()?[['Pricing certificate from chartered accountant',-2]]:[]),['Charge modification filed (CHG-9)',isA()?5:3],...(isA()?[['FC-GPR filed within 30 days of allotment',23]]:[])]:[];
+  return acc(`${x.id} · ${x.spv_name}`,t2?`${tag('Tranche '+t2.no+' · INR '+f(t2.inr,0)+' cr · '+dt(t2.date))}${pill('All conditions met','g')}`:tag('No tranche this quarter'),t2?`<div class="mini-h">Conditions for tranche ${t2.no}</div>${cps.map(([c,o])=>acc(c,`<span class="muted" style="font-size:11.5px">${dt(new Date(new Date(t2.date).getTime()+o*864e5).toISOString().slice(0,10))}</span><span class="ck">✓</span>`,kvg([['Met','Yes'],['Evidence',lk('Open evidence','src',/FC-GPR/.test(c)?'FCGPR':/CHG/.test(c)?'Charge_Filing':/Pricing/.test(c)?'Pricing':'CP_Checklist')],['Verified by','Nakul Deshpande-Iyer']]))).join('')}
+  <div class="mini-h">Filings</div>${xtPlain(['Filing','Reference','Due','Filed','Status'],[['ROC charge (CHG-9)',x.chg,'30 days from modification',dt(new Date(new Date(t2.date).getTime()+(isA()?5:3)*864e5).toISOString().slice(0,10)),pill('Registered','g')],...(isA()?[['FC-GPR','FCGPR/2026/AD999/000999','04 Sep 2026','28 Aug 2026',pill('Acknowledged 02 Sep','g')],['Pricing certificate','BSC/FEMA/26-27/099','before allotment','03 Aug 2026',pill('On file','g')]]:[['FEMA','not applicable','—','—',pill('Domestic')]])])}${isA()?'<div class="flag" style="margin-top:10px">To confirm with finance: this instrument is an NCD. FC-GPR is the form for equity instruments, so the reporting route shown here needs checking before client use.</div>':''}`:kvg([['Last tranche',dt(x.tranches[0].date)],['Units',x.qty.toLocaleString()],['Charge filing',x.chg],['Security',x.security]]),!!t2)}).join('')};
+V.approvals=()=>{const n=st.nav[st.s],q=[['NAV',''+'NAV v'+NV()+' for '+PL()+'',n==='draft'?'Not yet submitted':n==='submitted'?'Waiting for checker':'Approved and locked',n,''],['BANK_DETAIL','Change of bank details: '+S().investors[1].name,(st.appr[st.s]||{}).bank?'Approved; 48-hour hold running':'Waiting for checker. A 48-hour hold and a call-back follow approval',(st.appr[st.s]||{}).bank?'locked':'submitted','bank'],['REPORT','Valuation dispatch letter to investors','Approved '+dt(M().val_dates.dispatched),'locked','']];
+ return head('Fund administration','Approvals and controls','Maker-checker on everything that moves money or changes a number. The period lock, access review and vendor sessions are recorded here.')+
+ card('Approval queue',xt([{h:'Type'},{h:'Item'},{h:'State'},{h:''}],q.map(([t,i,s2,stt,k])=>({c:[tag(t),esc(i),esc(s2),stt==='locked'?pill('Done','g'):stt==='submitted'?pill('Pending','a'):pill('Draft')],d:kvg([['Maker',''+MK()+''],['Checker',''+CK()+''],['Rule','Maker and checker must be different people'],['You are',esc(ME.full_name)+' · '+role()[2]]])+(k==='bank'&&!(st.appr[st.s]||{}).bank?`<div style="margin-top:10px">${btn('Approve as checker','apprbank','p s')}</div>`:t==='NAV'&&n!=='locked'?`<p>${lk('Go to quarter close','go','nav-close')}</p>`:'')}))))+
+ `<div class="grid g3">${card('Period lock',`<div class="pad">${kvg([[''+QO()+'','Locked at load'],[''+PL()+'',n==='locked'?'Locked':'Open']])}<div style="margin-top:10px">${btn('Try to post a journal dated '+QM15()+'','trypost','s')}</div><p class="muted" style="margin-bottom:0">After the lock, a late change posts as a ${'dated adjustment in '+NQ()}.</p></div>`)}
+ ${card('Users and roles',`<div class="pad">${kvg(ROLES.map(r=>[r[2],esc(r[1])]))}${ME&&ME.is_admin?`<p style="margin-bottom:0">${lk('Manage users and access','go','admin')}</p>`:''}</div>`)}
+ ${!CAN('audit')?'':card('Control events',xt([{h:'Time'},{h:'Event'},{h:'By'}],st.audit.filter(e=>/SIGN_IN|POST_REFUSED|PASSWORD|USER_|PROFILE|INGEST_FAILED|LOCKED/.test(e.action)).slice(-8).reverse().map(e=>({c:[e.ts,tag(e.action),esc(e.user)],d:kvg([['Record',esc(e.obj)],['Scheme',e.sch]])}))))}</div>`};
+const RR=()=>S().reg_report;
+const REPORTS=()=>[[RR()?RR().title:(isA()?'IFSCA quarterly report':'SEBI quarterly activity report'),'Regulator','xlsx',()=>regPreview(RR())],
+ ['NAV statement','Investors','pdf',()=>classTable()],['Capital account statements','Investors','pdf',()=>caRoll(S().investors[0])],
+ ['Portfolio disclosure','Investors','pdf',()=>xtPlain(['Instrument','Project','City','Principal INR cr','Fair value INR cr'],S().instruments.map(x=>[x.id,x.spv_name,x.city,f(x.principal),f(x.val.fv_inr)]),[3,4])],
+ ['ILPA-style quarterly pack','Investors','pdf',()=>kvg(Object.entries(S().expected.performance).map(([k,v])=>[k.replace('_',' '),k==='irr'?(v*100).toFixed(2)+'%':v]))],
+ ['Investor income characterisation','Tax','xlsx',()=>xtPlain(['Investor','Interest income','Other heads',M().tax_name],S().dist.rows.map(r=>[r.investor,f(r.income),'0.0000',f(r.wht)]),[1,2,3])],
+ [`${M().tax_name} register`,'Tax','xlsx',()=>xtPlain(['Investor','Section','Amount','Deposit','Challan'],S().dist.rows.map(r=>[r.investor,M().tax_section,f(r.wht),dt(S().dist.deposit),S().dist.challan]),[2])],
+ ['Auditor pack','Auditor','zip',()=>'<p class="muted" style="margin:0">Trial balance, journals with source pointers, bank and custody reconciliations, valuation file, confirmations.</p>'],
+ ['Trustee related-party pack','Trustee','pdf',()=>xtPlain(['Related party','Transaction',U()],[['Residential Capital Managers','Management fee for '+PL()+'',f(M().fee_q+M().fee_gst)],['Residential Capital Managers',isA()?'FME contribution (Class B)':'Sponsor commitment (Class B)',f(S().investors[3].commit,2)]],[2])],
+ ...(isA()?[['Form 61B extract','Tax','xml',()=>xtPlain(['Investor','Country','Status'],S().investors.slice(0,3).map(i=>[i.name,i.country,i.crs]))]]:[['Covenant breach notice (SPV-B2)','Investors','pdf',()=>breachNotice()]])];
+function rnum(v,label=''){if(typeof v!=='number')return esc(String(v??''));if(/^Number/.test(label))return String(v);const d=Math.abs(v*100-Math.round(v*100))<1e-7?2:Math.abs(v*1000-Math.round(v*1000))<1e-7?3:4;return v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function regPreview(m){if(!m)return '<p class="muted">This run has no regulator report model. Upload the quarter again.</p>';
+ return `<p class="muted" style="margin-top:0">${esc(m.note||'')}</p><p style="margin:0 0 6px">Built from the closing books in the layout of the ${esc(M().period.prev_label)} report as filed (${esc(m.prior_file)}). File name: <span class="hash">${esc(m.file_name)}</span></p>`+
+  m.parts.map(p=>`<div class="mini-h">${esc(p.h)}</div>${xtPlain(['Item','Value'],p.rows.map(([k,v])=>[esc(k),rnum(v,k)]),[1])}`).join('')+
+  `<div class="mini-h">${esc(m.investments.title)}</div>${xtPlain(m.investments.head.map(esc),m.investments.rows.map(r=>r.map((v,i)=>i>=5?rnum(v):esc(v))),[5,6])}`+
+  `<div class="mini-h">${esc(m.investors.title)}</div>${xtPlain(m.investors.head.map(esc),m.investors.rows.map(r=>r.map((v,i)=>i>=4?rnum(v):esc(v))),[4,5])}`+
+  `<div class="mini-h">Ties before the file is written</div>${kvg(m.ties.map(t=>[esc(t[0]),`${pill(t[1]?'ties':'differs',t[1]?'g':'r')} <span class="muted">${esc(t[2])}</span>`]))}`}
+function regFoot(n){const lock=st.nav[st.s]==='locked',reg=st.regrep[st.s],dl=reg?` ${pill(reg.check==='PASS'?'Read back: ties to books':'Read back: differs',reg.check==='PASS'?'g':'r')} <span class="hash">${esc(reg.file)} · ${reg.sha.slice(0,16)} · ${esc(reg.by)}</span> ${lk('Open','openrep',n)} <a class="link" href="/api/reports/${reg.id}/file">Download .xlsx</a>`:'';
+ if(!CANDO('gen_regulator'))return reg?dl:`<span class="muted">Not generated yet. Finance generates it from the locked NAV.</span>`;
+ if(!lock)return `<span class="muted">The workbook is generated only from a locked NAV. NAV v${NV()} is ${st.nav[st.s]}.</span> ${lk('Go to quarter close','go','nav-close')}`;
+ return `${btn(reg?'Generate again':'Generate workbook','gen','p s',n)}${reg?` ${pill(reg.check==='PASS'?'Read back: ties to books':'Read back: differs',reg.check==='PASS'?'g':'r')} <span class="hash">${esc(reg.file)} · ${reg.sha.slice(0,16)} · ${esc(reg.by)}</span> ${lk('Open','openrep',n)} <a class="link" href="/api/reports/${reg.id}/file">Download .xlsx</a>`:''}`}
+function sheetTable(rows){return `<div class="tw"><table class="t compact"><tbody>${rows.filter(r=>r.some(c=>c.v)).map(r=>`<tr>${r.map(c=>`<td class="${c.n?'num r':''}"${c.b?' style="font-weight:700"':''}>${esc(c.v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+async function regModal(){const reg=st.regrep[st.s];if(!reg){toast('Generate the workbook first.');return}
+ let p;try{p=await API(`/api/reports/${reg.id}/preview`)}catch(e){toast(e.message);return}
+ const m=$('#modal'),ok=p.check==='PASS';m.className='modal wide on';$('#ov').classList.add('on');
+ m.innerHTML=`<div class="rp-bar"><b>${esc(p.file)}</b><span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${pill(ok?'Read back: ties to books':'Read back: differs',ok?'g':'r')}<a class="btn sm" href="/api/reports/${p.id}/file">Download .xlsx</a><button class="btn sm" data-act="closemodal">Close</button></span></div><div class="rp-wrap"><div class="rp"><div class="rp-b"><h2>${esc(reg.n)} · ${PL()}</h2><p class="lead">What is in the stored file. Built from locked NAV v${reg.nav_v} by ${esc(reg.by)} · ${(p.size/1024).toFixed(1)} KB · SHA-256 <span class="hash">${p.sha}</span></p>`+
+  `<h3>Read back against the closing books</h3><p>The file was read with the parser that next quarter's upload uses for the prior report, then compared with the trial balance and the PPM commitments.</p>${xtPlain(['Figure','In the file','Compared with',''],p.checks.map(c=>[esc(c[0]),c[1],c[2],c[3]?pill('ties','g'):pill('differs','r')]),[1,2])}`+
+  p.sheets.map(s=>`<h3>Sheet: ${esc(s.name)}</h3>${sheetTable(s.rows)}`).join('')+`</div></div></div>`}
+function breachNotice(){const x=S().instruments.find(i=>!i.cov.tests.every(t=>t.ok));return x?paper(M().name,'Notice under side letter LP-B1','NOTICE OF COVENANT BREACH',[['Project',x.spv_name],['Instrument',x.id],['Test date',''+QE()+''],...x.cov.tests.map(t=>[t.name,`actual ${f(t.actual,2)} against minimum ${f(t.min,2)}`]),['Notice due',(BND()?dt(BND()):'—')+' (10 business days)'],['Next step','Developer to submit a cure plan within 30 days']],'Issued by investor relations to all Class A investors.'):'<p class="muted">No breach.</p>'}
+V.reports=()=>{const lock=st.nav[st.s]==='locked';return head('Reporting','Report centre','Reports are built from the locked NAV, so every report for the quarter shows the same figures. Open a report to preview it.',lock?pill('Built from '+'NAV v'+NV()+' (locked)','g'):pill('NAV not locked: previews only','a'))+
+ `<div class="grid g2" style="margin-top:0">${REPORTS().map(([n,to,fm,pv],i)=>{const reg=i===0&&RR(),run=reg?st.regrep[st.s]:st.reports.find(r=>r.n===n&&r.s===st.s);return `<div>${acc(n,`${tag(to)}${tag(fm)}${run?pill(reg?'File generated':'Generated','g'):''}`,`${pv()}<div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">${reg?regFoot(n):!CANDO('gen')?`${lk('Open preview','openrep',n)} <span class="muted">Read only for your role.</span>`:`${btn(run?'Generate again':'Generate','gen','p s',n)}${run?`<span class="hash">run ${run.h} · ${run.by}</span> ${lk('Open','openrep',n)}`:'<span class="muted">Generate to open, print or save as PDF.</span>'}`}</div>`)}</div>`}).join('')}</div>`};
+V.projects=()=>head('Reporting','Project monitoring','Three months of developer MIS for each project, tested against the covenants in the debenture documents.')+`<div class="grid g2" style="margin-top:0">${S().instruments.map(x=>{const ok=x.cov.tests.every(t=>t.ok);return card(`${x.spv} · ${x.spv_name}`,`<div class="pad">${spvDetail(x)}${ok?'':`<div class="flag r" style="margin-top:12px"><b>Breach.</b> Notice to investors is due ${BND()?dt(BND()):'—'}. ${btn(st.notice[x.id]?'Notice generated':'Generate breach notice','notice','s',x.id)}</div>${st.notice[x.id]?`<div style="margin-top:10px">${breachNotice()}</div>`:''}`}</div>`,ok?pill('Covenants pass','g'):pill('Breach','r'))}).join('')}</div>`;
+V.calendar=()=>{const o=S().obligations,open=o.filter(b=>b.status==='Open').sort((a,b)=>a.due<b.due?-1:1),done=o.filter(b=>b.status!=='Open');return head('Compliance',`${M().regulator} compliance calendar`,'Countdowns follow the as-of date. An amber verify mark means the date was reconstructed and still needs checking against the current circular.',pill(`${open.filter(b=>days(b.due,st.clock)<0).length} overdue`,'r')+pill(`${done.length} filed`,'g'))+card(`Open (${open.length})`,xt(oblCols,oblRows(open)))+`<div style="height:14px"></div>`+card(`Filed or done (${done.length})`,xt(oblCols,oblRows(done)))};
+V.exceptions=()=>{const ex=exceptions();return head('Compliance','Exceptions','Raised from the data by rule. Nothing here is typed by hand.')+card(`${ex.length} open`,exTable(ex))};
+V.audit=()=>head('Compliance','Audit log','Append-only. Each entry carries the hash of the one before it, so a changed entry breaks the chain. Stored on the server; Verify chain recomputes every hash.',btn('Verify chain','verify','k'))+card(`${st.audit.length} events`,xt([{h:'#'},{h:'Time'},{h:'User'},{h:'Action'},{h:'Record'}],[...st.audit].reverse().map(e=>({c:[e.seq,e.ts,esc(e.user),tag(e.action),esc(e.obj)],d:kvg([['Scheme',e.sch],['Previous hash',`<span class="hash">${e.p}</span>`],['This hash',`<span class="hash">${e.h}</span>`]])}))));
+
+/* ---------- actions ---------- */
+function srcDrawer(name){const fl=S().files.find(x=>x.file.includes(name))||S().files.find(x=>x.file.includes(name.split('/').pop().split(' ')[0]));if(!fl)return drawer(name,'Source pointer','<div class="note">This figure is computed by the engine from the documents listed on the journal.</div>');
+ const url=`/api/files/${st.s}/${fl.file.split('/').map(encodeURIComponent).join('/')}`,pv=/^(pdf|csv|mt940|xml)$/.test(fl.format);
+ drawer(fl.file,`${fl.format.toUpperCase()} · ${fl.who}`,`${kvg([['Feeds',fl.feeds.map(tag).join(' ')],['Used on',fl.page],['SHA-256',`<span class="hash">${fl.sha}…</span>`],['File',`<a href="${url}" target="_blank" rel="noopener">Open</a> · <a href="${url}?download=1">Download</a>`]])}<div class="mini-h" style="margin-top:16px">Preview</div>${pv?`<iframe class="prev-frame" src="${url}" title="${esc(fl.file)}"></iframe>`:`<div class="note">${fl.format.toUpperCase()} files open in a spreadsheet application. Use Download above.</div>`}`)}
+const can=(roles,what)=>roles.includes(st.role)?true:(toast(`${role()[2]} cannot ${what}. Sign in as ${roles.map(r=>ROLES.find(x=>x[0]===r)[2]).join(' or ')}.`),false);
+const ACT={go:a=>{if(!CAN(a))return toast('Your role has no access to that page.');location.hash=a},tab:a=>{const [i,k]=a.split('|');st.tab[i]=k;render()},jf:a=>{st.jf=a;render()},src:a=>srcDrawer(a),toastx:a=>toast(a),
+ recon:()=>{st.tab.ing='recon';location.hash='ingestion';render()},
+ mapok:a=>doAct('mapok',a),navsubmit:()=>doAct('navsubmit'),navlock:()=>doAct('navlock'),valok:()=>doAct('valok'),trypost:()=>doAct('trypost'),apprbank:()=>doAct('apprbank'),
+ gen:a=>doAct('gen',a).then(r=>r&&reportModal(a)),openrep:a=>reportModal(a),notice:a=>doAct('notice',a),obl:a=>doAct('obl',a),ack:a=>doAct('ack',a),str:()=>doAct('str'),strnext:a=>doAct('strnext',st.str[a].id),
+ verify:()=>doAct('verify'),upload:()=>uploadModal(),logout:()=>API('/api/auth/logout',{method:'POST'}).then(()=>location.reload()),pwd:()=>pwdModal(),
+ printrep:()=>{document.body.classList.add('printing-report');window.print();setTimeout(()=>document.body.classList.remove('printing-report'),500)}};
+/* ---------- shell ---------- */
+const NICON={admin:'key',home:'grid',ingestion:'upload','nav-close':'check',ledger:'book',instruments:'layers',fx:'swap',valuation:'bars',capital:'coins',waterfall:'flow',tally:'link',investors:'users',kyc:'shield',calls:'download',distributions:'send',bank:'bank',deals:'doc',approvals:'key',reports:'print',projects:'building',calendar:'calendar',exceptions:'warn',audit:'lock'};
+function closeAll(){closeDrawer();$('#modal').className='modal';$('#ov').classList.remove('on')}
+function strip(){const s=S(),tb=s.close_tb,c=s.call.rows;return `<div class="strip" style="margin-top:20px">${[['Instruments',s.instruments.length,`${s.instruments.length} project SPVs`,'instruments'],['Deployed',f(tb[1200],2),'cost, '+U(),'instruments'],['Fair value',f(tb[1200]+tb[1210]+(tb[1220]||0),2),'valuer, 30 Sep','valuation'],['Called',f(-tb[3100],2),(-tb[3100]/M().committed*100).toFixed(0)+'% of commitments','calls'],['Distributed',f(tb[3200],2),s.dist.label+' income','distributions'],['Unfunded',f(sum(c,r=>r.unf),2),'dry powder','investors'],['Fee payable',f(-tb[2100],2),'Q2 accrued','nav-close'],[M().tax_name+' payable',f(-tb[2500],2),'GL 2500','distributions']].map(([l,v,x,g])=>`<button data-act="go" data-arg="${g}"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${x}</div></button>`).join('')}</div>`}
+function uploadModal(){if(!CANUP)return toast('Only the finance maker, the finance checker or an administrator can upload files.');const m=$('#modal');m.className='modal on';$('#ov').classList.add('on');let picked=[];
+ const sch=Object.keys(DATA?DATA.schemes:{A:1,B:1});
+ m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 4px;font-size:19px">Upload source files</h2><p class="muted" style="margin:0 0 14px">A whole quarter as a zip (folders <code>scheme_A_…</code>, <code>scheme_B_…</code>, <code>shared/</code>), or single files to add or correct. Every upload is checked, posted and reconciled; the current books change only if it succeeds.</p>
+ <div class="up-zone" id="upz">Drop a zip or files here, or <b>browse</b><div class="up-files" id="upl"></div></div>
+ <div class="up-opts"><label>Mode <select id="upm"><option value="auto">Automatic</option><option value="replace">Replace: complete quarter</option><option value="merge">Merge: add or correct files</option></select></label>
+ <label>Single files belong to <select id="ups">${sch.map(k=>`<option value="${k}" ${k===st.s?'selected':''}>Scheme ${k}${DATA?' · '+esc(DATA.schemes[k].meta.name):''}</option>`).join('')}</select></label></div>
+ <div class="uplog" id="uplog" style="display:none"></div>
+ <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button class="btn sm" data-act="closemodal">Close</button><button class="btn sm primary" id="upgo" disabled>Upload and process</button></div></div>`;
+ const z=$('#upz'),inp=$('#upin'),show=()=>{$('#upl').innerHTML=picked.map(f=>esc(f.name)+' · '+(f.size/1048576).toFixed(2)+' MB').join('<br>');$('#upgo').disabled=!picked.length};
+ z.onclick=()=>{inp.value='';inp.click()};inp.onchange=()=>{picked=[...inp.files];show()};
+ z.ondragover=e=>{e.preventDefault();z.classList.add('drag')};z.ondragleave=()=>z.classList.remove('drag');z.ondrop=e=>{e.preventDefault();z.classList.remove('drag');picked=[...e.dataTransfer.files];show()};
+ $('#upgo').onclick=()=>{const fd=new FormData();picked.forEach(f=>fd.append('files',f,f.name));fd.append('mode',$('#upm').value);fd.append('scheme',$('#ups').value);
+  const lg=$('#uplog');lg.style.display='block';lg.innerHTML='<div class="k">Uploading…</div>';$('#upgo').disabled=true;st.ing=true;
+  const x=new XMLHttpRequest();x.open('POST','/api/uploads');x.setRequestHeader('X-Requested-With','trackfund');
+  x.upload.onprogress=e=>{if(e.lengthComputable)lg.innerHTML=`<div class="k">Uploading ${Math.round(e.loaded/e.total*100)}%</div>`+(e.loaded===e.total?'<div class="k">Processing: classifying, parsing, posting, reconciling…</div>':'')};
+  x.onload=async()=>{st.ing=false;let r={};try{r=JSON.parse(x.responseText)}catch(e){}
+   if(x.status!==200){lg.innerHTML+=`<div class="r">${esc(r.detail||('Error '+x.status))}</div>`;$('#upgo').disabled=false;return}
+   lg.innerHTML=(r.log||[]).map(([k,t])=>`<div class="${k==='g'?'':k}">${k==='g'?'✓ ':k==='r'?'✗ ':''}${esc(t)}</div>`).join('');lg.scrollTop=lg.scrollHeight;
+   if(r.status==='succeeded'){await loadAll();toast(`Run ${r.id} processed. ${Object.entries(r.summary).map(([k,v])=>`Scheme ${k}: ${v.passed}/${v.rules} checks pass, ${v.failed} fail`).join('; ')}.`)}else{toast('Upload not processed: '+(r.error||'see log'));$('#upgo').disabled=false}};
+  x.onerror=()=>{st.ing=false;lg.innerHTML+='<div class="r">Network error</div>';$('#upgo').disabled=false};x.send(fd)}}
+function pwdModal(){const m=$('#modal');m.className='modal on';$('#ov').classList.add('on');m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 12px;font-size:19px">Change password</h2><div class="login" style="position:static;display:block;background:none"><label>Current password</label><input id="pw0" type="password" autocomplete="current-password"><label>New password (at least 10 characters)</label><input id="pw1" type="password" autocomplete="new-password"><div class="err" id="pwe"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn sm" data-act="closemodal">Cancel</button><button class="btn sm primary" id="pwgo">Change</button></div></div>`;
+ $('#pwgo').onclick=()=>post('/api/auth/password',{current:$('#pw0').value,new:$('#pw1').value}).then(()=>{closeAll();toast('Password changed.')}).catch(e=>$('#pwe').textContent=e.message)}
+function runsCard(){if(!runsCard.data){API('/api/runs').then(r=>{runsCard.data=r;render()}).catch(()=>{});return card('Ingestion runs','<div class="pad muted">Loading…</div>')}
+ return card('Ingestion runs (latest first)',xt([{h:'Run'},{h:'When'},{h:'By'},{h:'Status'},{h:'Result'}],runsCard.data.map(r=>({c:[`#${r.id}${r.is_current?' · current':''}`,new Date(r.created_at+'Z').toLocaleString('en-GB'),esc(r.created_by),pill(r.status,{succeeded:'g',failed:'r',running:'a'}[r.status]||''),r.summary?Object.entries(r.summary).map(([k,v])=>`${k}: NAV ${f(v.nav)} · ${v.passed}/${v.rules} pass`).join('; '):esc(r.error||'')],d:kvg([['Period',r.period||'—'],['Finished',r.finished_at?new Date(r.finished_at+'Z').toLocaleString('en-GB'):'—'],['Error',esc(r.error||'—')]])}))))}
+function reportModal(n){if(RR()&&n===RR().title)return regModal();const r=REPORTS().find(x=>x[0]===n),s=S(),m=$('#modal'),run=st.reports.find(x=>x.n===n&&x.s===st.s);m.className='modal wide on';$('#ov').classList.add('on');
+ m.innerHTML=`<div class="rp-bar"><b>${n}</b><span style="display:flex;gap:8px;align-items:center"><span class="chip ${st.nav[st.s]==='locked'?'g':'a'}">${st.nav[st.s]==='locked'?'Built from locked '+'NAV v'+NV()+'':'Preview · NAV not locked'}</span><button class="btn sm" data-act="printrep">Print / save PDF</button><button class="btn sm" data-act="closemodal">Close</button></span></div><div class="rp-wrap"><div class="rp"><div class="rp-h"><span class="brand-mark">TF</span><div><b>${M().name}</b><small>${M().category} · ${M().regulator} ${M().reg_no}</small></div><div class="rp-d">${PL()}<br>As at ${QE()}</div></div><div class="rp-b"><h2>${n}</h2><p class="lead">Prepared for: ${r[1]} · output ${r[2].toUpperCase()}</p><div class="kp">${[['NAV',f(s.nav_close)],['NAV / unit A',f(s.classes.A.nav_per_unit)],['Called',f(-s.close_tb[3100],2)],['Net IRR',(s.expected.performance.irr*100).toFixed(2)+'%']].map(([a,b])=>`<div><small>${a}</small><b>${b}</b></div>`).join('')}</div><h3>Detail</h3>${r[3]()}<div class="sig"><div>Prepared by ${esc(MK())}, finance maker</div><div>${st.nav[st.s]==='locked'?'Approved by '+esc(CK()):'Awaiting approval by the finance checker'}</div></div></div><div class="rp-f"><span>${esc(M().name)} · ${U()}</span><span>run ${run?run.h:''}</span></div></div></div>`}
+/* ---------- administration (administrator only; the server refuses these calls for anyone else) ---------- */
+const adminData={loaded:false,users:[],matrix:null};
+async function loadAdmin(){if(loadAdmin.busy)return;loadAdmin.busy=true;try{const [u,m]=await Promise.all([API('/api/admin/users'),API('/api/admin/access')]);adminData.users=u;adminData.matrix=m;adminData.loaded=true;render()}catch(e){toast(e.message)}finally{loadAdmin.busy=false}}
+const ROLE_OPTS=()=>adminData.matrix.roles.map(r=>[r.role,r.label]);
+V.admin=()=>{if(!ME.is_admin)return '';
+ const h=head('Administration','Users and access','Each person signs in with their own account. The role decides which pages they see, which data the server sends to their browser and which actions they can take. Only an administrator sees and does everything.',btn('Add user','adduser','p'));
+ if(!adminData.loaded){loadAdmin();return h+card('Users','<div class="pad muted">Loading…</div>')}
+ const MX=adminData.matrix,us=adminData.users,lab=r=>(MX.roles.find(x=>x.role===r)||{label:r}).label,pg=k=>(MX.pages.find(p=>p.key===k)||{}).label||k;
+ const users=card(`Users (${us.filter(u=>u.active).length} active of ${us.length})`,xt([{h:'Username'},{h:'Name'},{h:'Role'},{h:'Status'},{h:'Last sign-in'}],us.map(u=>({c:[`<span class="mono">${esc(u.username)}</span>`,esc(u.full_name),u.is_admin?pill('Administrator','b'):esc(lab(u.role)),u.active?pill('Active','g'):pill('Deactivated','r'),u.last_login_at?new Date(u.last_login_at+'Z').toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'never'],
+  d:`<div class="adm-row"><label>Role <select id="ur-${u.id}">${ROLE_OPTS().map(([k,l])=>`<option value="${k}" ${k===u.role?'selected':''}>${esc(l)}</option>`).join('')}</select></label>${btn('Change role','setrole','s',u.id)}${btn('Reset password','resetpw','s',u.id)}${u.id===ME.id?'<span class="muted">This is you</span>':btn(u.active?'Deactivate':'Activate','toggleuser','s',u.id)}</div><p class="muted" style="margin:8px 0 0">${esc(lab(u.role))} opens: ${(MX.roles.find(x=>x.role===u.role)||{pages:[]}).pages.map(k=>esc(pg(k))).join(', ')}.</p>`}))));
+ const roles=MX.roles,groups=[...new Set(MX.pages.map(p=>p.group))],tick=v=>v?'<b style="color:#15803D">✓</b>':'<span class="muted">·</span>';
+ const th=`<th></th>${roles.map(r=>`<th class="r" title="${esc(r.label)}" style="white-space:nowrap">${esc(r.label.replace(' (read only)','').replace(' (read + approve)',''))}</th>`).join('')}`;
+ const pagesT=`<div class="tw"><table class="t compact"><thead><tr>${th}</tr></thead><tbody>${groups.map(g=>`<tr><td colspan="${roles.length+1}" style="font-weight:700;padding-top:12px">${esc(g)}</td></tr>`+MX.pages.filter(p=>p.group===g).map(p=>`<tr class="row"><td>${esc(p.label)}</td>${roles.map(r=>`<td class="r">${tick(r.pages.includes(p.key))}</td>`).join('')}</tr>`).join('')).join('')}</tbody></table></div>`;
+ const actsT=`<div class="tw"><table class="t compact"><thead><tr>${th}</tr></thead><tbody>${Object.keys(ACT_LABEL).map(a=>`<tr class="row"><td>${ACT_LABEL[a]}</td>${roles.map(r=>`<td class="r">${tick(r.actions.includes(a))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+ return h+users+'<div style="height:14px"></div>'+card('Pages each role can open',pagesT)+'<div style="height:14px"></div>'+card('Actions each role can take',actsT+'<p class="muted" style="margin:10px 14px">The server enforces this table: a role receives only the data of its pages, and other pages, files, exports and actions are refused. Maker-checker still applies to the administrator (nobody approves a NAV they submitted), and nobody can change or delete the files of a locked quarter.</p>')};
+function userModal(){const m=$('#modal');m.className='modal on';$('#ov').classList.add('on');
+ m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 4px;font-size:19px">Add user</h2><div class="login" style="position:static;display:block;background:none"><label>Username</label><input id="nu-u" autocomplete="off"><label>Full name</label><input id="nu-n" autocomplete="off"><label>Role</label><select id="nu-r">${ROLE_OPTS().map(([k,l])=>`<option value="${k}">${esc(l)}</option>`).join('')}</select><label>Initial password (at least 10 characters; they change it after signing in)</label><input id="nu-p" type="password" autocomplete="new-password"><div class="err" id="nu-e"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn sm" data-act="closemodal">Cancel</button><button class="btn sm primary" id="nu-go">Add user</button></div></div>`;
+ $('#nu-go').onclick=()=>post('/api/admin/users',{username:$('#nu-u').value,full_name:$('#nu-n').value,role:$('#nu-r').value,password:$('#nu-p').value}).then(u=>{closeAll();toast(`${u.username} added as ${u.role_label}.`);adminData.loaded=false;render()}).catch(e=>$('#nu-e').textContent=e.message)}
+function pwResetModal(id){const u=adminData.users.find(x=>x.id==id),m=$('#modal');m.className='modal on';$('#ov').classList.add('on');
+ m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 4px;font-size:19px">Reset password · ${esc(u.username)}</h2><p class="muted" style="margin:0">This signs ${esc(u.full_name)} out everywhere. Give them the new password through a separate channel.</p><div class="login" style="position:static;display:block;background:none"><label>New password (at least 10 characters)</label><input id="rp-p" type="password" autocomplete="new-password"><div class="err" id="rp-e"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn sm" data-act="closemodal">Cancel</button><button class="btn sm primary" id="rp-go">Reset password</button></div></div>`;
+ $('#rp-go').onclick=()=>API('/api/admin/users/'+id,{method:'PATCH',body:JSON.stringify({password:$('#rp-p').value})}).then(()=>{closeAll();toast('Password reset.')}).catch(e=>$('#rp-e').textContent=e.message)}
+async function patchUser(id,body,msg){try{await API('/api/admin/users/'+id,{method:'PATCH',body:JSON.stringify(body)});toast(msg);adminData.loaded=false;render()}catch(e){toast(e.message)}}
+async function deleteModal(pre){if(!CANDEL)return;let list;try{list=await API('/api/admin/files')}catch(e){return toast(e.message)}
+ const m=$('#modal');m.className='modal wide on';$('#ov').classList.add('on');let rows=list.filter(x=>x.scheme===st.s);const sel=new Set(pre&&rows.some(x=>x.file===pre&&!x.refused)?[pre]:[]);
+ m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 4px;font-size:19px">Delete source files · ${esc(M().name)}</h2><p class="muted" style="margin:0 0 12px">The selected files are removed from this quarter. The books are recomputed without them and become current only if that succeeds, and a NAV draft or submission is replaced by a new draft. Each deletion is recorded in the audit log; earlier ingestion runs keep their own copies. Required files cannot be deleted (upload a corrected file instead, which replaces them), and nothing can be deleted from a locked quarter.</p>
+ <input id="dlq" class="inp" placeholder="Filter by file name or type" style="width:100%;margin-bottom:10px"><div id="dll" style="max-height:44vh;overflow:auto;border:1px solid var(--line);border-radius:10px"></div><div class="uplog" id="dlog" style="display:none"></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px"><span id="dlc" class="muted"></span><span style="display:flex;gap:8px"><button class="btn sm" data-act="closemodal">Close</button><button class="btn sm danger" id="dlgo" disabled>Delete selected</button></span></div></div>`;
+ const count=()=>{$('#dlc').textContent=sel.size?`${sel.size} selected`:'Nothing selected';const b=$('#dlgo');b.disabled=!sel.size;delete b.dataset.sure;b.textContent='Delete selected'};
+ const draw=()=>{const q=$('#dlq').value.trim().toLowerCase();$('#dll').innerHTML=`<table class="t compact"><tbody>${rows.filter(x=>!q||x.file.toLowerCase().includes(q)||x.label.toLowerCase().includes(q)).map(x=>`<tr class="row"><td style="width:30px"><input type="checkbox" data-dl="${esc(x.file)}" ${sel.has(x.file)?'checked':''} ${x.refused?'disabled':''} aria-label="Select ${esc(x.file)}"></td><td><span class="mono" style="font-size:11.5px">${esc(x.file)}</span><div class="muted" style="font-size:12px">${esc(x.label)} · ${(x.size/1024).toFixed(0)} KB · ${x.parsed?'read for figures: the books change without it':'evidence document'}${x.evidence_for.length?` · <b style="color:#B45309">evidence for ${x.evidence_for.map(esc).join(', ')}: check R16 will fail without it</b>`:''}${x.refused?` · ${esc(x.refused)}`:''}</div></td></tr>`).join('')||'<tr><td class="muted" style="padding:14px">No files match.</td></tr>'}</tbody></table>`;count()};
+ draw();$('#dlq').oninput=draw;
+ $('#dll').onchange=e=>{const f=e.target.dataset.dl;if(f==null)return;e.target.checked?sel.add(f):sel.delete(f);count()};
+ $('#dlgo').onclick=async()=>{const b=$('#dlgo');if(!b.dataset.sure){b.dataset.sure=1;b.textContent=`Confirm: delete ${sel.size} file${sel.size>1?'s':''}`;return}
+  b.disabled=true;const lg=$('#dlog');lg.style.display='block';lg.innerHTML='<div class="k">Deleting and recomputing the books…</div>';
+  try{const r=await post('/api/admin/files/delete',{scheme:st.s,files:[...sel]});lg.innerHTML=(r.log||[]).map(([k,t])=>`<div class="${k==='g'?'':k}">${k==='g'?'✓ ':k==='r'?'✗ ':''}${esc(t)}</div>`).join('');lg.scrollTop=lg.scrollHeight;
+   if(r.status==='succeeded'){sel.clear();await loadAll();rows=(await API('/api/admin/files')).filter(x=>x.scheme===st.s);draw();toast(`Run ${r.id}: ${r.summary&&r.summary[st.s]?`files deleted; ${r.summary[st.s].passed}/${r.summary[st.s].rules} checks pass, ${r.summary[st.s].failed} fail`:'files deleted'}.`)}
+   else toast('Nothing deleted: '+(r.error||'see log'))}catch(e){lg.innerHTML+=`<div class="r">${esc(e.message)}</div>`}
+  count()}}
+Object.assign(ACT,{adduser:()=>userModal(),resetpw:id=>pwResetModal(id),delfiles:a=>deleteModal(a),
+ setrole:id=>patchUser(id,{role:$('#ur-'+id).value},'Role changed. It applies from their next click.'),
+ toggleuser:id=>{const u=adminData.users.find(x=>x.id==id);patchUser(id,{active:!u.active},u.active?`${u.username} deactivated.`:`${u.username} activated.`)}});
+ACT.closemodal=closeAll;
+ACT.sch=a=>{st.s=a;render.keep=false;render()};
+function render(){const ex=exceptions(),od=S().obligations.filter(b=>b.status==='Open'&&days(b.due,st.clock)<0).length,r=role();
+ $('#nb').textContent=ex.length;
+ $('#notif').innerHTML=`<div class="notif-h"><b>Exceptions</b><button class="link" data-act="go" data-arg="exceptions" style="font-size:13px">Open all</button></div>${ex.slice(0,6).map(e=>`<a data-act="go" data-arg="${e.go}"><span class="d"></span><span>${esc(e.title)}<small>${e.sev} · ${e.area}</small></span></a>`).join('')}`;
+ $('#uchip').innerHTML=`<span class="avatar">${esc(ME.full_name).split(' ').map(x=>x[0]).slice(0,2).join('')}</span><span class="uc-t"><b>${esc(ME.full_name)}</b><small>${r[2]}</small></span><span class="role-badge">${r[0].replace('_',' ')}</span>${ic('down',14)}`;
+ $('#umenu').innerHTML=`<div class="um-h"><b>${esc(ME.full_name)}</b><div class="muted" style="font-size:12.5px">${esc(ME.username)} · ${r[2]}</div></div><button class="um-i" data-act="pwd" role="menuitem">Change password<small>at least 10 characters</small></button><button class="um-i" data-act="logout" role="menuitem">Sign out<small>end this session</small></button>`;
+ $('#side').innerHTML=`<div class="side-scroll"><div class="fund-pick"><small>Fund</small>${['A','B'].map(k=>{const d=DATA.schemes[k],m=d.meta;return `<button class="fundcard ${k===st.s?'on':''}" data-act="sch" data-arg="${k}"><b>${m.name}</b><div class="fs">${m.regulator} · ${k==='A'?'USD '+m.committed+'m':'₹'+m.committed+' Cr'} committed</div><div class="fb"><i style="width:100%"></i></div><div class="fs">${d.files.length} of ${d.files.length} files · ${PL()}</div></button>`}).join('')}</div>${MYNAV().map(([g,items])=>`<div class="nav-h">${g}</div><nav class="nav">${items.map(([k,l])=>`<a class="${k===st.v?'on':''}" href="#${k}">${ic(NICON[k],18)}<span>${l}</span>${k==='exceptions'?`<span class="cnt">${ex.length}</span>`:k==='calendar'&&od?`<span class="cnt">${od}</span>`:''}</a>`).join('')}</nav>`).join('')}<div style="margin:18px 6px 6px;font-size:11.5px;color:var(--navy-mute);line-height:1.5">${RUN?`Run ${RUN.id} · loaded ${new Date(RUN.created_at+'Z').toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})} by ${esc(RUN.created_by)}`:''}</div></div>`;
+ const m=$('#main'),y=m.scrollTop;render.tabs=null;m.innerHTML=`<div class="page">${(V[st.v]||V.home)()}</div>`;if(render.tabs&&$('#tabslot'))$('#tabslot').outerHTML=render.tabs;m.scrollTop=render.keep?y:0;render.keep=true}
+document.addEventListener('click',e=>{const t=e.target;
+ if(!t.closest('#uchip'))$('#umenu').classList.remove('on');if(!t.closest('#bell'))$('#notif').classList.remove('on');if(!t.closest('.gsearch'))$('#gsr').classList.remove('on');
+ const a=t.closest('[data-act]');if(a){ACT[a.dataset.act](a.dataset.arg);return}
+ const k=t.closest('[data-drill]');if(k){const id=k.dataset.drill,grp=id.replace(/-\d+$/,''),was=k.classList.contains('open');document.querySelectorAll(`[data-drill^="${grp}-"]`).forEach(x=>{x.classList.remove('open');const d=document.getElementById(x.dataset.drill);d&&d.classList.remove('open')});if(!was){k.classList.add('open');document.getElementById(id).classList.add('open')}return}
+ const h=t.closest('[data-acc]');if(h){h.parentElement.classList.toggle('open');return}
+ const r=t.closest('tr[data-x]');if(r){r.classList.toggle('open');r.nextElementSibling.classList.toggle('on');return}
+ if(t.closest('#dwx')||t.id==='ov'){closeAll();return}
+ if(t.closest('#uchip')){$('#umenu').classList.toggle('on');return}
+ if(t.closest('#bell')){$('#notif').classList.toggle('on');return}
+ if(t.closest('#menu'))$('#side').classList.toggle('on');else if(!t.closest('#side'))$('#side').classList.remove('on')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll();if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#gs').focus()}
+ if((e.key==='Enter'||e.key===' ')&&e.target.matches('tr[data-x]')){e.preventDefault();e.target.click()}});
+document.addEventListener('input',e=>{if(e.target.id==='wfs'){$('#wfp').textContent='+'+e.target.value+'%';$('#wfo').innerHTML=wfOut(+e.target.value)}
+ if(e.target.id==='gs'){const q=e.target.value.trim().toLowerCase(),R=$('#gsr');if(!q){R.classList.remove('on');return}
+  const res=[...MYNAV().flatMap(([g,it])=>it.map(([k,l])=>[l,g,k])),...(CAN('investors')&&S().investors||[]).map(i=>[i.id+' '+i.name,'Investor','investors']),...(CAN('instruments')&&S().instruments||[]).map(x=>[x.id+' '+x.spv_name,'Instrument','instruments']),...(CAN('ledger')&&S().journals||[]).map(j=>[j.no+' '+j.desc,'Journal','ledger'])].filter(x=>x[0].toLowerCase().includes(q)).slice(0,9);
+  R.innerHTML=res.length?res.map(([l,g,k])=>`<a data-act="gsgo" data-arg="${k}"><span>${esc(l)}</span><small>${g}</small></a>`).join(''):'<div class="gs-grp">No matches</div>';R.classList.add('on')}});
+ACT.gsgo=a=>{$('#gs').value='';$('#gsr').classList.remove('on');location.hash=a};
+$('#clock').addEventListener('change',e=>{if(e.target.value){st.clock=e.target.value;render()}});
+function route(){if(!DATA)return;const h=location.hash.slice(1);st.v=V[h]&&CAN(h)?h:'home';if(h&&h!==st.v)history.replaceState(null,'','#'+st.v);render.keep=false;render();$('#side').classList.remove('on')}
+window.addEventListener('hashchange',route);
+document.addEventListener('dragover',e=>{if(e.target.closest&&e.target.closest('#dropz')){e.preventDefault()}});
+document.addEventListener('drop',e=>{if(e.target.closest&&e.target.closest('#dropz')){e.preventDefault();uploadModal()}});
+/* ---------- server ---------- */
+let ME=null,BRAND={},RUN=null,CANUP=false,ACC=null,CANDEL=false;
+async function API(path,opt={}){const h={'X-Requested-With':'trackfund',...(opt.headers||{})};if(opt.body&&typeof opt.body==='string')h['Content-Type']='application/json';
+ const r=await fetch(path,{credentials:'same-origin',...opt,headers:h});let j=null;try{j=await r.json()}catch(e){}
+ if(r.status===401&&!path.startsWith('/api/auth/login')){showLogin();throw new Error('Please sign in again.')}
+ if(!r.ok)throw new Error(j&&Array.isArray(j.detail)?j.detail.map(d=>d.msg).join('; '):(j&&j.detail)||('Error '+r.status));return j}
+const post=(p,b)=>API(p,{method:'POST',body:JSON.stringify(b||{})});
+function applyState(x){['nav','navv','reports','str','appr','mapOk','valOk','notice','audit','regrep'].forEach(k=>st[k]=x[k]||(k==='regrep'?{}:x[k]));runsCard.data=null}
+async function doAct(name,arg){try{const r=await post('/api/actions/'+name,{scheme:st.s,arg:arg==null?null:String(arg),clock:st.clock});applyState(r.state);if(r.data)DATA=r.data;render();toast(r.message);return r}catch(e){toast(e.message);return null}}
+function showLogin(){$('#login').classList.add('on');setTimeout(()=>$('#lu').focus(),50)}
+$('#loginf').addEventListener('submit',async e=>{e.preventDefault();$('#lerr').textContent='';try{await post('/api/auth/login',{username:$('#lu').value,password:$('#lp').value});$('#lp').value='';$('#login').classList.remove('on');await loadAll()}catch(err){$('#lerr').textContent=err.message}});
+function emptyPage(){$('#main').innerHTML=`<div class="page"><div class="empty-state"><h2>No quarter loaded yet</h2><p>Upload the quarter's source files as one zip: a folder per scheme (<code>scheme_A_…</code>, <code>scheme_B_…</code>) and <code>shared/</code> with the locked opening balances.</p>${CANUP?btn('Upload files','upload','p'):'<p class="muted">Ask the finance maker to upload the files.</p>'}</div></div>`;
+ $('#side').innerHTML='';$('#uchip').innerHTML=`<span class="uc-t"><b>${esc(ME.full_name)}</b><small>${role()?role()[2]:ME.role}</small></span>`;$('#umenu').innerHTML=`<button class="um-i" data-act="logout" role="menuitem">Sign out</button>`}
+async function loadAll(){const d=await API('/api/dashboard');ME=d.user;ACC=d.user.access;BRAND=d.brand||{};RUN=d.run;CANUP=d.can_ingest;CANDEL=!!d.can_delete;adminData.loaded=false;ROLES=d.directory;st.role=ME.role;applyState(d.state);DATA=d.data;
+ $('#brandtag').innerHTML=esc(BRAND.client_label||'').replace(' · ','<br>');
+ if(!DATA){emptyPage();return}
+ if(!DATA.schemes[st.s])st.s=Object.keys(DATA.schemes)[0];route()}
+$('#clock').value=st.clock;
+API('/api/auth/me').then(loadAll).catch(()=>showLogin());
+
+</script>
+</body>
+</html>

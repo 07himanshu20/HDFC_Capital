@@ -1,0 +1,15 @@
+{
+  "_comment": "Users created on first start. Edit before the first start, or manage later on the Users and access page (administrator). Passwords: TRACKFUND_INITIAL_PASSWORD, or a random one written to <data dir>/initial_credentials.txt.",
+  "users": [
+    {"username": "admin",   "full_name": "System administrator",  "role": "ADMIN",       "is_admin": true},
+    {"username": "ishaan",  "full_name": "Ishaan Wadekar",        "role": "PO"},
+    {"username": "jaideep", "full_name": "Jaideep Almeida-Rao",   "role": "CRO"},
+    {"username": "pallav",  "full_name": "Pallav Bhowmick",       "role": "FIN_MAKER"},
+    {"username": "renuka",  "full_name": "Renuka Thirumalai",     "role": "FIN_CHECKER"},
+    {"username": "farhan",  "full_name": "Farhan Qureshi-Menon",  "role": "AML_PO"},
+    {"username": "devika",  "full_name": "Devika Sabnis",         "role": "IR"},
+    {"username": "nakul",   "full_name": "Nakul Deshpande-Iyer",  "role": "INV_TEAM"},
+    {"username": "trustee", "full_name": "Trustee desk",          "role": "TRUSTEE_RO"},
+    {"username": "auditor", "full_name": "Audit team",            "role": "AUDITOR_RO"}
+  ]
+}

@@ -1,0 +1,2337 @@
+{
+ "dataset": "dataset/Q2FY27",
+ "summary": {
+  "PASS": 49,
+  "WARN": 4,
+  "PARTIAL": 2,
+  "FAIL": 0,
+  "N/A": 1
+ },
+ "rules": [
+  {
+   "rule": "R3",
+   "scheme": "A",
+   "title": "MT940 opening :60F: = PDF opening; daily :62F: = running balance",
+   "status": "PASS",
+   "left": "18123200.00",
+   "right": "18123200.00",
+   "detail": "8 daily :62F: balances checked",
+   "src": "IBU_Statement_SchemeA_USD_Jul-Sep26.mt940 / .pdf"
+  },
+  {
+   "rule": "R3",
+   "scheme": "A",
+   "title": "MT940 = PDF: line count, dates, refs, narrations, amounts, balances",
+   "status": "PASS",
+   "left": "17 lines, net 6,159,400.00",
+   "right": "17 lines, net 6,159,400.00",
+   "detail": "",
+   "src": "IBU_Statement_SchemeA_USD_Jul-Sep26.pdf"
+  },
+  {
+   "rule": "R3",
+   "scheme": "A",
+   "title": "MT940 = CSV: line count, dates, refs, narrations, amounts, balances",
+   "status": "PASS",
+   "left": "17 lines, net 6,159,400.00",
+   "right": "17 lines, net 6,159,400.00",
+   "detail": "",
+   "src": "IBU_Statement_SchemeA_USD_Jul-Sep26.csv"
+  },
+  {
+   "rule": "R3",
+   "scheme": "A",
+   "title": "PDF summary: closing balance and transaction count",
+   "status": "PASS",
+   "left": "24,282,600.00",
+   "right": "24,282,600.00",
+   "detail": "",
+   "src": "IBU_Statement_SchemeA_USD_Jul-Sep26.pdf"
+  },
+  {
+   "rule": "R1",
+   "scheme": "A",
+   "title": "Bank = GL cash on every transaction day (opening and each day-end)",
+   "status": "PASS",
+   "left": "bank close 24,282,600.00",
+   "right": "GL 1100 24,282,600.00",
+   "detail": "8 day-ends compared; opening 18,123,200.00",
+   "src": "IBU_Statement_SchemeA_USD_Jul-Sep26 (MT940) vs journals"
+  },
+  {
+   "rule": "R2",
+   "scheme": "A",
+   "title": "Every bank line matched to exactly one journal cash line (amount, date, reference)",
+   "status": "PASS",
+   "left": "17 bank lines",
+   "right": "17 journal cash lines, 0 unmatched",
+   "detail": "zero unmatched",
+   "src": "IBU_Statement_SchemeA_USD_Jul-Sep26 (MT940)"
+  },
+  {
+   "rule": "R4",
+   "scheme": "A",
+   "title": "Custody = instrument register (holdings 30-Jun and 30-Sep; credits = tranche units on allotment date)",
+   "status": "PASS",
+   "left": "I-A1: open 20,000 / close 30,000 / credits 1; I-A2: open 60,000 / close 60,000 / credits 0",
+   "right": "I-A1: 20,000 / 30,000; I-A2: 60,000 / 60,000",
+   "detail": "",
+   "src": "Demat_Holding_Statement pdf, Demat_Transaction_Statement csv vs Deal_Master Tranches, Opening_Balances"
+  },
+  {
+   "rule": "R5",
+   "scheme": "A",
+   "title": "Call: notices = allocation = % x commitments = receipts (+ outstanding) = bank credits = GL 3100 / 1400",
+   "status": "PASS",
+   "left": "notices 18.00 / allocation 18.0",
+   "right": "receipts 18.00 / GL 3100 18.0 / outstanding 0.00",
+   "detail": "4 notices; 15% of 120; late payers: LP-A3 (5d)",
+   "src": "CapitalCall_CG3_Notice_*.pdf, _Allocation.xlsx, bank, journals"
+  },
+  {
+   "rule": "R6",
+   "scheme": "A",
+   "title": "Late-payment interest = rate x days late x amount = bank receipt = GL 4500",
+   "status": "PASS",
+   "left": "computed {'LP-A3': '0.0037'}",
+   "right": "bank {'LP-A3': '0.0037'} / GL 4500 0.0037",
+   "detail": "rate 10% p.a. ACT/365 from PPM term sheet",
+   "src": "PPM_Term_Sheet pdf, bank, journals"
+  },
+  {
+   "rule": "R7",
+   "scheme": "A",
+   "title": "Distribution: schedule = notices = lines; rate from investor register; bank debits = net; GL 3200 = gross; GL 2500 = tax at 30-Sep; challan clears 2500 in Oct; certificates",
+   "status": "PASS",
+   "left": "gross 1.20 = net 1.080 + WHT 0.120",
+   "right": "GL 3200 1.20 / GL 2500 0.120 / bank net 1.080 / challan 0.12 on 07-Oct-2026",
+   "detail": "payment file net 1.080 + WHT 0.120 = 1.200; 3 certificates tie; tax payable is a liability at 30-Sep, not in cash",
+   "src": "Distribution_DA1_Schedule.xlsx, notices, bank, WHT_Deposit_Challan_DA1.pdf"
+  },
+  {
+   "rule": "R8",
+   "scheme": "A",
+   "title": "Accruals: schedule (ACT/365, tranche part-periods) = GL 4100/4110 = coupon receipts; 1300 clears; PIK capitalised into principal = valuer principal",
+   "status": "PASS",
+   "left": "schedule cash 1.0297 / PIK 0.0000",
+   "right": "GL 4100 1.0297 / 4110 0 / 1300 closing 0.0000",
+   "detail": "I-A1: cash 9.2055 cr on 200x92d + 100x56d",
+   "src": "Deal_Master, bank narrations, journals, Valuation_Inputs Summary"
+  },
+  {
+   "rule": "R9",
+   "scheme": "A",
+   "title": "FX: every INR-linked journal uses the daily table; 30-Sep translation at 89.40; GL 1220 = recomputed",
+   "status": "PASS",
+   "left": "Disbursement I-A1 T2 05-Aug: 89.15; Coupon I-A1 30-Sep: 89.4000; closing 89.4000",
+   "right": "table: 89.1500; 89.4000; 1220 cumulative -0.4298 (movement -0.1621)",
+   "detail": "I-A1: INR 300.0000 cr -> 33.5570 vs cost 33.9185; I-A2: INR 60 cr -> 6.7114 vs cost 6.7797",
+   "src": "FX_Rates_USDINR_Daily_Jul-Sep26.csv, Deal_Master Tranches, bank narrations"
+  },
+  {
+   "rule": "R10",
+   "scheme": "A",
+   "title": "Valuation: report PDF = inputs workbook; GL 1210 = fair-value adjustment; dispatch within 15 days of receipt",
+   "status": "PASS",
+   "left": "I-A1: FV 303.0000 cr (adj 3.0000); I-A2: FV 66.0000 cr (adj 6.0000)",
+   "right": "GL 1210 1.0067 (movement 0.7595); received 20-Oct, dispatched 29-Oct, limit 04-Nov",
+   "detail": "",
+   "src": "Valuation_Report pdf p.1 table 2, Valuation_Inputs xlsx, calendar"
+  },
+  {
+   "rule": "R11",
+   "scheme": "A",
+   "title": "GL trial balance: debits = credits at 30-Jun and 30-Sep",
+   "status": "PASS",
+   "left": "30-Jun Dr 48.8527 / Cr 48.8527",
+   "right": "30-Sep Dr 68.9847 / Cr 68.9847",
+   "detail": "",
+   "src": "Opening_Balances_30Jun26_locked.xlsx + journals"
+  },
+  {
+   "rule": "R11",
+   "scheme": "A",
+   "title": "Tally trial balance: opening, transactions and closing each balance; ledger rows foot to Grand Total",
+   "status": "PASS",
+   "left": "opening 4,291,200,000.00 / 4,291,200,000.00; transactions 3,029,846,460.00 / 3,029,846,460.00",
+   "right": "closing 6,072,486,060.00 / 6,072,486,060.00",
+   "detail": "21 ledgers",
+   "src": "Tally_SchemeA_TrialBalance_30Sep26.xlsx"
+  },
+  {
+   "rule": "R12",
+   "scheme": "A",
+   "title": "Tally day book: every voucher balances; TB transactions = XML; ledger-master openings = TB openings",
+   "status": "PASS",
+   "left": "20 vouchers",
+   "right": "21 ledgers",
+   "detail": "",
+   "src": "Tally_SchemeA_DayBook_Q2FY27.xml, TB, LedgerMasters"
+  },
+  {
+   "rule": "R12",
+   "scheme": "A",
+   "title": "Tally bridge (memo-rate book): every voucher matched; every GL journal without a voucher and every ledger difference explained by M / A / F; residual nil",
+   "status": "PASS",
+   "left": "20 vouchers matched, 0 unmatched; narration USD x 89.40 = INR on every voucher",
+   "right": "8 GL journals not in Tally (codes A, F); unexplained residual by GL: nil",
+   "detail": "50 bridge lines written to validation_report.json; M total INR 8,960,354.61",
+   "src": "Tally XML/TB vs journals, FX table"
+  },
+  {
+   "rule": "R13",
+   "scheme": "A",
+   "title": "NAV = assets - liabilities = sum of capital accounts = sum of class NAVs; units = unit register",
+   "status": "PASS",
+   "left": "NAV 64.8077 (USD 64,807,700.00); opening 46.9989",
+   "right": "capital accounts 64.807700; class A 61.462315 / B 3.345385; units 660,000 (A 627,000 / B 33,000)",
+   "detail": "NAV per unit: fund 98.1935, class A 98.0260, class B 101.3753 (fee charged to class A only)",
+   "src": "journals, Unit_Register xlsx (Unit Ledger, Holdings)"
+  },
+  {
+   "rule": "R14",
+   "scheme": "A",
+   "title": "Performance recomputed from call due dates, distribution dates and NAV (paid-in denominators); carry provision on hypothetical liquidation",
+   "status": "PASS",
+   "left": "IRR 0.0175% TVPI 1.000117 DPI 0.018182 RVPI 0.981935; carry 0.000000",
+   "right": "expected IRR 0.0175% TVPI 1.000117 DPI 0.018182 RVPI 0.981935; carry 0.000000",
+   "detail": "3 calls, 1 distribution; NAV below hurdle so carry provision is nil",
+   "src": "Opening_Balances Calls, call allocation, distribution schedule, journals"
+  },
+  {
+   "rule": "R15",
+   "scheme": "A",
+   "title": "Reports: Q1 FY27 report as filed ties to the locked 30-Jun books and registers (layout reused for Q2)",
+   "status": "PARTIAL",
+   "left": "report NAV 46.9989, drawn 48",
+   "right": "books NAV 46.9989, drawn 48",
+   "detail": "The Q2 FY27 report is an output of the backend (next phase); this rule will be re-run on it for the locked NAV version.",
+   "src": "IFSCA_Quarterly_Report_Q1FY27_as_filed.xlsx"
+  },
+  {
+   "rule": "R16",
+   "scheme": "A",
+   "title": "Calendar: every Filed / Done obligation has an evidence file that exists and matches its manifest hash",
+   "status": "PASS",
+   "left": "8 filed/done of 15 obligations",
+   "right": "8 with verified evidence",
+   "detail": "9 rows carry a verify flag (reconstructed dates)",
+   "src": "IFSCA_Compliance_Calendar_SchemeA.xlsx"
+  },
+  {
+   "rule": "R17",
+   "scheme": "A",
+   "title": "KYC gate: no investor with status other than Complete is in the call unless its refresh falls due after the call date",
+   "status": "PASS",
+   "left": "LP-A3: Refresh due (refresh 20-Nov-2026)",
+   "right": "call notice date 15-Jul-2026",
+   "detail": "",
+   "src": "KYC_Register_SchemeA.xlsx, call allocation"
+  },
+  {
+   "rule": "R18",
+   "scheme": "A",
+   "title": "Covenants: MIS Jul-Sep actuals (two developer layouts) = covenant certificates; breach flags; breach-notice due date",
+   "status": "PASS",
+   "left": "SPV-A1: sold 74 (min 45), cover 2.00 (min 1.25); SPV-A2: sold 51 (min 30), cover 1.70 (min 1.25)",
+   "right": "breaches: none",
+   "detail": "",
+   "src": "Developer_MIS_*.xlsx (6 files), Covenant_Certificate_*.pdf, Deal_Master Covenants, calendar"
+  },
+  {
+   "rule": "R19",
+   "scheme": "A",
+   "title": "Limits: single-investee exposure, leverage, corpus >= minimum (PPM terms)",
+   "status": "WARN",
+   "left": "largest I-A1 cost 33.9185: 22.61% of target corpus 150.00; 28.27% of commitments 120",
+   "right": "limit 25% of investable funds; leverage 0 (limit nil); corpus 120 >= minimum 3.00",
+   "detail": "WITHIN the limit only if investable funds are measured on target corpus; on total commitments the exposure is 28.27% and exceeds 25%. The brief's Section 6 amounts produce this - decision needed (see docs/known_limitations.md).",
+   "src": "PPM_Term_Sheet pdf, Deal_Master, journals"
+  },
+  {
+   "rule": "S1",
+   "scheme": "A",
+   "title": "FEMA: FC-GPR allotment date = tranche date; due = allotment + 30 days; filed on or before due",
+   "status": "PASS",
+   "left": "allotment 05-Aug-2026, filed 28-Aug-2026",
+   "right": "due 04-Sep-2026",
+   "detail": "ack FCGPR/2026/AD999/000999",
+   "src": "FCGPR_Acknowledgement_I-A1_T2.pdf, Deal_Master Tranches"
+  },
+  {
+   "rule": "S2",
+   "scheme": "A",
+   "title": "Fee engine: rate x commitments x 1/4 = invoice (+ GST) = GL 5100",
+   "status": "WARN",
+   "left": "computed 0.5250 (+ GST 0.00)",
+   "right": "invoice 0.525; GL 5100 0.525",
+   "detail": "Fee base is TOTAL commitments (120) as in the brief's golden totals; on Class A commitments only (114) the fee would be 0.498750. Decision needed.",
+   "src": "FME_Fee_Invoice_Q2FY27.pdf, PPM_Term_Sheet"
+  },
+  {
+   "rule": "G1",
+   "scheme": "A",
+   "title": "Golden totals: books rebuilt from the source files = expected_results.json (TBs, NAV, capital accounts, bank, custody, tax payable, counts) - exact",
+   "status": "PASS",
+   "left": "rebuilt NAV 64.8077, cash 24.2826, 28 journals",
+   "right": "expected NAV 64.8077, cash 24.2826, 28 journals",
+   "detail": "",
+   "src": "expected_results.json"
+  },
+  {
+   "rule": "G2",
+   "scheme": "A",
+   "title": "Brief Section 6.1 golden totals (tolerance 0.0005): closing TB, NAV 64.8077, bank 24,282,600, units 660,000, opening TB, NAV 46.9987, result 1.0090",
+   "status": "PASS",
+   "left": "NAV 64.8077; bank 24,282,600.00; opening NAV 46.9989; quarter result 1.0088",
+   "right": "brief: NAV 64.8077; bank 24,282,600.00; opening NAV 46.9987; quarter result 1.0090",
+   "detail": "differences within tolerance: opening accumulated result 1.0011 vs brief 1.0013 and quarter result 1.0088 vs 1.0090 (the brief's own opening TB is out of balance by 0.0002); closing TB differences: none",
+   "src": "brief Section 6.1"
+  },
+  {
+   "rule": "R3",
+   "scheme": "B",
+   "title": "XLS opening balance = PDF opening balance",
+   "status": "PASS",
+   "left": "549531000.0",
+   "right": "549531000.00",
+   "detail": "",
+   "src": "Bank_Statement_SchemeB_INR_Jul-Sep26.xls / .pdf"
+  },
+  {
+   "rule": "R3",
+   "scheme": "B",
+   "title": "XLS = PDF: line count, dates, refs, narrations, amounts, balances",
+   "status": "PASS",
+   "left": "17 lines, net 140,698,000.00",
+   "right": "17 lines, net 140,698,000.00",
+   "detail": "",
+   "src": "Bank_Statement_SchemeB_INR_Jul-Sep26.pdf"
+  },
+  {
+   "rule": "R3",
+   "scheme": "B",
+   "title": "PDF summary: closing balance and transaction count",
+   "status": "PASS",
+   "left": "69,02,29,000.00",
+   "right": "690,229,000.00",
+   "detail": "",
+   "src": "Bank_Statement_SchemeB_INR_Jul-Sep26.pdf"
+  },
+  {
+   "rule": "R1",
+   "scheme": "B",
+   "title": "Bank = GL cash on every transaction day (opening and each day-end)",
+   "status": "PASS",
+   "left": "bank close 690,229,000.00",
+   "right": "GL 1100 690,229,000.00",
+   "detail": "6 day-ends compared; opening 549,531,000.00",
+   "src": "Bank_Statement_SchemeB_INR_Jul-Sep26 (XLS) vs journals"
+  },
+  {
+   "rule": "R2",
+   "scheme": "B",
+   "title": "Every bank line matched to exactly one journal cash line (amount, date, reference)",
+   "status": "PASS",
+   "left": "17 bank lines",
+   "right": "17 journal cash lines, 0 unmatched",
+   "detail": "zero unmatched",
+   "src": "Bank_Statement_SchemeB_INR_Jul-Sep26 (XLS)"
+  },
+  {
+   "rule": "R4",
+   "scheme": "B",
+   "title": "Custody = instrument register (holdings 30-Jun and 30-Sep; credits = tranche units on allotment date)",
+   "status": "PASS",
+   "left": "I-B1: open 12,000 / close 15,000 / credits 1; I-B2: open 8,000 / close 8,000 / credits 0",
+   "right": "I-B1: 12,000 / 15,000; I-B2: 8,000 / 8,000",
+   "detail": "",
+   "src": "Demat_Holding_Statement pdf, Demat_Transaction_Statement csv vs Deal_Master Tranches, Opening_Balances"
+  },
+  {
+   "rule": "R5",
+   "scheme": "B",
+   "title": "Call: notices = allocation = % x commitments = receipts (+ outstanding) = bank credits = GL 3100 / 1400",
+   "status": "PASS",
+   "left": "notices 50.00 / allocation 50.0",
+   "right": "receipts 50.0 / GL 3100 50.0 / outstanding 0.0",
+   "detail": "4 notices; 10% of 500; late payers: none",
+   "src": "CapitalCall_CB3_Notice_*.pdf, _Allocation.xlsx, bank, journals"
+  },
+  {
+   "rule": "R6",
+   "scheme": "B",
+   "title": "Late-payment interest = rate x days late x amount = bank receipt = GL 4500",
+   "status": "PASS",
+   "left": "computed none due",
+   "right": "bank none / GL 4500 0",
+   "detail": "rate 12% p.a. ACT/365 from PPM term sheet",
+   "src": "PPM_Term_Sheet pdf, bank, journals"
+  },
+  {
+   "rule": "R7",
+   "scheme": "B",
+   "title": "Distribution: schedule = notices = lines; rate from investor register; bank debits = net; GL 3200 = gross; GL 2500 = tax at 30-Sep; challan clears 2500 in Oct; certificates",
+   "status": "PASS",
+   "left": "gross 10.0 = net 9.00 + TDS 1.00",
+   "right": "GL 3200 10.0 / GL 2500 1.00 / bank net 9.00 / challan 1.00 on 07-Oct-2026",
+   "detail": "n/a (no bulk file for the onshore scheme); 3 certificates tie; tax payable is a liability at 30-Sep, not in cash",
+   "src": "Distribution_DB1_Schedule.xlsx, notices, bank, TDS_194LBB_Challan_DB1.pdf"
+  },
+  {
+   "rule": "R8",
+   "scheme": "B",
+   "title": "Accruals: schedule (ACT/365, tranche part-periods) = GL 4100/4110 = coupon receipts; 1300 clears; PIK capitalised into principal = valuer principal",
+   "status": "PASS",
+   "left": "schedule cash 6.3898 / PIK 1.2374",
+   "right": "GL 4100 6.3898 / 4110 1.2374 / 1300 closing 0.0000",
+   "detail": "I-B1: cash 4.3274 cr on 120x92d + 30x22d; I-B2: cash 2.0624 cr PIK 1.2374 cr on 81.8241x92d",
+   "src": "Deal_Master, bank narrations, journals, Valuation_Inputs Summary"
+  },
+  {
+   "rule": "R9",
+   "scheme": "B",
+   "title": "FX",
+   "status": "N/A",
+   "left": "not applicable",
+   "right": "INR scheme - no FX",
+   "detail": "",
+   "src": ""
+  },
+  {
+   "rule": "R10",
+   "scheme": "B",
+   "title": "Valuation: report PDF = inputs workbook; GL 1210 = fair-value adjustment; dispatch within 15 days of receipt",
+   "status": "PASS",
+   "left": "I-B1: FV 151.5000 cr (adj 1.5000); I-B2: FV 83.0615 cr (adj 0.0000)",
+   "right": "GL 1210 1.5 (movement 0.5); received 19-Oct, dispatched 28-Oct, limit 03-Nov",
+   "detail": "",
+   "src": "Valuation_Report pdf p.1 table 2, Valuation_Inputs xlsx, calendar"
+  },
+  {
+   "rule": "R11",
+   "scheme": "B",
+   "title": "GL trial balance: debits = credits at 30-Jun and 30-Sep",
+   "status": "PASS",
+   "left": "30-Jun Dr 257.7772 / Cr 257.7772",
+   "right": "30-Sep Dr 317.2244 / Cr 317.2244",
+   "detail": "",
+   "src": "Opening_Balances_30Jun26_locked.xlsx + journals"
+  },
+  {
+   "rule": "R11",
+   "scheme": "B",
+   "title": "Tally trial balance: opening, transactions and closing each balance; ledger rows foot to Grand Total",
+   "status": "PASS",
+   "left": "opening 2,577,772,000.00 / 2,577,772,000.00; transactions 1,718,244,000.00 / 1,718,244,000.00",
+   "right": "closing 3,172,244,000.00 / 3,172,244,000.00",
+   "detail": "27 ledgers",
+   "src": "Tally_SchemeB_TrialBalance_30Sep26.xlsx"
+  },
+  {
+   "rule": "R12",
+   "scheme": "B",
+   "title": "Tally day book: every voucher balances; TB transactions = XML; ledger-master openings = TB openings",
+   "status": "PASS",
+   "left": "29 vouchers",
+   "right": "27 ledgers",
+   "detail": "",
+   "src": "Tally_SchemeB_DayBook_Q2FY27.xml, TB, LedgerMasters"
+  },
+  {
+   "rule": "R12",
+   "scheme": "B",
+   "title": "Tally bridge (statutory book): every voucher <-> one GL journal; TB ledger balances = mapped GL balances (100%)",
+   "status": "PASS",
+   "left": "29 vouchers, 0 unmatched",
+   "right": "29 journals, 0 unmatched; 0 GL balance differences",
+   "detail": "",
+   "src": "Tally XML/TB vs journals"
+  },
+  {
+   "rule": "R13",
+   "scheme": "B",
+   "title": "NAV = assets - liabilities = sum of capital accounts = sum of class NAVs; units = unit register",
+   "status": "PASS",
+   "left": "NAV 298.9544 (INR 2,989,544,000.00); opening 254.4072",
+   "right": "capital accounts 298.954400; class A 283.416680 / B 15.537720; units 30,000,000 (A 28,500,000 / B 1,500,000)",
+   "detail": "NAV per unit: fund 99.6515, class A 99.4444, class B 103.5848 (fee charged to class A only)",
+   "src": "journals, Unit_Register xlsx (Unit Ledger, Holdings)"
+  },
+  {
+   "rule": "R14",
+   "scheme": "B",
+   "title": "Performance recomputed from call due dates, distribution dates and NAV (paid-in denominators); carry provision on hypothetical liquidation",
+   "status": "PASS",
+   "left": "IRR 3.7222% TVPI 1.029848 DPI 0.033333 RVPI 0.996515; carry 0.000000",
+   "right": "expected IRR 3.7222% TVPI 1.029848 DPI 0.033333 RVPI 0.996515; carry 0.000000",
+   "detail": "3 calls, 1 distribution; NAV below hurdle so carry provision is nil",
+   "src": "Opening_Balances Calls, call allocation, distribution schedule, journals"
+  },
+  {
+   "rule": "R15",
+   "scheme": "B",
+   "title": "Reports: Q1 FY27 report as filed ties to the locked 30-Jun books and registers (layout reused for Q2)",
+   "status": "PARTIAL",
+   "left": "report NAV 254.4072, drawn 250",
+   "right": "books NAV 254.4072, drawn 250",
+   "detail": "The Q2 FY27 report is an output of the backend (next phase); this rule will be re-run on it for the locked NAV version.",
+   "src": "SEBI_Quarterly_Activity_Report_Q1FY27_as_filed.xlsx"
+  },
+  {
+   "rule": "R16",
+   "scheme": "B",
+   "title": "Calendar: every Filed / Done obligation has an evidence file that exists and matches its manifest hash",
+   "status": "PASS",
+   "left": "8 filed/done of 12 obligations",
+   "right": "8 with verified evidence",
+   "detail": "7 rows carry a verify flag (reconstructed dates)",
+   "src": "SEBI_Compliance_Calendar_SchemeB.xlsx"
+  },
+  {
+   "rule": "R17",
+   "scheme": "B",
+   "title": "KYC gate: no investor with status other than Complete is in the call unless its refresh falls due after the call date",
+   "status": "PASS",
+   "left": "LP-B3: Refresh due (refresh 15-Dec-2026)",
+   "right": "call notice date 20-Aug-2026",
+   "detail": "",
+   "src": "KYC_Register_SchemeB.xlsx, call allocation"
+  },
+  {
+   "rule": "R18",
+   "scheme": "B",
+   "title": "Covenants: MIS Jul-Sep actuals (two developer layouts) = covenant certificates; breach flags; breach-notice due date",
+   "status": "PASS",
+   "left": "SPV-B1: sold 55 (min 40), cover 2.08 (min 1.25); SPV-B2: sold 18 (min 40), cover 0.90 (min 1.25)",
+   "right": "breaches: SPV-B2 Sales velocity, SPV-B2 Collection cover; notice due 14-Oct-2026 (10 business days, weekends only) = calendar 14-Oct-2026",
+   "detail": "",
+   "src": "Developer_MIS_*.xlsx (6 files), Covenant_Certificate_*.pdf, Deal_Master Covenants, calendar"
+  },
+  {
+   "rule": "R19",
+   "scheme": "B",
+   "title": "Limits: single-investee exposure, leverage, corpus >= minimum (PPM terms)",
+   "status": "WARN",
+   "left": "largest I-B1 cost 150: 25.00% of target corpus 600.00; 30.00% of commitments 500",
+   "right": "limit 25% of investable funds; leverage 0 (limit nil); corpus 500 >= minimum 20.00",
+   "detail": "WITHIN the limit only if investable funds are measured on target corpus; on total commitments the exposure is 30.00% and exceeds 25%. The brief's Section 6 amounts produce this - decision needed (see docs/known_limitations.md).",
+   "src": "PPM_Term_Sheet pdf, Deal_Master, journals"
+  },
+  {
+   "rule": "S2",
+   "scheme": "B",
+   "title": "Fee engine: rate x commitments x 1/4 = invoice (+ GST) = GL 5100",
+   "status": "WARN",
+   "left": "computed 2.5000 (+ GST 0.45)",
+   "right": "invoice 2.50; GL 5100 2.95",
+   "detail": "Fee base is TOTAL commitments (500) as in the brief's golden totals; on Class A commitments only (475) the fee would be 2.375000. Decision needed.",
+   "src": "IM_Fee_Invoice_Q2FY27.pdf, PPM_Term_Sheet"
+  },
+  {
+   "rule": "G1",
+   "scheme": "B",
+   "title": "Golden totals: books rebuilt from the source files = expected_results.json (TBs, NAV, capital accounts, bank, custody, tax payable, counts) - exact",
+   "status": "PASS",
+   "left": "rebuilt NAV 298.9544, cash 69.0229, 29 journals",
+   "right": "expected NAV 298.9544, cash 69.0229, 29 journals",
+   "detail": "",
+   "src": "expected_results.json"
+  },
+  {
+   "rule": "R20",
+   "scheme": "all",
+   "title": "Manifest: every listed file exists and matches its SHA-256",
+   "status": "PASS",
+   "left": "160 files",
+   "right": "0 mismatches",
+   "detail": "",
+   "src": "manifest.json"
+  },
+  {
+   "rule": "R20",
+   "scheme": "all",
+   "title": "Determinism: generator re-run with the same seed gives identical hashes (PDF timestamps normalised)",
+   "status": "PASS",
+   "left": "160 files, seed 20260930",
+   "right": "0 differing",
+   "detail": "",
+   "src": "generator re-run"
+  },
+  {
+   "rule": "N1",
+   "scheme": "all",
+   "title": "Names: the firm name does not appear in file names or text-format files (PDF/xlsx text is scanned in the QA step)",
+   "status": "PASS",
+   "left": "occurrences",
+   "right": "0",
+   "detail": "",
+   "src": "manifest + csv/xml/mt940"
+  }
+ ],
+ "books": {
+  "A": {
+   "open_tb": {
+    "1100": "18.1232",
+    "1200": "29.4812",
+    "1210": "0.2472",
+    "1220": "-0.2677",
+    "1300": "0",
+    "1400": "0",
+    "2100": "-0.525",
+    "2200": "-0.06",
+    "2300": "0",
+    "2500": "0",
+    "3100": "-48",
+    "3200": "0",
+    "3900": "1.0011"
+   },
+   "close_tb": {
+    "1100": "24.2826",
+    "1200": "40.6982",
+    "1210": "1.0067",
+    "1220": "-0.4298",
+    "1300": "0.0000",
+    "1400": "0.00",
+    "2100": "-0.525",
+    "2200": "-0.105",
+    "2300": "0.000",
+    "2500": "-0.120",
+    "3100": "-66.0",
+    "3200": "1.20",
+    "3900": "1.0011",
+    "5100": "0.525",
+    "5200": "0.065",
+    "5210": "0.04",
+    "4500": "-0.0037",
+    "4100": "-1.0297",
+    "4200": "-0.012",
+    "5300": "0.004",
+    "4700": "0.1621",
+    "4600": "-0.7595"
+   },
+   "nav_open": "46.9989",
+   "nav_close": "64.8077",
+   "capital": {
+    "LP-A1": {
+     "opening": "23.458002",
+     "closing": "32.348586",
+     "units": 330000,
+     "nav_per_unit": "98.0260",
+     "contributions": "9",
+     "distributions_income": "-0.6"
+    },
+    "LP-A2": {
+     "opening": "14.074802",
+     "closing": "19.409153",
+     "units": 198000,
+     "nav_per_unit": "98.0260",
+     "contributions": "5.4",
+     "distributions_income": "-0.36"
+    },
+    "LP-A3": {
+     "opening": "7.037401",
+     "closing": "9.704576",
+     "units": 99000,
+     "nav_per_unit": "98.0260",
+     "contributions": "2.7",
+     "distributions_income": "-0.18"
+    },
+    "LP-A4": {
+     "opening": "2.428695",
+     "closing": "3.345385",
+     "units": 33000,
+     "nav_per_unit": "101.3753",
+     "contributions": "0.9",
+     "distributions_income": "-0.06"
+    }
+   },
+   "classes": {
+    "A": {
+     "nav": "61.462315",
+     "units": 627000
+    },
+    "B": {
+     "nav": "3.345385",
+     "units": 33000
+    }
+   },
+   "performance": {
+    "paid_in": "66.0",
+    "distributed": "1.20",
+    "irr": 0.000175,
+    "tvpi": "1.000117",
+    "dpi": "0.018182",
+    "rvpi": "0.981935"
+   },
+   "pl": {
+    "fee": "-0.525",
+    "expense": "-0.109",
+    "income": "1.0454",
+    "fx": "-0.1621",
+    "fv": "0.7595"
+   },
+   "journals": [
+    {
+     "date": "2026-07-07",
+     "kind": "FEE_PAY",
+     "ref": "MF/Q1FY27",
+     "src": "FME_Fee_Invoice_Q1FY27.pdf",
+     "bank": ":61: #1",
+     "lines": [
+      {
+       "gl": 2100,
+       "amt": "0.525"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.525"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_FEE",
+     "ref": "ACCR/MF/Q2FY27",
+     "src": "FME_Fee_Invoice_Q2FY27.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5100,
+       "amt": "0.525"
+      },
+      {
+       "gl": 2100,
+       "amt": "-0.525"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-10",
+     "kind": "EXP_PAY",
+     "ref": "INV/NFS/IFSC/26-27/0087",
+     "src": "Vendor_Invoices_Q2FY27/Administrator_Q1FY27_Invoice.pdf",
+     "bank": ":61: #3",
+     "lines": [
+      {
+       "gl": 2200,
+       "amt": "0.02"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.02"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/NFS/IFSC/26-27/0139",
+     "src": "Vendor_Invoices_Q2FY27/Administrator_Q2FY27_Invoice.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5200,
+       "amt": "0.02"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.02"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/ACCRUAL/AUD/FY27/H1",
+     "src": "Vendor_Invoices_Q2FY27/Audit_Q2FY27_AccrualNote.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5200,
+       "amt": "0.015"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.015"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-10",
+     "kind": "EXP_PAY",
+     "ref": "INV/LWP/26-27/0311",
+     "src": "Vendor_Invoices_Q2FY27/Legal_Q1FY27_Invoice.pdf",
+     "bank": ":61: #4",
+     "lines": [
+      {
+       "gl": 2200,
+       "amt": "0.01"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.01"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-10",
+     "kind": "EXP_PAY",
+     "ref": "INV/STS/IFSC/26-27/0114",
+     "src": "Vendor_Invoices_Q2FY27/Trustee_Q1FY27_Invoice.pdf",
+     "bank": ":61: #2",
+     "lines": [
+      {
+       "gl": 2200,
+       "amt": "0.03"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.03"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/STS/IFSC/26-27/0171",
+     "src": "Vendor_Invoices_Q2FY27/Trustee_Q2FY27_Invoice.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5200,
+       "amt": "0.03"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.03"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/MVA/26-27/0452",
+     "src": "Vendor_Invoices_Q2FY27/Valuer_Q2FY27_Invoice.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5210,
+       "amt": "0.04"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.04"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-15",
+     "kind": "CALL_ISSUE",
+     "ref": "CG3/ISSUE",
+     "src": "CapitalCall_CG3_Allocation.xlsx Allocation",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1400,
+       "amt": "18.0"
+      },
+      {
+       "gl": 3100,
+       "amt": "-9",
+       "investor": "LP-A1"
+      },
+      {
+       "gl": 3100,
+       "amt": "-5.4",
+       "investor": "LP-A2"
+      },
+      {
+       "gl": 3100,
+       "amt": "-2.7",
+       "investor": "LP-A3"
+      },
+      {
+       "gl": 3100,
+       "amt": "-0.9",
+       "investor": "LP-A4"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-30",
+     "kind": "CALL_RCPT",
+     "ref": "CG3/LP-A1",
+     "src": "bank :61: #5",
+     "bank": ":61: #5",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "9.00"
+      },
+      {
+       "gl": 1400,
+       "amt": "-9.00",
+       "investor": "LP-A1"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-30",
+     "kind": "CALL_RCPT",
+     "ref": "CG3/LP-A2",
+     "src": "bank :61: #6",
+     "bank": ":61: #6",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "5.40"
+      },
+      {
+       "gl": 1400,
+       "amt": "-5.40",
+       "investor": "LP-A2"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-30",
+     "kind": "CALL_RCPT",
+     "ref": "CG3/LP-A4",
+     "src": "bank :61: #7",
+     "bank": ":61: #7",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "0.90"
+      },
+      {
+       "gl": 1400,
+       "amt": "-0.90",
+       "investor": "LP-A4"
+      }
+     ]
+    },
+    {
+     "date": "2026-08-04",
+     "kind": "CALL_RCPT",
+     "ref": "CG3/LP-A3",
+     "src": "bank :61: #8",
+     "bank": ":61: #8",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "2.70"
+      },
+      {
+       "gl": 1400,
+       "amt": "-2.70",
+       "investor": "LP-A3"
+      }
+     ]
+    },
+    {
+     "date": "2026-08-12",
+     "kind": "LPI",
+     "ref": "LPI/CG3/LP-A3",
+     "src": "bank :61: #10",
+     "bank": ":61: #10",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "0.0037"
+      },
+      {
+       "gl": 4500,
+       "amt": "-0.0037"
+      }
+     ]
+    },
+    {
+     "date": "2026-08-05",
+     "kind": "DISB",
+     "ref": "DISB/I-A1/T2",
+     "src": "Deal_Master Tranches!row 5",
+     "bank": ":61: #9",
+     "lines": [
+      {
+       "gl": 1200,
+       "amt": "11.2170",
+       "instrument": "I-A1"
+      },
+      {
+       "gl": 1100,
+       "amt": "-11.2170"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-10",
+     "kind": "DIST_DECL",
+     "ref": "DA1/DECL",
+     "src": "Distribution_DA1_Schedule.xlsx Schedule",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 3200,
+       "amt": "0.6",
+       "investor": "LP-A1"
+      },
+      {
+       "gl": 3200,
+       "amt": "0.36",
+       "investor": "LP-A2"
+      },
+      {
+       "gl": 3200,
+       "amt": "0.18",
+       "investor": "LP-A3"
+      },
+      {
+       "gl": 3200,
+       "amt": "0.06",
+       "investor": "LP-A4"
+      },
+      {
+       "gl": 2300,
+       "amt": "-1.080"
+      },
+      {
+       "gl": 2500,
+       "amt": "-0.120"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-15",
+     "kind": "DIST_PAY",
+     "ref": "DA1/LP-A1",
+     "src": "bank :61: #11",
+     "bank": ":61: #11",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "0.54",
+       "investor": "LP-A1"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.54"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-15",
+     "kind": "DIST_PAY",
+     "ref": "DA1/LP-A2",
+     "src": "bank :61: #12",
+     "bank": ":61: #12",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "0.324",
+       "investor": "LP-A2"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.324"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-15",
+     "kind": "DIST_PAY",
+     "ref": "DA1/LP-A3",
+     "src": "bank :61: #13",
+     "bank": ":61: #13",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "0.162",
+       "investor": "LP-A3"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.162"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-15",
+     "kind": "DIST_PAY",
+     "ref": "DA1/LP-A4",
+     "src": "bank :61: #14",
+     "bank": ":61: #14",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "0.054",
+       "investor": "LP-A4"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.054"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_INT",
+     "ref": "ACCR/I-A1/Q2FY27",
+     "src": "Deal_Master Instruments + Tranches (recomputed)",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1300,
+       "amt": "1.0297",
+       "instrument": "I-A1"
+      },
+      {
+       "gl": 4100,
+       "amt": "-1.0297",
+       "instrument": "I-A1"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "CPN_RCPT",
+     "ref": "CPN/I-A1/Q2FY27",
+     "src": "bank :61: #15",
+     "bank": ":61: #15",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "1.0297"
+      },
+      {
+       "gl": 1300,
+       "amt": "-1.0297",
+       "instrument": "I-A1"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "BANK_INT",
+     "ref": "BANK/INT",
+     "src": "bank :61: #16",
+     "bank": ":61: #16",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "0.012"
+      },
+      {
+       "gl": 4200,
+       "amt": "-0.012"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "BANK_CHG",
+     "ref": "BANK/CHG",
+     "src": "bank :61: #17",
+     "bank": ":61: #17",
+     "lines": [
+      {
+       "gl": 5300,
+       "amt": "0.004"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.004"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "FX_TRANSL",
+     "ref": "FX/30SEP26",
+     "src": "FX_Rates csv + Deal_Master (recomputed)",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 4700,
+       "amt": "0.1621"
+      },
+      {
+       "gl": 1220,
+       "amt": "-0.1621"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "VALUATION",
+     "ref": "VAL/I-A1/30SEP26",
+     "src": "Valuation_Inputs Summary!row 4",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1210,
+       "amt": "0.0884",
+       "instrument": "I-A1"
+      },
+      {
+       "gl": 4600,
+       "amt": "-0.0884",
+       "instrument": "I-A1"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "VALUATION",
+     "ref": "VAL/I-A2/30SEP26",
+     "src": "Valuation_Inputs Summary!row 5",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1210,
+       "amt": "0.6711",
+       "instrument": "I-A2"
+      },
+      {
+       "gl": 4600,
+       "amt": "-0.6711",
+       "instrument": "I-A2"
+      }
+     ]
+    }
+   ],
+   "bridge": [
+    {
+     "voucher": "P/001",
+     "date": "2026-07-07",
+     "journal": "MF/Q1FY27",
+     "tally_inr": "46,935,000.00",
+     "gl_usd": "525,000.00",
+     "daily_rate": "88.9020",
+     "code": "M",
+     "difference_inr": "261,450.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 88.9020"
+    },
+    {
+     "voucher": "P/001",
+     "date": "2026-07-07",
+     "journal": "MF/Q1FY27",
+     "gl": 5100,
+     "code": "A",
+     "difference_usd_m": "0.525000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/001",
+     "date": "2026-07-07",
+     "journal": "MF/Q1FY27",
+     "gl": 2100,
+     "code": "A",
+     "difference_usd_m": "-0.525000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/002",
+     "date": "2026-07-10",
+     "journal": "INV/STS/IFSC/26-27/0114",
+     "tally_inr": "2,682,000.00",
+     "gl_usd": "30,000.00",
+     "daily_rate": "88.7723",
+     "code": "M",
+     "difference_inr": "18,831.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 88.7723"
+    },
+    {
+     "voucher": "P/002",
+     "date": "2026-07-10",
+     "journal": "INV/STS/IFSC/26-27/0114",
+     "gl": 5200,
+     "code": "A",
+     "difference_usd_m": "0.030000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/002",
+     "date": "2026-07-10",
+     "journal": "INV/STS/IFSC/26-27/0114",
+     "gl": 2200,
+     "code": "A",
+     "difference_usd_m": "-0.030000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/003",
+     "date": "2026-07-10",
+     "journal": "INV/NFS/IFSC/26-27/0087",
+     "tally_inr": "1,788,000.00",
+     "gl_usd": "20,000.00",
+     "daily_rate": "88.7723",
+     "code": "M",
+     "difference_inr": "12,554.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 88.7723"
+    },
+    {
+     "voucher": "P/003",
+     "date": "2026-07-10",
+     "journal": "INV/NFS/IFSC/26-27/0087",
+     "gl": 5200,
+     "code": "A",
+     "difference_usd_m": "0.020000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/003",
+     "date": "2026-07-10",
+     "journal": "INV/NFS/IFSC/26-27/0087",
+     "gl": 2200,
+     "code": "A",
+     "difference_usd_m": "-0.020000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/004",
+     "date": "2026-07-10",
+     "journal": "INV/LWP/26-27/0311",
+     "tally_inr": "894,000.00",
+     "gl_usd": "10,000.00",
+     "daily_rate": "88.7723",
+     "code": "M",
+     "difference_inr": "6,277.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 88.7723"
+    },
+    {
+     "voucher": "P/004",
+     "date": "2026-07-10",
+     "journal": "INV/LWP/26-27/0311",
+     "gl": 5200,
+     "code": "A",
+     "difference_usd_m": "0.010000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/004",
+     "date": "2026-07-10",
+     "journal": "INV/LWP/26-27/0311",
+     "gl": 2200,
+     "code": "A",
+     "difference_usd_m": "-0.010000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/001",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A1",
+     "tally_inr": "804,600,000.00",
+     "gl_usd": "9,000,000.00",
+     "daily_rate": "89.0748",
+     "code": "M",
+     "difference_inr": "2,926,800.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.0748"
+    },
+    {
+     "voucher": "R/001",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A1",
+     "gl": 1400,
+     "code": "A",
+     "difference_usd_m": "9.000000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/001",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A1",
+     "gl": 3100,
+     "code": "A",
+     "difference_usd_m": "-9.000000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/002",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A2",
+     "tally_inr": "482,760,000.00",
+     "gl_usd": "5,400,000.00",
+     "daily_rate": "89.0748",
+     "code": "M",
+     "difference_inr": "1,756,080.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.0748"
+    },
+    {
+     "voucher": "R/002",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A2",
+     "gl": 1400,
+     "code": "A",
+     "difference_usd_m": "5.400000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/002",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A2",
+     "gl": 3100,
+     "code": "A",
+     "difference_usd_m": "-5.400000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/003",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A4",
+     "tally_inr": "80,460,000.00",
+     "gl_usd": "900,000.00",
+     "daily_rate": "89.0748",
+     "code": "M",
+     "difference_inr": "292,680.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.0748"
+    },
+    {
+     "voucher": "R/003",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A4",
+     "gl": 1400,
+     "code": "A",
+     "difference_usd_m": "0.900000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/003",
+     "date": "2026-07-30",
+     "journal": "CG3/LP-A4",
+     "gl": 3100,
+     "code": "A",
+     "difference_usd_m": "-0.900000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/004",
+     "date": "2026-08-04",
+     "journal": "CG3/LP-A3",
+     "tally_inr": "241,380,000.00",
+     "gl_usd": "2,700,000.00",
+     "daily_rate": "89.1911",
+     "code": "M",
+     "difference_inr": "564,030.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.1911"
+    },
+    {
+     "voucher": "R/004",
+     "date": "2026-08-04",
+     "journal": "CG3/LP-A3",
+     "gl": 1400,
+     "code": "A",
+     "difference_usd_m": "2.700000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/004",
+     "date": "2026-08-04",
+     "journal": "CG3/LP-A3",
+     "gl": 3100,
+     "code": "A",
+     "difference_usd_m": "-2.700000",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "P/005",
+     "date": "2026-08-05",
+     "journal": "DISB/I-A1/T2",
+     "tally_inr": "1,002,799,800.00",
+     "gl_usd": "11,217,000.00",
+     "daily_rate": "89.1500",
+     "code": "M",
+     "difference_inr": "2,804,250.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.1500"
+    },
+    {
+     "voucher": "R/005",
+     "date": "2026-08-12",
+     "journal": "LPI/CG3/LP-A3",
+     "tally_inr": "330,780.00",
+     "gl_usd": "3,700.00",
+     "daily_rate": "89.2047",
+     "code": "M",
+     "difference_inr": "722.61",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.2047"
+    },
+    {
+     "voucher": "J/001",
+     "date": "2026-09-10",
+     "journal": "DA1/DECL",
+     "tally_inr": "107,280,000.00",
+     "gl_usd": "1,200,000.00",
+     "daily_rate": "89.1766",
+     "code": "M",
+     "difference_inr": "268,080.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.1766"
+    },
+    {
+     "voucher": "P/006",
+     "date": "2026-09-15",
+     "journal": "DA1/LP-A1",
+     "tally_inr": "48,276,000.00",
+     "gl_usd": "540,000.00",
+     "daily_rate": "89.3550",
+     "code": "M",
+     "difference_inr": "24,300.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.3550"
+    },
+    {
+     "voucher": "P/007",
+     "date": "2026-09-15",
+     "journal": "DA1/LP-A2",
+     "tally_inr": "28,965,600.00",
+     "gl_usd": "324,000.00",
+     "daily_rate": "89.3550",
+     "code": "M",
+     "difference_inr": "14,580.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.3550"
+    },
+    {
+     "voucher": "P/008",
+     "date": "2026-09-15",
+     "journal": "DA1/LP-A3",
+     "tally_inr": "14,482,800.00",
+     "gl_usd": "162,000.00",
+     "daily_rate": "89.3550",
+     "code": "M",
+     "difference_inr": "7,290.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.3550"
+    },
+    {
+     "voucher": "P/009",
+     "date": "2026-09-15",
+     "journal": "DA1/LP-A4",
+     "tally_inr": "4,827,600.00",
+     "gl_usd": "54,000.00",
+     "daily_rate": "89.3550",
+     "code": "M",
+     "difference_inr": "2,430.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.3550"
+    },
+    {
+     "voucher": "R/006",
+     "date": "2026-09-30",
+     "journal": "CPN/I-A1/Q2FY27",
+     "tally_inr": "92,055,180.00",
+     "gl_usd": "1,029,700.00",
+     "daily_rate": "89.4000",
+     "code": "M",
+     "difference_inr": "0.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.4000"
+    },
+    {
+     "voucher": "R/006",
+     "date": "2026-09-30",
+     "journal": "CPN/I-A1/Q2FY27",
+     "gl": 1300,
+     "code": "A",
+     "difference_usd_m": "1.029700",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/006",
+     "date": "2026-09-30",
+     "journal": "CPN/I-A1/Q2FY27",
+     "gl": 4100,
+     "code": "A",
+     "difference_usd_m": "-1.029700",
+     "reason": "cash-basis entry in Tally; accrual / receivable entry in GL"
+    },
+    {
+     "voucher": "R/007",
+     "date": "2026-09-30",
+     "journal": "BANK/INT",
+     "tally_inr": "1,072,800.00",
+     "gl_usd": "12,000.00",
+     "daily_rate": "89.4000",
+     "code": "M",
+     "difference_inr": "0.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.4000"
+    },
+    {
+     "voucher": "P/010",
+     "date": "2026-09-30",
+     "journal": "BANK/CHG",
+     "tally_inr": "357,600.00",
+     "gl_usd": "4,000.00",
+     "daily_rate": "89.4000",
+     "code": "M",
+     "difference_inr": "0.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.4000"
+    },
+    {
+     "voucher": "J/002",
+     "date": "2026-09-30",
+     "journal": "VAL/I-A1/30SEP26",
+     "tally_inr": "7,902,960.00",
+     "gl_usd": "88,400.00",
+     "daily_rate": "89.4000",
+     "code": "M",
+     "difference_inr": "0.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.4000"
+    },
+    {
+     "voucher": "J/003",
+     "date": "2026-09-30",
+     "journal": "VAL/I-A2/30SEP26",
+     "tally_inr": "59,996,340.00",
+     "gl_usd": "671,100.00",
+     "daily_rate": "89.4000",
+     "code": "M",
+     "difference_inr": "0.00",
+     "reason": "memo-rate restatement: recorded at 89.40, daily rate 89.4000"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-09-30",
+     "journal": "ACCR/MF/Q2FY27",
+     "code": "A",
+     "difference_usd_m": "0.525",
+     "reason": "accrual / receivable not booked in Tally"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-09-30",
+     "journal": "ACCR/NFS/IFSC/26-27/0139",
+     "code": "A",
+     "difference_usd_m": "0.02",
+     "reason": "accrual / receivable not booked in Tally"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-09-30",
+     "journal": "ACCR/ACCRUAL/AUD/FY27/H1",
+     "code": "A",
+     "difference_usd_m": "0.015",
+     "reason": "accrual / receivable not booked in Tally"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-09-30",
+     "journal": "ACCR/STS/IFSC/26-27/0171",
+     "code": "A",
+     "difference_usd_m": "0.03",
+     "reason": "accrual / receivable not booked in Tally"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-09-30",
+     "journal": "ACCR/MVA/26-27/0452",
+     "code": "A",
+     "difference_usd_m": "0.04",
+     "reason": "accrual / receivable not booked in Tally"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-07-15",
+     "journal": "CG3/ISSUE",
+     "code": "A",
+     "difference_usd_m": "18.0",
+     "reason": "accrual / receivable not booked in Tally"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-09-30",
+     "journal": "ACCR/I-A1/Q2FY27",
+     "code": "A",
+     "difference_usd_m": "1.0297",
+     "reason": "accrual / receivable not booked in Tally"
+    },
+    {
+     "voucher": "(none)",
+     "date": "2026-09-30",
+     "journal": "FX/30SEP26",
+     "code": "F",
+     "difference_usd_m": "0.1621",
+     "reason": "FX translation not booked in Tally"
+    },
+    {
+     "voucher": "(opening)",
+     "journal": "opening 1220",
+     "gl": 1220,
+     "code": "F",
+     "difference_usd_m": "0.267700",
+     "reason": "prior-period FX translation not in Tally"
+    },
+    {
+     "voucher": "(opening)",
+     "journal": "opening 2200",
+     "gl": 2200,
+     "code": "A",
+     "difference_usd_m": "0.060000",
+     "reason": "prior-period accrual not in Tally"
+    },
+    {
+     "voucher": "(opening)",
+     "journal": "opening 2100",
+     "gl": 2100,
+     "code": "A",
+     "difference_usd_m": "0.525000",
+     "reason": "prior-period accrual not in Tally"
+    },
+    {
+     "voucher": "(opening)",
+     "journal": "opening 3900",
+     "gl": 3900,
+     "code": "A+F",
+     "difference_usd_m": "-0.852700",
+     "reason": "prior-period accruals (A) and FX translation (F) not in Tally"
+    }
+   ]
+  },
+  "B": {
+   "open_tb": {
+    "1100": "54.9531",
+    "1200": "201.8241",
+    "1210": "1",
+    "1300": "0",
+    "1400": "0",
+    "2100": "-2.95",
+    "2200": "-0.42",
+    "2300": "0",
+    "2500": "0",
+    "3100": "-250",
+    "3200": "0",
+    "3900": "-4.4072"
+   },
+   "close_tb": {
+    "1100": "69.0229",
+    "1200": "233.0615",
+    "1210": "1.5",
+    "1300": "0.0000",
+    "1400": "0.0",
+    "2100": "-2.95",
+    "2200": "-0.68",
+    "2300": "0.00",
+    "2500": "-1.00",
+    "3100": "-300.0",
+    "3200": "10.0",
+    "3900": "-4.4072",
+    "5100": "2.95",
+    "5200": "0.38",
+    "5210": "0.30",
+    "4100": "-6.3898",
+    "4110": "-1.2374",
+    "4200": "-0.06",
+    "5300": "0.01",
+    "4600": "-0.5"
+   },
+   "nav_open": "254.4072",
+   "nav_close": "298.9544",
+   "capital": {
+    "LP-B1": {
+     "opening": "126.970705",
+     "closing": "149.166673",
+     "units": 15000000,
+     "nav_per_unit": "99.4444",
+     "contributions": "25",
+     "distributions_income": "-5"
+    },
+    "LP-B2": {
+     "opening": "76.182423",
+     "closing": "89.500004",
+     "units": 9000000,
+     "nav_per_unit": "99.4444",
+     "contributions": "15",
+     "distributions_income": "-3"
+    },
+    "LP-B3": {
+     "opening": "38.091212",
+     "closing": "44.750003",
+     "units": 4500000,
+     "nav_per_unit": "99.4445",
+     "contributions": "7.5",
+     "distributions_income": "-1.5"
+    },
+    "LP-B4": {
+     "opening": "13.16286",
+     "closing": "15.537720",
+     "units": 1500000,
+     "nav_per_unit": "103.5848",
+     "contributions": "2.5",
+     "distributions_income": "-0.5"
+    }
+   },
+   "classes": {
+    "A": {
+     "nav": "283.416680",
+     "units": 28500000
+    },
+    "B": {
+     "nav": "15.537720",
+     "units": 1500000
+    }
+   },
+   "performance": {
+    "paid_in": "300.0",
+    "distributed": "10.0",
+    "irr": 0.037222,
+    "tvpi": "1.029848",
+    "dpi": "0.033333",
+    "rvpi": "0.996515"
+   },
+   "pl": {
+    "fee": "-2.95",
+    "expense": "-0.69",
+    "income": "7.6872",
+    "fv": "0.5"
+   },
+   "journals": [
+    {
+     "date": "2026-07-05",
+     "kind": "FEE_PAY",
+     "ref": "MF/Q1FY27",
+     "src": "IM_Fee_Invoice_Q1FY27.pdf",
+     "bank": "Statement!row 8",
+     "lines": [
+      {
+       "gl": 2100,
+       "amt": "2.95"
+      },
+      {
+       "gl": 1100,
+       "amt": "-2.95"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_FEE",
+     "ref": "ACCR/MF/Q2FY27",
+     "src": "IM_Fee_Invoice_Q2FY27.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5100,
+       "amt": "2.95"
+      },
+      {
+       "gl": 2100,
+       "amt": "-2.95"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/ACCRUAL/AUD/FY27/H1-B",
+     "src": "Vendor_Invoices_Q2FY27/Audit_Q2FY27_AccrualNote.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5200,
+       "amt": "0.16"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.16"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-10",
+     "kind": "EXP_PAY",
+     "ref": "INV/LWP/26-27/0312",
+     "src": "Vendor_Invoices_Q2FY27/Legal_Q1FY27_Invoice.pdf",
+     "bank": "Statement!row 11",
+     "lines": [
+      {
+       "gl": 2200,
+       "amt": "0.20"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.20"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-10",
+     "kind": "EXP_PAY",
+     "ref": "INV/CRS/26-27/0933",
+     "src": "Vendor_Invoices_Q2FY27/Rta_Q1FY27_Invoice.pdf",
+     "bank": "Statement!row 10",
+     "lines": [
+      {
+       "gl": 2200,
+       "amt": "0.10"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.10"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/CRS/26-27/1377",
+     "src": "Vendor_Invoices_Q2FY27/Rta_Q2FY27_Invoice.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5200,
+       "amt": "0.10"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.10"
+      }
+     ]
+    },
+    {
+     "date": "2026-07-10",
+     "kind": "EXP_PAY",
+     "ref": "INV/STS/26-27/0209",
+     "src": "Vendor_Invoices_Q2FY27/Trustee_Q1FY27_Invoice.pdf",
+     "bank": "Statement!row 9",
+     "lines": [
+      {
+       "gl": 2200,
+       "amt": "0.12"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.12"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/STS/26-27/0298",
+     "src": "Vendor_Invoices_Q2FY27/Trustee_Q2FY27_Invoice.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5200,
+       "amt": "0.12"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.12"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_EXP",
+     "ref": "ACCR/MVA/26-27/0453",
+     "src": "Vendor_Invoices_Q2FY27/Valuer_Q2FY27_Invoice.pdf",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 5210,
+       "amt": "0.30"
+      },
+      {
+       "gl": 2200,
+       "amt": "-0.30"
+      }
+     ]
+    },
+    {
+     "date": "2026-08-20",
+     "kind": "CALL_ISSUE",
+     "ref": "CB3/ISSUE",
+     "src": "CapitalCall_CB3_Allocation.xlsx Allocation",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1400,
+       "amt": "50.0"
+      },
+      {
+       "gl": 3100,
+       "amt": "-25",
+       "investor": "LP-B1"
+      },
+      {
+       "gl": 3100,
+       "amt": "-15",
+       "investor": "LP-B2"
+      },
+      {
+       "gl": 3100,
+       "amt": "-7.5",
+       "investor": "LP-B3"
+      },
+      {
+       "gl": 3100,
+       "amt": "-2.5",
+       "investor": "LP-B4"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-03",
+     "kind": "CALL_RCPT",
+     "ref": "CB3/LP-B1",
+     "src": "bank Statement!row 12",
+     "bank": "Statement!row 12",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "25.0"
+      },
+      {
+       "gl": 1400,
+       "amt": "-25.0",
+       "investor": "LP-B1"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-03",
+     "kind": "CALL_RCPT",
+     "ref": "CB3/LP-B2",
+     "src": "bank Statement!row 13",
+     "bank": "Statement!row 13",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "15.0"
+      },
+      {
+       "gl": 1400,
+       "amt": "-15.0",
+       "investor": "LP-B2"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-03",
+     "kind": "CALL_RCPT",
+     "ref": "CB3/LP-B3",
+     "src": "bank Statement!row 14",
+     "bank": "Statement!row 14",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "7.5"
+      },
+      {
+       "gl": 1400,
+       "amt": "-7.5",
+       "investor": "LP-B3"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-03",
+     "kind": "CALL_RCPT",
+     "ref": "CB3/LP-B4",
+     "src": "bank Statement!row 15",
+     "bank": "Statement!row 15",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "2.5"
+      },
+      {
+       "gl": 1400,
+       "amt": "-2.5",
+       "investor": "LP-B4"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-08",
+     "kind": "DISB",
+     "ref": "DISB/I-B1/T2",
+     "src": "Deal_Master Tranches!row 5",
+     "bank": "Statement!row 16",
+     "lines": [
+      {
+       "gl": 1200,
+       "amt": "30",
+       "instrument": "I-B1"
+      },
+      {
+       "gl": 1100,
+       "amt": "-30"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-20",
+     "kind": "DIST_DECL",
+     "ref": "DB1/DECL",
+     "src": "Distribution_DB1_Schedule.xlsx Schedule",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 3200,
+       "amt": "5",
+       "investor": "LP-B1"
+      },
+      {
+       "gl": 3200,
+       "amt": "3",
+       "investor": "LP-B2"
+      },
+      {
+       "gl": 3200,
+       "amt": "1.5",
+       "investor": "LP-B3"
+      },
+      {
+       "gl": 3200,
+       "amt": "0.5",
+       "investor": "LP-B4"
+      },
+      {
+       "gl": 2300,
+       "amt": "-9.00"
+      },
+      {
+       "gl": 2500,
+       "amt": "-1.00"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-25",
+     "kind": "DIST_PAY",
+     "ref": "DB1/LP-B1",
+     "src": "bank Statement!row 17",
+     "bank": "Statement!row 17",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "4.5",
+       "investor": "LP-B1"
+      },
+      {
+       "gl": 1100,
+       "amt": "-4.5"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-25",
+     "kind": "DIST_PAY",
+     "ref": "DB1/LP-B2",
+     "src": "bank Statement!row 18",
+     "bank": "Statement!row 18",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "2.7",
+       "investor": "LP-B2"
+      },
+      {
+       "gl": 1100,
+       "amt": "-2.7"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-25",
+     "kind": "DIST_PAY",
+     "ref": "DB1/LP-B3",
+     "src": "bank Statement!row 19",
+     "bank": "Statement!row 19",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "1.35",
+       "investor": "LP-B3"
+      },
+      {
+       "gl": 1100,
+       "amt": "-1.35"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-25",
+     "kind": "DIST_PAY",
+     "ref": "DB1/LP-B4",
+     "src": "bank Statement!row 20",
+     "bank": "Statement!row 20",
+     "lines": [
+      {
+       "gl": 2300,
+       "amt": "0.45",
+       "investor": "LP-B4"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.45"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_INT",
+     "ref": "ACCR/I-B1/Q2FY27",
+     "src": "Deal_Master Instruments + Tranches (recomputed)",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1300,
+       "amt": "4.3274",
+       "instrument": "I-B1"
+      },
+      {
+       "gl": 4100,
+       "amt": "-4.3274",
+       "instrument": "I-B1"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "CPN_RCPT",
+     "ref": "CPN/I-B1/Q2FY27",
+     "src": "bank Statement!row 21",
+     "bank": "Statement!row 21",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "4.3274"
+      },
+      {
+       "gl": 1300,
+       "amt": "-4.3274",
+       "instrument": "I-B1"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_INT",
+     "ref": "ACCR/I-B2/Q2FY27",
+     "src": "Deal_Master Instruments + Tranches (recomputed)",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1300,
+       "amt": "2.0624",
+       "instrument": "I-B2"
+      },
+      {
+       "gl": 4100,
+       "amt": "-2.0624",
+       "instrument": "I-B2"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "CPN_RCPT",
+     "ref": "CPN/I-B2/Q2FY27",
+     "src": "bank Statement!row 22",
+     "bank": "Statement!row 22",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "2.0624"
+      },
+      {
+       "gl": 1300,
+       "amt": "-2.0624",
+       "instrument": "I-B2"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "ACCR_PIK",
+     "ref": "PIK/I-B2/Q2FY27",
+     "src": "Deal_Master (recomputed)",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1300,
+       "amt": "1.2374",
+       "instrument": "I-B2"
+      },
+      {
+       "gl": 4110,
+       "amt": "-1.2374",
+       "instrument": "I-B2"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "PIK_CAP",
+     "ref": "PIKCAP/I-B2/Q2FY27",
+     "src": "Deal_Master (recomputed)",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1200,
+       "amt": "1.2374",
+       "instrument": "I-B2"
+      },
+      {
+       "gl": 1300,
+       "amt": "-1.2374",
+       "instrument": "I-B2"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "BANK_INT",
+     "ref": "BANK/INT",
+     "src": "bank Statement!row 23",
+     "bank": "Statement!row 23",
+     "lines": [
+      {
+       "gl": 1100,
+       "amt": "0.06"
+      },
+      {
+       "gl": 4200,
+       "amt": "-0.06"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "BANK_CHG",
+     "ref": "BANK/CHG",
+     "src": "bank Statement!row 24",
+     "bank": "Statement!row 24",
+     "lines": [
+      {
+       "gl": 5300,
+       "amt": "0.01"
+      },
+      {
+       "gl": 1100,
+       "amt": "-0.01"
+      }
+     ]
+    },
+    {
+     "date": "2026-09-30",
+     "kind": "VALUATION",
+     "ref": "VAL/I-B1/30SEP26",
+     "src": "Valuation_Inputs Summary!row 4",
+     "bank": null,
+     "lines": [
+      {
+       "gl": 1210,
+       "amt": "0.5",
+       "instrument": "I-B1"
+      },
+      {
+       "gl": 4600,
+       "amt": "-0.5",
+       "instrument": "I-B1"
+      }
+     ]
+    }
+   ],
+   "bridge": []
+  }
+ }
+}

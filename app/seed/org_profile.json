@@ -1,0 +1,47 @@
+{
+  "_comment": "Organisation master data that is not carried in the quarterly source files. Loaded into the database on first start; editable by an administrator through the API (PUT /api/admin/profile).",
+  "manager": {
+    "name": "Residential Capital Managers",
+    "ifsca": "IFSCA/FME/III/2025-26/9999",
+    "sebi": "IN/AIF2/25-26/9999",
+    "po": "Ishaan Wadekar",
+    "co": "Meenal Kothandaraman",
+    "aml_po": "Farhan Qureshi-Menon",
+    "aml_dd": "Sharvari Deodhar",
+    "ir": "Devika Sabnis",
+    "cro": "Jaideep Almeida-Rao",
+    "addr_ifsc": "Unit 1499, Tower Z, Block 99, GIFT SEZ, Gandhinagar 382355",
+    "addr_in": "Level 99, Fictional Towers, Lower Parel, Mumbai 400013"
+  },
+  "brand": {
+    "product": "TrackFund AI",
+    "client_label": "HDFC Capital · GIFT IFSC"
+  },
+  "name_screen_terms": ["hdfc"],
+  "schemes": {
+    "A": {
+      "journal_seq_start": 25,
+      "providers": {"bank": "First Gulf-India Bank, IBU GIFT City"},
+      "accrual_history": {
+        "_comment": "Coupon accruals of earlier quarters as booked in USD (migrated from the previous system). Later quarters are added automatically when a quarter is locked.",
+        "I-A1": {"Q4FY26": {"rate": 88.5, "fn": 0.6501}, "Q1FY27": {"rate": 89.0, "fn": 0.7843}}
+      },
+      "investor_banks": {
+        "LP-A1": "Bank of Musashino, Tokyo",
+        "LP-A2": "Nishi-Tokyo Trust Bank, Tokyo",
+        "LP-A3": "Emirates Crescent Bank, Abu Dhabi",
+        "LP-A4": "First Gulf-India Bank, IBU GIFT City"
+      }
+    },
+    "B": {
+      "journal_seq_start": 33,
+      "providers": {"custodian": "Deccan Custodial Services Ltd"},
+      "investor_banks": {
+        "LP-B1": "Deccan Union Bank Ltd",
+        "LP-B2": "Sahyadri Cooperative Bank",
+        "LP-B3": "Deccan Union Bank Ltd",
+        "LP-B4": "Deccan Union Bank Ltd"
+      }
+    }
+  }
+}

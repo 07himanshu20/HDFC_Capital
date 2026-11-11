@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: trackfund
+      POSTGRES_USER: trackfund
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trackfund -d trackfund"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://trackfund:${POSTGRES_PASSWORD}@db:5432/trackfund
+      TRACKFUND_DATA_DIR: /data
+    volumes:
+      - appdata:/data
+    ports:
+      - "${TRACKFUND_PORT:-8000}:8000"
+
+volumes:
+  pgdata:
+  appdata:

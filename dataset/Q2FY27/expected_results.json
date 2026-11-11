@@ -1,0 +1,421 @@
+{
+ "A": {
+  "accumulated_result_close": "0.0077",
+  "bank": {
+   "closing": "24.2826",
+   "closing_base": "24282600.00",
+   "lines": 17,
+   "opening": "18.1232"
+  },
+  "capital_accounts": {
+   "LP-A1": {
+    "carry_alloc": "0",
+    "closing": "32.348586",
+    "cls": "A",
+    "contributions": "9.00",
+    "distributions_income": "-0.6000",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.054500",
+    "fee_alloc": "-0.276316",
+    "fv_alloc": "0.379750",
+    "fx_alloc": "-0.081050",
+    "income_alloc": "0.522700",
+    "nav_per_unit": "98.0260",
+    "opening": "23.458002",
+    "units": 330000,
+    "units_open": 240000
+   },
+   "LP-A2": {
+    "carry_alloc": "0",
+    "closing": "19.409153",
+    "cls": "A",
+    "contributions": "5.40",
+    "distributions_income": "-0.3600",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.032700",
+    "fee_alloc": "-0.165789",
+    "fv_alloc": "0.227850",
+    "fx_alloc": "-0.048630",
+    "income_alloc": "0.313620",
+    "nav_per_unit": "98.0260",
+    "opening": "14.074802",
+    "units": 198000,
+    "units_open": 144000
+   },
+   "LP-A3": {
+    "carry_alloc": "0",
+    "closing": "9.704576",
+    "cls": "A",
+    "contributions": "2.70",
+    "distributions_income": "-0.1800",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.016350",
+    "fee_alloc": "-0.082895",
+    "fv_alloc": "0.113925",
+    "fx_alloc": "-0.024315",
+    "income_alloc": "0.156810",
+    "nav_per_unit": "98.0260",
+    "opening": "7.037401",
+    "units": 99000,
+    "units_open": 72000
+   },
+   "LP-A4": {
+    "carry_alloc": "0",
+    "closing": "3.345385",
+    "cls": "B",
+    "contributions": "0.90",
+    "distributions_income": "-0.0600",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.005450",
+    "fee_alloc": "0",
+    "fv_alloc": "0.037975",
+    "fx_alloc": "-0.008105",
+    "income_alloc": "0.052270",
+    "nav_per_unit": "101.3753",
+    "opening": "2.428695",
+    "units": 33000,
+    "units_open": 24000
+   }
+  },
+  "carry_provision": "0.000000",
+  "classes": {
+   "A": {
+    "nav": "61.462315",
+    "nav_per_unit": "98.0260",
+    "units": 627000,
+    "units_open": 456000
+   },
+   "B": {
+    "nav": "3.345385",
+    "nav_per_unit": "101.3753",
+    "units": 33000,
+    "units_open": 24000
+   }
+  },
+  "closing_tb": {
+   "1100": "24.2826",
+   "1200": "40.6982",
+   "1210": "1.0067",
+   "1220": "-0.4298",
+   "1300": "0.0000",
+   "1400": "0.00",
+   "2100": "-0.525",
+   "2200": "-0.105",
+   "2300": "0.0000",
+   "2500": "-0.1200",
+   "3100": "-66.00",
+   "3200": "1.2000",
+   "3900": "1.0011",
+   "4100": "-1.0297",
+   "4200": "-0.012",
+   "4500": "-0.0037",
+   "4600": "-0.7595",
+   "4700": "0.1621",
+   "5100": "0.525",
+   "5200": "0.065",
+   "5210": "0.040",
+   "5300": "0.004"
+  },
+  "closing_tb_note": "closing_tb is pre-closing: 3900 holds the accumulated result at 30-Jun-2026; income/expense accounts hold the quarter",
+  "counts": {
+   "bank_lines": 17,
+   "journals_q2": 28,
+   "tally_vouchers_q2": 20
+  },
+  "covenants": {
+   "I-A1": {
+    "breached": [],
+    "collections": "72.0",
+    "cover": "2.00",
+    "units_sold": 74
+   },
+   "I-A2": {
+    "breached": [],
+    "collections": "30.6",
+    "cover": "1.70",
+    "units_sold": 51
+   }
+  },
+  "custody": {
+   "INE0A1A07019": {
+    "close": 30000,
+    "instrument": "I-A1",
+    "open": 20000
+   },
+   "INE0A2A08017": {
+    "close": 60000,
+    "instrument": "I-A2",
+    "open": 60000
+   }
+  },
+  "instruments": {
+   "I-A1": {
+    "cost": "33.9185",
+    "principal_inr_cr": "300.0000",
+    "quantity": 30000
+   },
+   "I-A2": {
+    "cost": "6.7797",
+    "principal_inr_cr": "60",
+    "quantity": 60000
+   }
+  },
+  "name": "Residential Credit Scheme I",
+  "nav_close": "64.8077",
+  "nav_open": "46.9989",
+  "nav_per_unit_fund": "98.1935",
+  "obligations": {
+   "filed_or_done": 8,
+   "total": 15
+  },
+  "opening_tb": {
+   "1100": "18.1232",
+   "1200": "29.4812",
+   "1210": "0.2472",
+   "1220": "-0.2677",
+   "1300": "0.0000",
+   "1400": "0",
+   "2100": "-0.525",
+   "2200": "-0.060",
+   "2300": "0",
+   "2500": "0",
+   "3100": "-48.00",
+   "3200": "0",
+   "3900": "1.0011"
+  },
+  "performance": {
+   "distributed": "1.200",
+   "dpi": "0.018182",
+   "irr": 0.000175,
+   "nav": "64.8077",
+   "paid_in": "66.00",
+   "rvpi": "0.981935",
+   "tvpi": "1.000117"
+  },
+  "quarter": {
+   "expense": "-0.109",
+   "fee": "-0.525",
+   "fv": "0.7595",
+   "fx": "-0.1621",
+   "income": "1.0454",
+   "result": "1.0088"
+  },
+  "unit": "USD m",
+  "units_open_total": 480000,
+  "units_total": 660000,
+  "wht_payable": "0.1200"
+ },
+ "B": {
+  "accumulated_result_close": "8.9544",
+  "bank": {
+   "closing": "69.0229",
+   "closing_base": "690229000.00",
+   "lines": 17,
+   "opening": "54.9531"
+  },
+  "capital_accounts": {
+   "LP-B1": {
+    "carry_alloc": "0",
+    "closing": "149.166673",
+    "cls": "A",
+    "contributions": "25.00",
+    "distributions_income": "-5.0000",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.345000",
+    "fee_alloc": "-1.552632",
+    "fv_alloc": "0.250000",
+    "fx_alloc": "0.000000",
+    "income_alloc": "3.843600",
+    "nav_per_unit": "99.4444",
+    "opening": "126.970705",
+    "units": 15000000,
+    "units_open": 12500000
+   },
+   "LP-B2": {
+    "carry_alloc": "0",
+    "closing": "89.500004",
+    "cls": "A",
+    "contributions": "15.00",
+    "distributions_income": "-3.0000",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.207000",
+    "fee_alloc": "-0.931579",
+    "fv_alloc": "0.150000",
+    "fx_alloc": "0.000000",
+    "income_alloc": "2.306160",
+    "nav_per_unit": "99.4444",
+    "opening": "76.182423",
+    "units": 9000000,
+    "units_open": 7500000
+   },
+   "LP-B3": {
+    "carry_alloc": "0",
+    "closing": "44.750003",
+    "cls": "A",
+    "contributions": "7.50",
+    "distributions_income": "-1.5000",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.103500",
+    "fee_alloc": "-0.465789",
+    "fv_alloc": "0.075000",
+    "fx_alloc": "0.000000",
+    "income_alloc": "1.153080",
+    "nav_per_unit": "99.4445",
+    "opening": "38.091212",
+    "units": 4500000,
+    "units_open": 3750000
+   },
+   "LP-B4": {
+    "carry_alloc": "0",
+    "closing": "15.537720",
+    "cls": "B",
+    "contributions": "2.50",
+    "distributions_income": "-0.5000",
+    "distributions_roc": "0",
+    "expense_alloc": "-0.034500",
+    "fee_alloc": "0",
+    "fv_alloc": "0.025000",
+    "fx_alloc": "0.000000",
+    "income_alloc": "0.384360",
+    "nav_per_unit": "103.5848",
+    "opening": "13.162860",
+    "units": 1500000,
+    "units_open": 1250000
+   }
+  },
+  "carry_provision": "0.000000",
+  "classes": {
+   "A": {
+    "nav": "283.416680",
+    "nav_per_unit": "99.4444",
+    "units": 28500000,
+    "units_open": 23750000
+   },
+   "B": {
+    "nav": "15.537720",
+    "nav_per_unit": "103.5848",
+    "units": 1500000,
+    "units_open": 1250000
+   }
+  },
+  "closing_tb": {
+   "1100": "69.0229",
+   "1200": "233.0615",
+   "1210": "1.5",
+   "1300": "0.0000",
+   "1400": "0.00",
+   "2100": "-2.95",
+   "2200": "-0.68",
+   "2300": "0.0000",
+   "2500": "-1.0000",
+   "3100": "-300.00",
+   "3200": "10.0000",
+   "3900": "-4.4072",
+   "4100": "-6.3898",
+   "4110": "-1.2374",
+   "4200": "-0.06",
+   "4600": "-0.5",
+   "5100": "2.95",
+   "5200": "0.38",
+   "5210": "0.30",
+   "5300": "0.01"
+  },
+  "closing_tb_note": "closing_tb is pre-closing: 3900 holds the accumulated result at 30-Jun-2026; income/expense accounts hold the quarter",
+  "counts": {
+   "bank_lines": 17,
+   "journals_q2": 29,
+   "tally_vouchers_q2": 29
+  },
+  "covenants": {
+   "I-B1": {
+    "breached": [],
+    "collections": "62.5",
+    "cover": "2.08",
+    "units_sold": 55
+   },
+   "I-B2": {
+    "breached": [
+     "Sales velocity (units sold in quarter)",
+     "Collection cover (times)"
+    ],
+    "collections": "18.0",
+    "cover": "0.90",
+    "units_sold": 18
+   }
+  },
+  "custody": {
+   "INE0B1B07015": {
+    "close": 15000,
+    "instrument": "I-B1",
+    "open": 12000
+   },
+   "INE0B2B07013": {
+    "close": 8000,
+    "instrument": "I-B2",
+    "open": 8000
+   }
+  },
+  "instruments": {
+   "I-B1": {
+    "cost": "150.0000",
+    "principal_inr_cr": "150.0000",
+    "quantity": 15000
+   },
+   "I-B2": {
+    "cost": "83.0615",
+    "principal_inr_cr": "83.0615",
+    "quantity": 8000
+   }
+  },
+  "name": "Residential Growth Fund II",
+  "nav_close": "298.9544",
+  "nav_open": "254.4072",
+  "nav_per_unit_fund": "99.6515",
+  "obligations": {
+   "filed_or_done": 8,
+   "total": 12
+  },
+  "opening_tb": {
+   "1100": "54.9531",
+   "1200": "201.8241",
+   "1210": "1.0",
+   "1300": "0.0000",
+   "1400": "0",
+   "2100": "-2.95",
+   "2200": "-0.42",
+   "2300": "0",
+   "2500": "0",
+   "3100": "-250.00",
+   "3200": "0",
+   "3900": "-4.4072"
+  },
+  "performance": {
+   "distributed": "10.00",
+   "dpi": "0.033333",
+   "irr": 0.037222,
+   "nav": "298.9544",
+   "paid_in": "300.00",
+   "rvpi": "0.996515",
+   "tvpi": "1.029848"
+  },
+  "quarter": {
+   "expense": "-0.69",
+   "fee": "-2.95",
+   "fv": "0.5",
+   "income": "7.6872",
+   "result": "4.5472"
+  },
+  "unit": "INR cr",
+  "units_open_total": 25000000,
+  "units_total": 30000000,
+  "wht_payable": "1.0000"
+ },
+ "meta": {
+  "end": "2026-09-30",
+  "note": "Golden totals written by the generator from its event engine; validation/run.py re-derives them from the source files only.",
+  "period": "Q2 FY27",
+  "seed": 20260930,
+  "start": "2026-07-01",
+  "tolerance": "0.0005 in scheme unit"
+ }
+}

@@ -1,0 +1,1718 @@
+{
+ "seed": 20260930,
+ "period": "Q2 FY27",
+ "files": [
+  {
+   "file": "scheme_A_gift/AML_Policy_Extract.pdf",
+   "format": "pdf",
+   "sha256": "855871ee4cf2e93b7b56ed4d67e2081b7ab4fec6411d20e57bed56ccdf0c6217",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/CCD_Subscription_Summary_I-A2.pdf",
+   "format": "pdf",
+   "sha256": "595e3b46c7de7ea955b13ca72bc261a8d04e98d45eaff82d3f74d67257229661",
+   "feeds": [
+    "instrument"
+   ],
+   "produced_by": "Fund counsel",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/CP_Checklist_I-A1_T2.xlsx",
+   "format": "xlsx",
+   "sha256": "33ca3da6c5ba9184552f2e8c02df476ca3106f2ffb222cb74c26082f1883e50c",
+   "feeds": [
+    "cp_item"
+   ],
+   "produced_by": "Investment team / legal",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/CapitalCall_CG3_Allocation.xlsx",
+   "format": "xlsx",
+   "sha256": "d34c65902a633bd127e282d72ce82732bf3c591773d38e007dd9b8c7a326731d",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME finance (maker) / checker",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_A_gift/CapitalCall_CG3_Notice_Al_Nahda_Sovereign_Holdings.pdf",
+   "format": "pdf",
+   "sha256": "e100030e957ce039af679ef24dbaca49b4e1119a5f60d7b803672594beb361cf",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_A_gift/CapitalCall_CG3_Notice_FME_Contribution.pdf",
+   "format": "pdf",
+   "sha256": "846092b0e8f6efcb35692d89fea55f0e08c22b9035b4766879710773b7c874d8",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_A_gift/CapitalCall_CG3_Notice_Nishi-Tokyo_Trust_Bank.pdf",
+   "format": "pdf",
+   "sha256": "c63035b94f465a93023a680dd4b67fa18d9b729aa52ed800e402b0094753459c",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_A_gift/CapitalCall_CG3_Notice_Sakura_Residential_Holdings.pdf",
+   "format": "pdf",
+   "sha256": "edc702bc5eb67394764aa439ce438e13d14a4cc3d5d8ccbbf10b8d6f6a1b3b47",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_A_gift/Charge_Filing_CHG9_I-A1.pdf",
+   "format": "pdf",
+   "sha256": "6353604acabf3937f5d8e3abd40d44576aa4726bd0c3bc2b67611daaab09e3e4",
+   "feeds": [
+    "charge_filing",
+    "evidence"
+   ],
+   "produced_by": "ROC / company secretary of the SPV",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/Covenant_Certificate_SPV-A1_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "b0f1aca5363aea41876a78db3baba823b266b8219cb2524522163fe91dc85e07",
+   "feeds": [
+    "covenant_test"
+   ],
+   "produced_by": "Developer CFO (Kalpavriksha Realty)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/Covenant_Certificate_SPV-A2_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "1d80092a0555185f343cd8788e3bc22082e48cf9fdd5a2375c0c5bc1761b4883",
+   "feeds": [
+    "covenant_test"
+   ],
+   "produced_by": "Developer CFO (Greenfield Estates)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/DTD_Summary_I-A1.pdf",
+   "format": "pdf",
+   "sha256": "c88d267c8abdfc29a1c47eec681ada7755b99f296d4e2ae2a63ebe33062808b5",
+   "feeds": [
+    "instrument"
+   ],
+   "produced_by": "Fund counsel",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/Deal_Master_SchemeA.xlsx",
+   "format": "xlsx",
+   "sha256": "0639ef7e36a9eb425685560a07daebcdeb16cb096063574b62c41954d14b9370",
+   "feeds": [
+    "project_spv",
+    "instrument",
+    "tranche",
+    "covenant_test"
+   ],
+   "produced_by": "Investment team",
+   "consumed_by": "Instruments & accruals / Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/Demat_Holding_Statement_SchemeA_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "b7e03321cefe9abc0666a1528a079a24814c0f4661209b75a921d78a34676a34",
+   "feeds": [
+    "custody_account",
+    "custody_holding"
+   ],
+   "produced_by": "Custodian / DP",
+   "consumed_by": "Bank & custody reconciliation"
+  },
+  {
+   "file": "scheme_A_gift/Demat_Transaction_Statement_SchemeA_Jul-Sep26.csv",
+   "format": "csv",
+   "sha256": "ca021375d374ba18beb05b3044f0050fb4f54a5970e10b069fdde7ffda8a4fbb",
+   "feeds": [
+    "custody_txn"
+   ],
+   "produced_by": "Custodian / DP",
+   "consumed_by": "Bank & custody reconciliation"
+  },
+  {
+   "file": "scheme_A_gift/Developer_MIS_SPV-A1_Aug26.xlsx",
+   "format": "xlsx",
+   "sha256": "dcaa43622b25b526d3193a28dc004fda27f3a1e2a033afd5177cce95e3f74a1c",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Kalpavriksha Realty)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/Developer_MIS_SPV-A1_Jul26.xlsx",
+   "format": "xlsx",
+   "sha256": "e6f915017b73bf5b5b415a81bec176d124e1789ff5089763ee3d9346b998f08a",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Kalpavriksha Realty)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/Developer_MIS_SPV-A1_Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "f3fdf3550b28a9a3964c25861fe228e8ecb0e8ce676d1a4980b905a2b7f0df25",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Kalpavriksha Realty)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/Developer_MIS_SPV-A2_Aug26.xlsx",
+   "format": "xlsx",
+   "sha256": "4eb222b9d3602ad4b05c1447c4d3861c938ee4c66cd6e6987d490430e2810f89",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Greenfield Estates)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/Developer_MIS_SPV-A2_Jul26.xlsx",
+   "format": "xlsx",
+   "sha256": "10005563150eb0d8ba319f5b397603cf2cbd6ffc0c2cfec90be95929fa43ea0b",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Greenfield Estates)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/Developer_MIS_SPV-A2_Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "997d9784395a8961233738feb8209751002acce94dbaf2874a7d14c2b1570569",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Greenfield Estates)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_A_gift/Distribution_DA1_Notice_Al_Nahda_Sovereign_Holdings.pdf",
+   "format": "pdf",
+   "sha256": "007532c5e094ab4e43fecefe3565674fb5baab9167fd6c4cffc6f74faf1bef59",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/Distribution_DA1_Notice_FME_Contribution.pdf",
+   "format": "pdf",
+   "sha256": "703622455bc76ad34f090dbe3b513b995c999cc56e92069921aa8ff1333ab8bd",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/Distribution_DA1_Notice_Nishi-Tokyo_Trust_Bank.pdf",
+   "format": "pdf",
+   "sha256": "0be8d629215e00bbee0d52d8e486707dbd39ec869ecd6e75d90e10fc47ecb507",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/Distribution_DA1_Notice_Sakura_Residential_Holdings.pdf",
+   "format": "pdf",
+   "sha256": "3453e1d310489cc26114bdda5dafe2e75110286ac68df9235802ee403e233735",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/Distribution_DA1_PaymentFile.csv",
+   "format": "csv",
+   "sha256": "2abc907a42bf215e0eac7412580fc9649a98d5f184b80ac34ba6a32175f6de30",
+   "feeds": [
+    "distribution_line"
+   ],
+   "produced_by": "FME finance - IBU bulk-payment upload",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/Distribution_DA1_Schedule.xlsx",
+   "format": "xlsx",
+   "sha256": "8611c796d7fd43f1e21d690c8285b5fcf11d15d4c424ac2e731b591b0cb41aa4",
+   "feeds": [
+    "distribution",
+    "distribution_line",
+    "wht_entry"
+   ],
+   "produced_by": "FME finance (maker) / checker",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/Evidence/Annual_Report_FY26_Filing_Ack.pdf",
+   "format": "pdf",
+   "sha256": "67cb8f7cdeaf7188b20159ddcb99d2947cf91ca4d22481afbce387c18c85bd8b",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_A_gift/Evidence/Compliance_Report_FY26_Filing_Ack.pdf",
+   "format": "pdf",
+   "sha256": "ee573e48563426f544d864b9c4d71e9c77274b2ec358229249ef1d0318e48b88",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_A_gift/Evidence/Form61B_CY2025_Filing_Ack.pdf",
+   "format": "pdf",
+   "sha256": "43d80351f40f984ae25f3ccbea733e88d081880000c27a38793d0887d3a2e8ba",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_A_gift/Evidence/ICSI_Certification_Completion.pdf",
+   "format": "pdf",
+   "sha256": "e41501df67de8b4f78b801ebafa8a590943541f2c0795905cae06c910a440c84",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_A_gift/Evidence/IFSCA_Q2FY27_Submission_Ack.pdf",
+   "format": "pdf",
+   "sha256": "99aab49841a48cd258ce83ee905eca08ee5e96faec63495677451c167d090306",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_A_gift/Evidence/Valuation_Dispatch_Confirmation_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "0a751fe53fd87ce81104ff8a18f8d858efe8b32e11ab0ac6fa11973409823db6",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_A_gift/FCGPR_Acknowledgement_I-A1_T2.pdf",
+   "format": "pdf",
+   "sha256": "32eb7100f9a1a3975cd2f8004e739a6b364bcb8220ec6ffa28398d624502cdd7",
+   "feeds": [
+    "fema_filing",
+    "evidence"
+   ],
+   "produced_by": "AD bank / RBI reporting portal",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/FINGate_Registration_Evidence.pdf",
+   "format": "pdf",
+   "sha256": "cacdc5bb3a370c1022641b4cd9101879b4866542fd747a0dcb1ce6b261d9140f",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "FIU-IND portal",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/FME_Fee_Invoice_Q1FY27.pdf",
+   "format": "pdf",
+   "sha256": "49c8239db4d8b1d3a4dda73d349335ace6328af5ca48af148e7841b8b1e97760",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "FME / investment manager",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/FME_Fee_Invoice_Q2FY27.pdf",
+   "format": "pdf",
+   "sha256": "5fb65751a0b559af447fe2b771a24d520c434769bd4a9643c3e3d61ebab2c512",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "FME / investment manager",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/FX_Rates_USDINR_Daily_Jul-Sep26.csv",
+   "format": "csv",
+   "sha256": "ffa47bd2e59401841252dbdfae67a847fc0f2db218bfcc8723fb5562a077d748",
+   "feeds": [
+    "fx_rate"
+   ],
+   "produced_by": "Rate feed (FBIL-style)",
+   "consumed_by": "FX & translation"
+  },
+  {
+   "file": "scheme_A_gift/IBU_Statement_SchemeA_USD_Jul-Sep26.csv",
+   "format": "csv",
+   "sha256": "f29a631215eda36d5c89c14cad17ed5a4d040868a87443d18496938d1365e2f8",
+   "feeds": [
+    "bank_account",
+    "bank_line"
+   ],
+   "produced_by": "Bank (IBU) - CSV download",
+   "consumed_by": "Ingestion / Bank reconciliation"
+  },
+  {
+   "file": "scheme_A_gift/IBU_Statement_SchemeA_USD_Jul-Sep26.mt940",
+   "format": "mt940",
+   "sha256": "5bb2671cf65e9de27dd108eb3505da9a5d3203939d305bd82f4359cde60522ec",
+   "feeds": [
+    "bank_account",
+    "bank_line"
+   ],
+   "produced_by": "Bank (IBU) - SWIFT MT940",
+   "consumed_by": "Ingestion / Bank reconciliation"
+  },
+  {
+   "file": "scheme_A_gift/IBU_Statement_SchemeA_USD_Jul-Sep26.pdf",
+   "format": "pdf",
+   "sha256": "b4fbae9b9a0defa6054b3d895c1f72ab302d8c74773c1537dfbabff93bac7e84",
+   "feeds": [
+    "bank_account",
+    "bank_line"
+   ],
+   "produced_by": "Bank (IBU)",
+   "consumed_by": "Bank & custody reconciliation"
+  },
+  {
+   "file": "scheme_A_gift/IFSCA_Compliance_Calendar_SchemeA.xlsx",
+   "format": "xlsx",
+   "sha256": "e93c73d1eb8c5adf14e317a5d63cf0259fe4b164cfe650e9a201d38ef9208875",
+   "feeds": [
+    "obligation",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "Calendar / Exceptions"
+  },
+  {
+   "file": "scheme_A_gift/IFSCA_Q1FY27_Submission_Email.pdf",
+   "format": "pdf",
+   "sha256": "79892af6c918e72db65572576d1a4662db94c2fc3963ab245d275f069e061f84",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "FME compliance mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_A_gift/IFSCA_Quarterly_Report_Q1FY27_as_filed.xlsx",
+   "format": "xlsx",
+   "sha256": "ef94b7763c65c45f376004e5081ebed405e7103947b574acee224ba601a8e4b0",
+   "feeds": [
+    "report_run"
+   ],
+   "produced_by": "FME compliance (prior filing)",
+   "consumed_by": "Report centre"
+  },
+  {
+   "file": "scheme_A_gift/Investor_Register_SchemeA.xlsx",
+   "format": "xlsx",
+   "sha256": "2a8120f6bcc669af49aa4f3ac935ec9e18d4de835fabbc1577c22d911b7fac96",
+   "feeds": [
+    "investor",
+    "commitment",
+    "unit_class"
+   ],
+   "produced_by": "Fund administrator / RTA",
+   "consumed_by": "Investors & commitments"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Al_Nahda_Sovereign_Holdings/BO_declaration.pdf",
+   "format": "pdf",
+   "sha256": "b6bfffe34568019036ccf45634ce2d0b0ea5b5b956f005132979c5c7ebbe6ab4",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Al_Nahda_Sovereign_Holdings/CRS_self_certification.pdf",
+   "format": "pdf",
+   "sha256": "097d94fa7907f0f060876517a37def7e9e3a9c1c40f671105db8ad9966a6cb5a",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Al_Nahda_Sovereign_Holdings/FATCA_W8BENE_summary.pdf",
+   "format": "pdf",
+   "sha256": "3d3fdb89b37ff10a41bf8e6f25573208e689cdfdc9304f5c07887c885d8179d8",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Al_Nahda_Sovereign_Holdings/checklist.pdf",
+   "format": "pdf",
+   "sha256": "1487e56fc5160342bffc535863c7b69447763ea9100ae61f2b3d5b1d32968741",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Al_Nahda_Sovereign_Holdings/screening_report.pdf",
+   "format": "pdf",
+   "sha256": "4baa4d6f437850173f04e862042a75b962fe3111cc2f65c0ecacc920bf9268d6",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "screening_log"
+   ],
+   "produced_by": "Screening vendor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Nishi-Tokyo_Trust_Bank/BO_declaration.pdf",
+   "format": "pdf",
+   "sha256": "63821f84ccd5ad5f8d4cdb513ffdfaa7ad38a0a13ca0dabfb1334a4cc6030198",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Nishi-Tokyo_Trust_Bank/CRS_self_certification.pdf",
+   "format": "pdf",
+   "sha256": "d3b52316df79fc65eb46107fd35ac27c5fc9cedb37b5349551dab218fafbeff7",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Nishi-Tokyo_Trust_Bank/FATCA_W8BENE_summary.pdf",
+   "format": "pdf",
+   "sha256": "0a71f6d4f506bad44e859c56e6e7a596e5ca6ee688c7c21f376cd64c7af08c18",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Nishi-Tokyo_Trust_Bank/checklist.pdf",
+   "format": "pdf",
+   "sha256": "eb4b5492dc57fc6fe948e8eab27279d3414b67ae38bf2b90c231f0fceaa27ca8",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Nishi-Tokyo_Trust_Bank/screening_report.pdf",
+   "format": "pdf",
+   "sha256": "e8bc356a8e4cbc723ac23e6fe2d7698e5741fc5fc019415abc241b0f5c5eb92a",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "screening_log"
+   ],
+   "produced_by": "Screening vendor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Sakura_Residential_Holdings/BO_declaration.pdf",
+   "format": "pdf",
+   "sha256": "48ec9c5cdc9e689b7d4b173b2be94afcdc9541d353d835f8b58366035f5a5c8f",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Sakura_Residential_Holdings/CRS_self_certification.pdf",
+   "format": "pdf",
+   "sha256": "943e3b17ec88bf9aefb48f362ecedc9d74e8db48543262c9bdd58077486ff2af",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Sakura_Residential_Holdings/FATCA_W8BENE_summary.pdf",
+   "format": "pdf",
+   "sha256": "36bc6512d808761a739f8e43df1fae07a64c16f1a9eed9bb1a64948088e54a64",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Sakura_Residential_Holdings/checklist.pdf",
+   "format": "pdf",
+   "sha256": "d58f119884c81861b4c11eaca90fb9b3845d322d75eed8bd79a3ce98a8337dd1",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Pack_Sakura_Residential_Holdings/screening_report.pdf",
+   "format": "pdf",
+   "sha256": "1cfada2c037f8c377e1ada8c86b604f0ac1b4cbdf8ebf19878ae9006b6d9e917",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "screening_log"
+   ],
+   "produced_by": "Screening vendor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/KYC_Register_SchemeA.xlsx",
+   "format": "xlsx",
+   "sha256": "2b4ef1cdb8d47a15a8d329c2e3c678de688d5a59f3a2271a3e0e1898198329ab",
+   "feeds": [
+    "kyc_file",
+    "kyc_document",
+    "screening_log",
+    "fatca_crs"
+   ],
+   "produced_by": "FME compliance (AML PO)",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_A_gift/PPM_Term_Sheet_SchemeA.pdf",
+   "format": "pdf",
+   "sha256": "9696c8ce5e8e42da21fc1d42f74914b5eae31a4dae8b937ff2e99a85e02b5b3a",
+   "feeds": [
+    "scheme",
+    "scheme_term"
+   ],
+   "produced_by": "FME / fund counsel",
+   "consumed_by": "Investors & commitments"
+  },
+  {
+   "file": "scheme_A_gift/Pricing_Certificate_I-A1_T2.pdf",
+   "format": "pdf",
+   "sha256": "e6ca151e7b5892a7b67050b5f7a0001e1a408da4db01ab60788c9e94f607e016",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Chartered accountant",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/Side_Letter_Summary_SchemeA.xlsx",
+   "format": "xlsx",
+   "sha256": "d41620fc0b4dd7a6fc3fbd6a1321ad40f5398993d6df9e5bfe1c4b8194262408",
+   "feeds": [
+    "side_letter_term"
+   ],
+   "produced_by": "Fund counsel / IR",
+   "consumed_by": "Investors & commitments"
+  },
+  {
+   "file": "scheme_A_gift/Tally_SchemeA_DayBook_Q2FY27.xml",
+   "format": "xml",
+   "sha256": "ccfb2ea79b6217c02520fb02868b1e996530bd44abb80be66dcacc4d21a4b278",
+   "feeds": [
+    "tally_voucher"
+   ],
+   "produced_by": "Client finance team (Tally export)",
+   "consumed_by": "Tally bridge"
+  },
+  {
+   "file": "scheme_A_gift/Tally_SchemeA_LedgerMasters.xlsx",
+   "format": "xlsx",
+   "sha256": "9c28901fb1df2d29d5a0c4cda610fdd828faeededcb5c9379df89b568de9a1a5",
+   "feeds": [
+    "tally_ledger_balance",
+    "gl_account"
+   ],
+   "produced_by": "Client finance team (Tally export)",
+   "consumed_by": "Tally bridge"
+  },
+  {
+   "file": "scheme_A_gift/Tally_SchemeA_TrialBalance_30Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "cb4b03302c52b736fd1bbae506ce99eb76735236386db239b5fe16e66a520532",
+   "feeds": [
+    "tally_ledger_balance"
+   ],
+   "produced_by": "Client finance team (Tally export)",
+   "consumed_by": "Tally bridge"
+  },
+  {
+   "file": "scheme_A_gift/Tranche2_Disbursement_Advice_I-A1.pdf",
+   "format": "pdf",
+   "sha256": "3ca689a06b1f2f926c8bf9a7e80d9dda43e442fa3b093f3e138e3584c3380c1f",
+   "feeds": [
+    "tranche"
+   ],
+   "produced_by": "FME finance",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_A_gift/Unit_Register_SchemeA.xlsx",
+   "format": "xlsx",
+   "sha256": "ee7534b96380673ae320a73366b2385aef4c21e0997108a61dc0049110c5ea1c",
+   "feeds": [
+    "unit_ledger"
+   ],
+   "produced_by": "Fund administrator / RTA",
+   "consumed_by": "Capital accounts"
+  },
+  {
+   "file": "scheme_A_gift/Valuation_Inputs_SchemeA_30Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "b3b08584eeee80a26e55de0ba27c51283149f7bf02ca39b4d4dde147a82db5f3",
+   "feeds": [
+    "valuation_item"
+   ],
+   "produced_by": "Independent registered valuer",
+   "consumed_by": "Valuation"
+  },
+  {
+   "file": "scheme_A_gift/Valuation_Report_SchemeA_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "31ebe96b63fadcc4d9f37d6fab6dcc711f624ff6fb429affd01000db47a447b2",
+   "feeds": [
+    "valuation_cycle",
+    "valuation_item"
+   ],
+   "produced_by": "Independent registered valuer",
+   "consumed_by": "Valuation"
+  },
+  {
+   "file": "scheme_A_gift/Vendor_Invoices_Q2FY27/Administrator_Q1FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "1f08739696199de9e23c3fd4296789e2c9efbf4cec4b8fcc31bc37dde6922d37",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/Vendor_Invoices_Q2FY27/Administrator_Q2FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "d043c0ecf62817dcc1895364f11ea09bee8e26e0c66985509b06c1399effe6e7",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/Vendor_Invoices_Q2FY27/Audit_Q2FY27_AccrualNote.pdf",
+   "format": "pdf",
+   "sha256": "7a0b4324043aa80e0a1a8ef5f0439e16479a1b4d81540b756a62159204f98f63",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Fund accounting",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/Vendor_Invoices_Q2FY27/Legal_Q1FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "ce07e1e6d113a663d786f9f084c393475bd39cf91f66e67130af7a3fb6972777",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/Vendor_Invoices_Q2FY27/Trustee_Q1FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "e23df55afeca2f1e254304ac742abfd0f8553fc01a33d0cb1315beb01ea4f032",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/Vendor_Invoices_Q2FY27/Trustee_Q2FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "f5c54792b61f0ff9fd1e9f7b62683406b44fa1c07721cdea053e2acaad2ee141",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/Vendor_Invoices_Q2FY27/Valuer_Q2FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "6ed62b24c835c4e063a14ec5eef9ed41844447b095afe557faa4c10e67c3a66b",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_A_gift/WHT_Certificate_Al_Nahda_Sovereign_Holdings.pdf",
+   "format": "pdf",
+   "sha256": "d437b4e42a106c92b99ace7c1845841e3836fb297ff3d8fbc222179c8a656ebb",
+   "feeds": [
+    "wht_entry"
+   ],
+   "produced_by": "FME / deductor",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/WHT_Certificate_Nishi-Tokyo_Trust_Bank.pdf",
+   "format": "pdf",
+   "sha256": "37c5e5889837c74cfdac3f32ff8be4c28f5cf9a9bf777a686d7ebb37c7479906",
+   "feeds": [
+    "wht_entry"
+   ],
+   "produced_by": "FME / deductor",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/WHT_Certificate_Sakura_Residential_Holdings.pdf",
+   "format": "pdf",
+   "sha256": "1004856d1050b3105dbf65b03ef0065502ca811ac0cd8a6d313629fee5366546",
+   "feeds": [
+    "wht_entry"
+   ],
+   "produced_by": "FME / deductor",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_A_gift/WHT_Deposit_Challan_DA1.pdf",
+   "format": "pdf",
+   "sha256": "85ffd061a2856976e7071ff3bd9d54d53d6e693e8d9604bdca71a6c33e66d941",
+   "feeds": [
+    "wht_entry",
+    "evidence"
+   ],
+   "produced_by": "Authorised bank / tax portal",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Bank_Statement_SchemeB_INR_Jul-Sep26.pdf",
+   "format": "pdf",
+   "sha256": "d6874bb2bdf848f7eead0b2f66436c8479e2f8334524645fe93857a7e21e2de6",
+   "feeds": [
+    "bank_account",
+    "bank_line"
+   ],
+   "produced_by": "Bank",
+   "consumed_by": "Bank & custody reconciliation"
+  },
+  {
+   "file": "scheme_B_onshore/Bank_Statement_SchemeB_INR_Jul-Sep26.xls",
+   "format": "xls",
+   "sha256": "9439c67c0f0c1fbc35ce3b786f1b76f13c356fd1d6b9b0612bd1abbbf89516d3",
+   "feeds": [
+    "bank_account",
+    "bank_line"
+   ],
+   "produced_by": "Bank - XLS download",
+   "consumed_by": "Ingestion / Bank reconciliation"
+  },
+  {
+   "file": "scheme_B_onshore/CP_Checklist_I-B1_T2.xlsx",
+   "format": "xlsx",
+   "sha256": "3141f92a94af5db60be3472e3540c03c769b7b7d754b75ad86349fc1f34f119c",
+   "feeds": [
+    "cp_item"
+   ],
+   "produced_by": "Investment team / legal",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_B_onshore/CTR_FY26_extract.pdf",
+   "format": "pdf",
+   "sha256": "9c8d4f6d958a0eb740b1a8d1bf8205235698cb85e6322984c4ae41db02b508e5",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_B_onshore/CapitalCall_CB3_Allocation.xlsx",
+   "format": "xlsx",
+   "sha256": "d8f407eed9136da009e9a636c3578c04ad5432814227bfe996172017c4cbda4f",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME finance (maker) / checker",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_B_onshore/CapitalCall_CB3_Notice_Rao_Family_Office.pdf",
+   "format": "pdf",
+   "sha256": "f0d77a92c5f618e6d3f2ae5590dc53e2000653659c97e47588d13bf24a61cfdc",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_B_onshore/CapitalCall_CB3_Notice_Sahyadri_Cooperative_Bank.pdf",
+   "format": "pdf",
+   "sha256": "96a5b36eedfa35052c2e32304d4908cf9212999675273a1d69cd1e99e8ccba06",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_B_onshore/CapitalCall_CB3_Notice_Sponsor_Commitment.pdf",
+   "format": "pdf",
+   "sha256": "0fd9fdf1395b24310c334171882f9e2a53e80ee9b2128f664266c1798dcfb9d8",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_B_onshore/CapitalCall_CB3_Notice_Vindhya_Life_Insurance.pdf",
+   "format": "pdf",
+   "sha256": "9c3b78bd21d09dff8b0fc5bb5e226c69750b2ea2fa6a108b3f34aeaa4abe02cb",
+   "feeds": [
+    "capital_call",
+    "call_allocation"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Capital calls"
+  },
+  {
+   "file": "scheme_B_onshore/Charge_Filing_CHG9_I-B1.pdf",
+   "format": "pdf",
+   "sha256": "a2b534b4a9f20ea61c56a9ddf46022ff95bca72b9fdd6c19581419ff6a6cc95b",
+   "feeds": [
+    "charge_filing",
+    "evidence"
+   ],
+   "produced_by": "ROC / company secretary of the SPV",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_B_onshore/Covenant_Certificate_SPV-B1_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "4b3bc75505a26219fd88e726a743f649f66987795729180b3792d9c8863ce115",
+   "feeds": [
+    "covenant_test"
+   ],
+   "produced_by": "Developer CFO (Urban Homes Group)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/Covenant_Certificate_SPV-B2_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "012b7161890cdb8ed350b11c069c960d3331d154e41242d2f5bde68def39dfb6",
+   "feeds": [
+    "covenant_test"
+   ],
+   "produced_by": "Developer CFO (Skyline Projects)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/DTD_Summary_I-B1.pdf",
+   "format": "pdf",
+   "sha256": "34898f78f2c3cf277b41aa2c367bed434c9625cc1cc6230f71f9a6b29a80fbd8",
+   "feeds": [
+    "instrument"
+   ],
+   "produced_by": "Fund counsel",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_B_onshore/DTD_Summary_I-B2.pdf",
+   "format": "pdf",
+   "sha256": "0fd6fdd3ff0d566780056d096848fc5a666ee130f77a4ffe6feb507e87019c42",
+   "feeds": [
+    "instrument"
+   ],
+   "produced_by": "Fund counsel",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_B_onshore/Deal_Master_SchemeB.xlsx",
+   "format": "xlsx",
+   "sha256": "2d4c8a0a032e962a79eab1f08c9b6c94ac6738b0dff7e9c9d8e019a32c4b84e5",
+   "feeds": [
+    "project_spv",
+    "instrument",
+    "tranche",
+    "covenant_test"
+   ],
+   "produced_by": "Investment team",
+   "consumed_by": "Instruments & accruals / Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_B_onshore/Demat_Holding_Statement_SchemeB_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "f1db7a51482b7fe660d4d5c5234e88af72921eaa6bf429f945b8cde5b2fa8c89",
+   "feeds": [
+    "custody_account",
+    "custody_holding"
+   ],
+   "produced_by": "Custodian / DP",
+   "consumed_by": "Bank & custody reconciliation"
+  },
+  {
+   "file": "scheme_B_onshore/Demat_Transaction_Statement_SchemeB_Jul-Sep26.csv",
+   "format": "csv",
+   "sha256": "35f4c8aa3bdb6bb82adc977cd2d39a3198ee43bf34bb07ca3ee68f1bc7d10580",
+   "feeds": [
+    "custody_txn"
+   ],
+   "produced_by": "Custodian / DP",
+   "consumed_by": "Bank & custody reconciliation"
+  },
+  {
+   "file": "scheme_B_onshore/Developer_MIS_SPV-B1_Aug26.xlsx",
+   "format": "xlsx",
+   "sha256": "847dfee76ac7c31d9763eb5aee1d117ed4cb0d7dd69503e68acf8cc8f3d16fcd",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Urban Homes Group)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/Developer_MIS_SPV-B1_Jul26.xlsx",
+   "format": "xlsx",
+   "sha256": "a132797141691152ff2e4e25ed71fd5e2b79ea81615d7140c2c1f15b90f720cd",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Urban Homes Group)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/Developer_MIS_SPV-B1_Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "36ca5e13f1b32338fd561bed9b98eca9467c8c30dff184504a48202954329063",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Urban Homes Group)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/Developer_MIS_SPV-B2_Aug26.xlsx",
+   "format": "xlsx",
+   "sha256": "2eb6dae5ec5283de72ac055042323a2eead0bab7f680537760be12d12e63c7d8",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Skyline Projects)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/Developer_MIS_SPV-B2_Jul26.xlsx",
+   "format": "xlsx",
+   "sha256": "e63b5a35b17b3c5e108d29a56f825ebbc31b5ea21dd75d798590be57df4aa9a8",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Skyline Projects)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/Developer_MIS_SPV-B2_Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "5232021f560d907e5fa864b1951e52124fea49fa60a353dbaba0dc2c6c3ab064",
+   "feeds": [
+    "mis_month"
+   ],
+   "produced_by": "Developer (Skyline Projects)",
+   "consumed_by": "Project monitoring"
+  },
+  {
+   "file": "scheme_B_onshore/Distribution_DB1_Notice_Rao_Family_Office.pdf",
+   "format": "pdf",
+   "sha256": "e6c160bc0dacf7711d5213eac10fd5b445ef8beba8774a8b8293467cef881780",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Distribution_DB1_Notice_Sahyadri_Cooperative_Bank.pdf",
+   "format": "pdf",
+   "sha256": "193774e5809c2bfc952de044f6dc2162397daf6852ce8d900b67c8ab4b27cce3",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Distribution_DB1_Notice_Sponsor_Commitment.pdf",
+   "format": "pdf",
+   "sha256": "a82d8d33e725adf3c88742d38476cbf2e68d41081c5c36be2d1f41a989900ce0",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Distribution_DB1_Notice_Vindhya_Life_Insurance.pdf",
+   "format": "pdf",
+   "sha256": "8d30d3d7858f1bf1c2c166f80c765535ec687c2ba74454a0b68d7ec43b2a2f7d",
+   "feeds": [
+    "distribution",
+    "distribution_line"
+   ],
+   "produced_by": "FME / fund administrator",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Distribution_DB1_Schedule.xlsx",
+   "format": "xlsx",
+   "sha256": "390e58629492646da160c4891b1537d0ea264db39033fe5c339d136f6567bc98",
+   "feeds": [
+    "distribution",
+    "distribution_line",
+    "wht_entry"
+   ],
+   "produced_by": "FME finance (maker) / checker",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Evidence/Form64C_64D_FY26_Filing_Ack.pdf",
+   "format": "pdf",
+   "sha256": "ab2b5ac69b4eb1c8e542c2d25cca5198cab870ef7047993f51353713e2ee160b",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_B_onshore/Evidence/PPM_Audit_FY26_Filing_Ack.pdf",
+   "format": "pdf",
+   "sha256": "21bb85dcaad6a47436c40cffcdf9b33d79a19f7780b437f2a8b5723581a3c4b4",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_B_onshore/Evidence/SEBI_QAR_Q2FY27_Submission_Ack.pdf",
+   "format": "pdf",
+   "sha256": "c7b998ab1c02d54a96448155166f3315e7cab494074a33aaaf03c6228a77b275",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_B_onshore/Evidence/Valuation_Dispatch_Confirmation_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "2865ffd60920092225b5350a3788ab9668649ebcb1945a741b27c815c9b97b31",
+   "feeds": [
+    "evidence"
+   ],
+   "produced_by": "Regulator portal / mailbox",
+   "consumed_by": "Calendar"
+  },
+  {
+   "file": "scheme_B_onshore/FATCA_CRS_SelfCert_Rao_Family_Office.pdf",
+   "format": "pdf",
+   "sha256": "51c78714cfa44c3e66a8a501603bcdea91cf0795f4a21239a220fbd036c4a72f",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/FATCA_CRS_SelfCert_Sahyadri_Cooperative_Bank.pdf",
+   "format": "pdf",
+   "sha256": "8b38ed06aafad084da4ffe3344d6739398fbf78bb9ec5477ef5221c7b4720632",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/FATCA_CRS_SelfCert_Vindhya_Life_Insurance.pdf",
+   "format": "pdf",
+   "sha256": "6d1533ac39bc505954e4eeaab7f9f10345a56db1107582037d6a99032ba932d4",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "fatca_crs"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/Form16A_Rao_Family_Office.pdf",
+   "format": "pdf",
+   "sha256": "9a18297a0dca6c4fafa54a75c4c3ce2b6e6caaabe56c67885e9119c60f4a97ad",
+   "feeds": [
+    "wht_entry"
+   ],
+   "produced_by": "FME / deductor",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Form16A_Sahyadri_Cooperative_Bank.pdf",
+   "format": "pdf",
+   "sha256": "204327ef01ff750ddbe6bd3e0e29507356efd927b8e72a6837321e0a67f8d576",
+   "feeds": [
+    "wht_entry"
+   ],
+   "produced_by": "FME / deductor",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Form16A_Vindhya_Life_Insurance.pdf",
+   "format": "pdf",
+   "sha256": "a53d838a7a23323861798787e89be38cd7ad929f553d2eb75c8572589b29a46f",
+   "feeds": [
+    "wht_entry"
+   ],
+   "produced_by": "FME / deductor",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Form64C_Statement_Rao_Family_Office.pdf",
+   "format": "pdf",
+   "sha256": "bb34a7c23d6ac126385befd2e6bc18bb4ab18c6f98316da68c5567b74e0f5603",
+   "feeds": [
+    "distribution_line",
+    "report_run"
+   ],
+   "produced_by": "FME tax team (draft)",
+   "consumed_by": "Report centre"
+  },
+  {
+   "file": "scheme_B_onshore/Form64C_Statement_Sahyadri_Cooperative_Bank.pdf",
+   "format": "pdf",
+   "sha256": "4ca2dbb08954e67d712c59b54321d23ccc66511d60abfedf408fbfddf8b13bc8",
+   "feeds": [
+    "distribution_line",
+    "report_run"
+   ],
+   "produced_by": "FME tax team (draft)",
+   "consumed_by": "Report centre"
+  },
+  {
+   "file": "scheme_B_onshore/Form64C_Statement_Sponsor_Commitment.pdf",
+   "format": "pdf",
+   "sha256": "42f787c599876c8327fbfb24c7bc6876d962c2999066072f2d1269ff7ebea6b1",
+   "feeds": [
+    "distribution_line",
+    "report_run"
+   ],
+   "produced_by": "FME tax team (draft)",
+   "consumed_by": "Report centre"
+  },
+  {
+   "file": "scheme_B_onshore/Form64C_Statement_Vindhya_Life_Insurance.pdf",
+   "format": "pdf",
+   "sha256": "eb2ee0c70849a7b63e02effb1c9a5e19159f5b23988722ef3f66571b23dcc782",
+   "feeds": [
+    "distribution_line",
+    "report_run"
+   ],
+   "produced_by": "FME tax team (draft)",
+   "consumed_by": "Report centre"
+  },
+  {
+   "file": "scheme_B_onshore/IM_Fee_Invoice_Q1FY27.pdf",
+   "format": "pdf",
+   "sha256": "fe63ad2cf4571c401f7a82be058d295d49552ffcbca6ff33edbcb042a54a66e6",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "FME / investment manager",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/IM_Fee_Invoice_Q2FY27.pdf",
+   "format": "pdf",
+   "sha256": "21c963e0d5025c011621c0ca027fe69845ddbfc536724db3608aad7837699f47",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "FME / investment manager",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/Investor_Register_SchemeB.xlsx",
+   "format": "xlsx",
+   "sha256": "56d366b3cc026722a8901b44e288b150aa97cbde8605ef85a636d0b8a81eaca1",
+   "feeds": [
+    "investor",
+    "commitment",
+    "unit_class",
+    "side_letter_term"
+   ],
+   "produced_by": "Fund administrator / RTA",
+   "consumed_by": "Investors & commitments"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Rao_Family_Office/BO_declaration.pdf",
+   "format": "pdf",
+   "sha256": "6e601e80fa0af504ffa2ca3116aa4bd64e89749b459a3258dce4b1e92718eb7f",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Rao_Family_Office/CKYC_record.pdf",
+   "format": "pdf",
+   "sha256": "31189d7e3a8a0e795c213999968a74e577f0b170cbf15f26623f4878012d5ac4",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "CKYC registry",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Rao_Family_Office/NetWorth_Certificate.pdf",
+   "format": "pdf",
+   "sha256": "13c3a308bfe15bb1bb25ed3b1b84fb32f3783222c678537d07c6dc6dcd10cc44",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "Chartered accountant",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Rao_Family_Office/checklist.pdf",
+   "format": "pdf",
+   "sha256": "d7d2883d0f38126037c65ce479cf4ab3326f214adfec75aa032ac251156bd369",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Rao_Family_Office/screening_report.pdf",
+   "format": "pdf",
+   "sha256": "9c333a48f25e074c3a45beae10e3f09a65bc53ad0135a2b68f64aeb601aa57ac",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "screening_log"
+   ],
+   "produced_by": "Screening vendor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Sahyadri_Cooperative_Bank/BO_declaration.pdf",
+   "format": "pdf",
+   "sha256": "4d8b113f1a9f4e5c18868ec7dcd22a041e133d7939864066db2fff939f6689f6",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Sahyadri_Cooperative_Bank/CKYC_record.pdf",
+   "format": "pdf",
+   "sha256": "96c1292d49af2a44564e4db8149e6ef9f217bbe04f56f5c21936f6533ff3e1c7",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "CKYC registry",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Sahyadri_Cooperative_Bank/checklist.pdf",
+   "format": "pdf",
+   "sha256": "14ac74013b8730d3d09b3bb6d695652267bf338d34161c383b2d087f635acb7e",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Sahyadri_Cooperative_Bank/screening_report.pdf",
+   "format": "pdf",
+   "sha256": "4e9a24852c61ab6ce13888aba993d60b50ccaeee20b79797a3c07a6f55728cbf",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "screening_log"
+   ],
+   "produced_by": "Screening vendor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Vindhya_Life_Insurance/BO_declaration.pdf",
+   "format": "pdf",
+   "sha256": "31f403be35f9fb779d6e68885ed9ab4ebb8759eb988a7ab7f83e3881ab36a20c",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "Investor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Vindhya_Life_Insurance/CKYC_record.pdf",
+   "format": "pdf",
+   "sha256": "e9ab029d59a2d3ed996f4b2cae74db790fb4468f78e7e3e1cf03a2fb8199e064",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "CKYC registry",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Vindhya_Life_Insurance/checklist.pdf",
+   "format": "pdf",
+   "sha256": "cb7997628970409d835e460ee626f5dc8db1b5ed37ff37cc024fed86d92c364e",
+   "feeds": [
+    "kyc_document",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Pack_Vindhya_Life_Insurance/screening_report.pdf",
+   "format": "pdf",
+   "sha256": "f0695186a7a992ca3130474e233bef0f6b20bc69fd0ad5efede6ea8cacc25672",
+   "feeds": [
+    "kyc_document",
+    "evidence",
+    "screening_log"
+   ],
+   "produced_by": "Screening vendor",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/KYC_Register_SchemeB.xlsx",
+   "format": "xlsx",
+   "sha256": "dab1822f2d29435e7226172c8c0d9cad0eaa09fde40af35ef96f0fa45755a774",
+   "feeds": [
+    "kyc_file",
+    "kyc_document",
+    "screening_log",
+    "fatca_crs"
+   ],
+   "produced_by": "FME compliance (AML PO)",
+   "consumed_by": "KYC / AML / FATCA"
+  },
+  {
+   "file": "scheme_B_onshore/PPM_Term_Sheet_SchemeB.pdf",
+   "format": "pdf",
+   "sha256": "3bf994163da4fc1be73cecb85f25268c91bf50dbf3d83d6edd27a81f2342626e",
+   "feeds": [
+    "scheme",
+    "scheme_term"
+   ],
+   "produced_by": "FME / fund counsel",
+   "consumed_by": "Investors & commitments"
+  },
+  {
+   "file": "scheme_B_onshore/SEBI_Compliance_Calendar_SchemeB.xlsx",
+   "format": "xlsx",
+   "sha256": "c64bd758d26cafd1e8a1450616c0ee792cafe5bd36eaca286ee45b5eb612c0c6",
+   "feeds": [
+    "obligation",
+    "evidence"
+   ],
+   "produced_by": "FME compliance",
+   "consumed_by": "Calendar / Exceptions"
+  },
+  {
+   "file": "scheme_B_onshore/SEBI_Quarterly_Activity_Report_Q1FY27_as_filed.xlsx",
+   "format": "xlsx",
+   "sha256": "7afda95b1155072149cb57b5f7eb6fe7c53e0b8bf4c75f59346e42f50256a670",
+   "feeds": [
+    "report_run"
+   ],
+   "produced_by": "FME compliance (prior filing)",
+   "consumed_by": "Report centre"
+  },
+  {
+   "file": "scheme_B_onshore/TDS_194LBB_Challan_DB1.pdf",
+   "format": "pdf",
+   "sha256": "b10fcf54384e40b6176d9a1b6c0652ae8bca7e877bbce59464af4f7325057e40",
+   "feeds": [
+    "wht_entry",
+    "evidence"
+   ],
+   "produced_by": "Authorised bank / tax portal",
+   "consumed_by": "Distributions"
+  },
+  {
+   "file": "scheme_B_onshore/Tally_SchemeB_DayBook_Q2FY27.xml",
+   "format": "xml",
+   "sha256": "7945fbae3ea3029464719476fc943524a04b3d55fc6e5df0cda49364fd09a048",
+   "feeds": [
+    "tally_voucher"
+   ],
+   "produced_by": "Client finance team (Tally export)",
+   "consumed_by": "Tally bridge"
+  },
+  {
+   "file": "scheme_B_onshore/Tally_SchemeB_LedgerMasters.xlsx",
+   "format": "xlsx",
+   "sha256": "4c296c15f261bca39f8974bc7d021a43b933843d0905178411f84d5f2f75e55c",
+   "feeds": [
+    "tally_ledger_balance",
+    "gl_account"
+   ],
+   "produced_by": "Client finance team (Tally export)",
+   "consumed_by": "Tally bridge"
+  },
+  {
+   "file": "scheme_B_onshore/Tally_SchemeB_TrialBalance_30Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "7f61e296281d9ce867a3838417f8b68c9cd2547d89922ee3408ffe76e4d003ee",
+   "feeds": [
+    "tally_ledger_balance"
+   ],
+   "produced_by": "Client finance team (Tally export)",
+   "consumed_by": "Tally bridge"
+  },
+  {
+   "file": "scheme_B_onshore/Tranche2_Disbursement_Advice_I-B1.pdf",
+   "format": "pdf",
+   "sha256": "5b0860d3f88f0b73e3d5d5f4aa6a21467eee1add39b3d184a6917d5449fa61fc",
+   "feeds": [
+    "tranche"
+   ],
+   "produced_by": "FME finance",
+   "consumed_by": "Deals, CPs & filings"
+  },
+  {
+   "file": "scheme_B_onshore/Unit_Register_SchemeB.xlsx",
+   "format": "xlsx",
+   "sha256": "f72be7df2a14e06b7a6795706923a7c2cce337e41905f2c103cae669f7337fb6",
+   "feeds": [
+    "unit_ledger"
+   ],
+   "produced_by": "Fund administrator / RTA",
+   "consumed_by": "Capital accounts"
+  },
+  {
+   "file": "scheme_B_onshore/Valuation_Inputs_SchemeB_30Sep26.xlsx",
+   "format": "xlsx",
+   "sha256": "c16d415975ec1d4856c0c042d26924b5d8e930465c7802ac22033f3daae36858",
+   "feeds": [
+    "valuation_item"
+   ],
+   "produced_by": "Independent registered valuer",
+   "consumed_by": "Valuation"
+  },
+  {
+   "file": "scheme_B_onshore/Valuation_Report_SchemeB_30Sep26.pdf",
+   "format": "pdf",
+   "sha256": "f73d11a3d2c8a79398b6c7196edcddef40830b02b7f7af02aa9976dba4b33fc4",
+   "feeds": [
+    "valuation_cycle",
+    "valuation_item"
+   ],
+   "produced_by": "Independent registered valuer",
+   "consumed_by": "Valuation"
+  },
+  {
+   "file": "scheme_B_onshore/Vendor_Invoices_Q2FY27/Audit_Q2FY27_AccrualNote.pdf",
+   "format": "pdf",
+   "sha256": "6fe9fa28e5a91ca7dde0983b1af3bd1f72c5caff59b6cd3c8da07def0feeee66",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Fund accounting",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/Vendor_Invoices_Q2FY27/Legal_Q1FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "2396369859b2067f5947d518734bc9860afb9e8cfb18ffedbc73bdb681432ead",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/Vendor_Invoices_Q2FY27/Rta_Q1FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "ad9dcf5e80c0fb61de3a4553e8fa11a0dcaeba1103002805db2d12882a8546ef",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/Vendor_Invoices_Q2FY27/Rta_Q2FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "0df261e7fc5309cbf3625c85ff114b18abdefe0c1609c847139846ab49972bf7",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/Vendor_Invoices_Q2FY27/Trustee_Q1FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "6586b6141e429085074a94965802cb8d7f89ad3b0e65a3f98e3f0c72c621ad8a",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/Vendor_Invoices_Q2FY27/Trustee_Q2FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "b1aa9b68d91ad2b1f2db2466c3e6dc5c3ccea7812a925bd8403aebcea09cd271",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "scheme_B_onshore/Vendor_Invoices_Q2FY27/Valuer_Q2FY27_Invoice.pdf",
+   "format": "pdf",
+   "sha256": "272871c2f50fd964f75797b81dfaa95f6906ce03519562c5c9f5b7016001f543",
+   "feeds": [
+    "journal"
+   ],
+   "produced_by": "Service provider",
+   "consumed_by": "Quarter close & NAV"
+  },
+  {
+   "file": "shared/Opening_Balances_30Jun26_locked.xlsx",
+   "format": "xlsx",
+   "sha256": "de8145cb8da77dd676a8ef644857ddd2113bf0bd004a343c3609f4bee36248ce",
+   "feeds": [
+    "period",
+    "journal",
+    "journal_line",
+    "capital_account"
+   ],
+   "produced_by": "Fund administrator (audited prior period)",
+   "consumed_by": "Ledger & TB"
+  }
+ ]
+}

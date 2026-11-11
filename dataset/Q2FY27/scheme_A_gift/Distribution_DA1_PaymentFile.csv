@@ -1,0 +1,7 @@
+H,BULKPAY,9990012600017,20260915,DA1/2026/001
+Record Type,Debit Account,Value Date,Currency,Amount,Beneficiary Name,Beneficiary Bank,Beneficiary SWIFT,Purpose Code,Payment Details
+D,9990012600017,15/09/2026,USD,540000.00,Sakura Residential Holdings K.K.,"Bank of Musashino, Tokyo",MUSAJPJTXXX,P9999,DIST DA1 LP-A1 NET OF WHT
+D,9990012600017,15/09/2026,USD,324000.00,"Nishi-Tokyo Trust Bank, Ltd.","Nishi-Tokyo Trust Bank, Tokyo",NTTBJPJTXXX,P9999,DIST DA1 LP-A2 NET OF WHT
+D,9990012600017,15/09/2026,USD,162000.00,Al Nahda Sovereign Holdings LLC,"Emirates Crescent Bank, Abu Dhabi",ECRBAEADXXX,P9999,DIST DA1 LP-A3 NET OF WHT
+D,9990012600017,15/09/2026,USD,54000.00,Residential Capital Managers (FME contribution),"First Gulf-India Bank, IBU GIFT City",FGIBINGGXXX,P9999,DIST DA1 LP-A4 NET OF WHT
+T,4,1080000.00
