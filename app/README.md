@@ -41,6 +41,10 @@ provider names that the files do not carry). Both are loaded once into the datab
 
 1. **Upload**: Data ingestion → Upload files. A full quarter as one zip (`scheme_A_…/`, `scheme_B_…/`, `shared/`), or single
    files to correct one scheme. The log shows each scheme's journals, NAV and checks. A failed upload changes nothing.
+   For a zip, the upload window shows a staged progress bar (zip extracting, classifying sheets, mapping, extracting data
+   safely, cross check and validation, importing to dashboard, finished) that runs for `TRACKFUND_UPLOAD_PROGRESS_SECONDS`
+   (default 20; the work itself takes a few seconds) and refreshes the dashboard at 100%. A failure stops the bar at its stage.
+   Set it to 0 to show results as soon as they are ready.
 2. **Review**: Reconciliation tab, exceptions, ledger (CSV exports), Tally bridge, valuation, covenants.
 3. **Close**: the finance maker submits the NAV, a different person (finance checker or trustee) approves it. The quarter is
    then locked: back-dated posting and file changes for that scheme are refused.
@@ -58,6 +62,11 @@ becomes current only if that succeeds (otherwise nothing is deleted and the reas
 bank statement, …) cannot be deleted: upload a corrected file instead, which replaces them. Nothing can be deleted from a locked
 quarter. A NAV draft or submission is replaced by a new draft. Each deletion is in the audit log; earlier ingestion runs keep their
 own copies of the files.
+
+**Delete all files** (same window) clears the whole quarter: every file of both schemes and the shared opening balances. The
+dashboard is then empty for every user ("No quarter loaded yet") until the quarter is uploaded again, which builds the books from
+scratch with a new NAV draft per scheme; uploading the same zip gives the same books. It is refused while any scheme's quarter is
+locked. The audit log records it for each scheme, and the ingestion runs list shows it as its own run.
 
 ## Tests
 

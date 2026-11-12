@@ -787,6 +787,8 @@ label.drop{display:block}
 .login h1{font-size:20px;margin:0 0 4px}.login p{margin:0 0 18px;color:var(--mute);font-size:13.5px}
 .login label{display:block;font-size:12.5px;font-weight:600;margin:12px 0 6px;color:var(--ink-2)}
 .btn.danger{background:#B42318;border-color:#B42318;color:#fff}.btn.danger:disabled{opacity:.45;cursor:default}
+.btn.danger-o{background:#fff;border-color:#B42318;color:#B42318}.btn.danger-o:disabled{opacity:.45;cursor:default}
+.note.danger{background:#FEF3F2;border-color:#FECDCA;color:#7A271A;font-size:13.5px;padding:12px 14px;margin-top:10px}
 .adm-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.adm-row select,.login select{height:36px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:#fff}
 .login select{width:100%;height:40px}
 .login input{width:100%;box-sizing:border-box;height:42px;border:1px solid var(--line);border-radius:9px;padding:0 12px;font-size:14px;background:#fff}
@@ -799,6 +801,21 @@ label.drop{display:block}
 .up-opts select{height:36px;border:1px solid var(--line);border-radius:8px;padding:0 8px;background:#fff}
 .uplog{font-family:var(--mono);font-size:12px;background:var(--navy,#0E1C38);color:#CFE3D6;border-radius:10px;padding:12px 14px;max-height:300px;overflow:auto;line-height:1.7;margin-top:14px}
 .uplog .w{color:#F5C77A}.uplog .r{color:#F49B9B}.uplog .k{color:#9CC0FF}
+.upprog{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--bg-2)}
+.upprog .ph{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:9px;font-size:14.5px;color:var(--ink)}
+.upprog .ph span{font-family:var(--mono);font-size:13px;color:var(--ink-2)}
+.pbar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent-2),var(--accent));background-size:28px 100%;transition:width .12s linear}
+.pbar.done i{background:var(--pos-bar)}.pbar.fail i{background:var(--neg-bar)}
+.upstages{list-style:none;margin:13px 0 0;padding:0;display:grid;gap:7px}
+.upstages li{display:flex;gap:10px;align-items:center;font-size:13.5px;color:var(--faint)}
+.upstages li .ico{width:18px;height:18px;border-radius:50%;border:1.5px solid #CBD2DC;flex:none;display:grid;place-items:center;font-size:11px;line-height:1;color:#fff}
+.upstages li small{margin-left:auto;font-size:12px;color:var(--faint);text-align:right}
+.upstages li.on{color:var(--ink);font-weight:600}.upstages li.on small{color:var(--mute);font-weight:400}
+.upstages li.on .ico{border:2px solid var(--accent);border-right-color:transparent;animation:sp .7s linear infinite}
+.upstages li.ok{color:var(--ink-2)}.upstages li.ok .ico{background:var(--pos-bar);border-color:var(--pos-bar)}.upstages li.ok .ico::after{content:'✓'}
+.upstages li.bad{color:var(--neg);font-weight:600}.upstages li.bad .ico{background:var(--neg-bar);border-color:var(--neg-bar)}.upstages li.bad .ico::after{content:'✕'}
+@media (max-width:640px){.upstages li small{display:none}}
 .prev-frame{width:100%;height:60vh;border:1px solid var(--line);border-radius:10px;background:#fff}
 .empty-state{max-width:560px;margin:60px auto;text-align:center}
 .empty-state h2{font-size:22px;margin:0 0 8px}.empty-state p{color:var(--mute)}
@@ -1145,24 +1162,55 @@ function uploadModal(){if(!CANUP)return toast('Only the finance maker, the finan
  <div class="up-zone" id="upz">Drop a zip or files here, or <b>browse</b><div class="up-files" id="upl"></div></div>
  <div class="up-opts"><label>Mode <select id="upm"><option value="auto">Automatic</option><option value="replace">Replace: complete quarter</option><option value="merge">Merge: add or correct files</option></select></label>
  <label>Single files belong to <select id="ups">${sch.map(k=>`<option value="${k}" ${k===st.s?'selected':''}>Scheme ${k}${DATA?' · '+esc(DATA.schemes[k].meta.name):''}</option>`).join('')}</select></label></div>
+ <div class="upprog" id="upprog" style="display:none" role="status" aria-live="polite"><div class="ph"><b id="upst">Starting</b><span id="uppc">0%</span></div><div class="pbar" id="upbar"><i></i></div>
+ <ol class="upstages" id="upsl">${UPSTAGES.map(([t,d])=>`<li><span class="ico"></span><span>${t}</span><small>${d}</small></li>`).join('')}</ol></div>
  <div class="uplog" id="uplog" style="display:none"></div>
  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button class="btn sm" data-act="closemodal">Close</button><button class="btn sm primary" id="upgo" disabled>Upload and process</button></div></div>`;
  const z=$('#upz'),inp=$('#upin'),show=()=>{$('#upl').innerHTML=picked.map(f=>esc(f.name)+' · '+(f.size/1048576).toFixed(2)+' MB').join('<br>');$('#upgo').disabled=!picked.length};
  z.onclick=()=>{inp.value='';inp.click()};inp.onchange=()=>{picked=[...inp.files];show()};
  z.ondragover=e=>{e.preventDefault();z.classList.add('drag')};z.ondragleave=()=>z.classList.remove('drag');z.ondrop=e=>{e.preventDefault();z.classList.remove('drag');picked=[...e.dataTransfer.files];show()};
  $('#upgo').onclick=()=>{const fd=new FormData();picked.forEach(f=>fd.append('files',f,f.name));fd.append('mode',$('#upm').value);fd.append('scheme',$('#ups').value);
-  const lg=$('#uplog');lg.style.display='block';lg.innerHTML='<div class="k">Uploading…</div>';$('#upgo').disabled=true;st.ing=true;
+  const lg=$('#uplog'),staged=UPSEC>0&&picked.some(f=>/\.zip$/i.test(f.name));$('#upgo').disabled=true;st.ing=true;
+  const showLog=(log,n)=>{const L=log||[];lg.style.display=L.length?'block':'none';lg.innerHTML=L.slice(0,n==null?L.length:n).map(([k,t])=>`<div class="${k==='g'?'':k}">${k==='g'?'✓ ':k==='r'?'✗ ':''}${esc(t)}</div>`).join('');lg.scrollTop=lg.scrollHeight};
+  const done=async r=>{st.ing=false;if(r.status==='succeeded'){await loadAll();toast(`Run ${r.id} processed. ${Object.entries(r.summary).map(([k,v])=>`Scheme ${k}: ${v.passed}/${v.rules} checks pass, ${v.failed} fail`).join('; ')}.`)}
+   else{toast('Upload not processed: '+(r.error||'see log'));const b=$('#upgo');if(b&&document.body.contains(lg))b.disabled=false}};
+  const P=staged?upProgress(UPSEC,showLog,done):null;
+  if(!staged){lg.style.display='block';lg.innerHTML='<div class="k">Uploading…</div>'}
   const x=new XMLHttpRequest();x.open('POST','/api/uploads');x.setRequestHeader('X-Requested-With','trackfund');
-  x.upload.onprogress=e=>{if(e.lengthComputable)lg.innerHTML=`<div class="k">Uploading ${Math.round(e.loaded/e.total*100)}%</div>`+(e.loaded===e.total?'<div class="k">Processing: classifying, parsing, posting, reconciling…</div>':'')};
-  x.onload=async()=>{st.ing=false;let r={};try{r=JSON.parse(x.responseText)}catch(e){}
-   if(x.status!==200){lg.innerHTML+=`<div class="r">${esc(r.detail||('Error '+x.status))}</div>`;$('#upgo').disabled=false;return}
-   lg.innerHTML=(r.log||[]).map(([k,t])=>`<div class="${k==='g'?'':k}">${k==='g'?'✓ ':k==='r'?'✗ ':''}${esc(t)}</div>`).join('');lg.scrollTop=lg.scrollHeight;
-   if(r.status==='succeeded'){await loadAll();toast(`Run ${r.id} processed. ${Object.entries(r.summary).map(([k,v])=>`Scheme ${k}: ${v.passed}/${v.rules} checks pass, ${v.failed} fail`).join('; ')}.`)}else{toast('Upload not processed: '+(r.error||'see log'));$('#upgo').disabled=false}};
-  x.onerror=()=>{st.ing=false;lg.innerHTML+='<div class="r">Network error</div>';$('#upgo').disabled=false};x.send(fd)}}
+  x.upload.onprogress=e=>{if(!staged&&e.lengthComputable)lg.innerHTML=`<div class="k">Uploading ${Math.round(e.loaded/e.total*100)}%</div>`+(e.loaded===e.total?'<div class="k">Processing: classifying, parsing, posting, reconciling…</div>':'')};
+  x.onload=()=>{let r={};try{r=JSON.parse(x.responseText)}catch(e){}
+   if(x.status!==200){const msg=r.detail||('Error '+x.status);if(P)return P.result({status:'failed',error:msg,log:[['r',msg]]});st.ing=false;lg.innerHTML+=`<div class="r">${esc(msg)}</div>`;$('#upgo').disabled=false;return}
+   if(P)return P.result(r);showLog(r.log);done(r)};
+  x.onerror=()=>{if(P)return P.result({status:'failed',error:'Network error',log:[['r','Network error']]});st.ing=false;lg.innerHTML+='<div class="r">Network error</div>';$('#upgo').disabled=false};x.send(fd)}}
+/* staged progress for a zip upload: the bar runs for T seconds while the server works (usually 1-3 s), the real log lines appear
+   as it advances, and the dashboard refreshes only at 100%. A failure stops the bar at the stage where it happened. */
+const UPSTAGES=[['Zip extracting','Unpacking the archive and checking every file',10],['Classifying sheets','Recognising each file by its name and type',24],
+ ['Mapping','Mapping each file\'s headers to the fund schema',38],['Extracting data safely','Reading the figures; a SHA-256 is kept for every file',60],
+ ['Cross check and validation','Posting the books and running the control checks',82],['Importing to dashboard','Saving the run and refreshing every view',97],['Finished','',100]];
+function upFailStage(msg){msg=String(msg||'');return /zip|archive|exceeds|too many/i.test(msg)?0:/missing required|recogni[sz]ed|choose the scheme/i.test(msg)?1:/locked/i.test(msg)?4:3}
+function upProgress(T,showLog,done){const box=$('#upprog'),bar=$('#upbar'),bi=bar.firstElementChild,lis=[...$('#upsl').children],lbl=$('#upst'),pc=$('#uppc');
+ box.style.display='block';bar.className='pbar';const t0=performance.now();let res=null,p=0,over=false,closed=false,ff=null;
+ const stageOf=v=>{const i=UPSTAGES.findIndex(s=>v<s[2]);return i<0?6:i};
+ const paint=(cur,state)=>{bi.style.width=p.toFixed(1)+'%';pc.textContent=Math.floor(p)+'%';lis.forEach((li,i)=>li.className=i<cur?'ok':i===cur?(state||'on'):'');
+  lbl.textContent=state==='bad'?`Stopped at: ${UPSTAGES[cur][0]}. Nothing was changed.`:UPSTAGES[cur][0]+(cur<6?'…':'')};
+ const tick=()=>{if(over)return;if(!document.body.contains(box)){over=closed=true;if(res)done(res);return}
+  const f=Math.min(1,(performance.now()-t0)/1000/T);let target=100*(f+0.025*Math.sin(f*Math.PI*6)*(1-f));
+  if(res&&res.status!=='succeeded'){
+   if(!ff){const fs=Math.max(upFailStage(res.error),stageOf(p)),a=fs?UPSTAGES[fs-1][2]:0;ff={fs,from:p,to:Math.max(p,a+(UPSTAGES[fs][2]-a)*.4),t:performance.now()}}
+   const k=Math.min(1,(performance.now()-ff.t)/1200);p=ff.from+(ff.to-ff.from)*k;
+   if(k>=1){over=true;paint(ff.fs,'bad');bar.classList.add('fail');showLog(res.log);done(res);return}
+   paint(stageOf(p));return setTimeout(tick,60)}
+  if(!res)target=Math.min(target,96);
+  p=Math.max(p,target);
+  if(res&&f>=1){over=true;p=100;paint(6,'ok');bar.classList.add('done');showLog(res.log);setTimeout(()=>done(res),500);return}
+  if(res&&res.log)showLog(res.log,Math.max(1,Math.ceil(res.log.length*Math.min(1,p/97))));
+  paint(stageOf(p));setTimeout(tick,60)};
+ tick();
+ return {result(r){res=r;if(closed)done(r)}}}
 function pwdModal(){const m=$('#modal');m.className='modal on';$('#ov').classList.add('on');m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 12px;font-size:19px">Change password</h2><div class="login" style="position:static;display:block;background:none"><label>Current password</label><input id="pw0" type="password" autocomplete="current-password"><label>New password (at least 10 characters)</label><input id="pw1" type="password" autocomplete="new-password"><div class="err" id="pwe"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn sm" data-act="closemodal">Cancel</button><button class="btn sm primary" id="pwgo">Change</button></div></div>`;
  $('#pwgo').onclick=()=>post('/api/auth/password',{current:$('#pw0').value,new:$('#pw1').value}).then(()=>{closeAll();toast('Password changed.')}).catch(e=>$('#pwe').textContent=e.message)}
 function runsCard(){if(!runsCard.data){API('/api/runs').then(r=>{runsCard.data=r;render()}).catch(()=>{});return card('Ingestion runs','<div class="pad muted">Loading…</div>')}
- return card('Ingestion runs (latest first)',xt([{h:'Run'},{h:'When'},{h:'By'},{h:'Status'},{h:'Result'}],runsCard.data.map(r=>({c:[`#${r.id}${r.is_current?' · current':''}`,new Date(r.created_at+'Z').toLocaleString('en-GB'),esc(r.created_by),pill(r.status,{succeeded:'g',failed:'r',running:'a'}[r.status]||''),r.summary?Object.entries(r.summary).map(([k,v])=>`${k}: NAV ${f(v.nav)} · ${v.passed}/${v.rules} pass`).join('; '):esc(r.error||'')],d:kvg([['Period',r.period||'—'],['Finished',r.finished_at?new Date(r.finished_at+'Z').toLocaleString('en-GB'):'—'],['Error',esc(r.error||'—')]])}))))}
+ return card('Ingestion runs (latest first)',xt([{h:'Run'},{h:'When'},{h:'By'},{h:'Status'},{h:'Result'}],runsCard.data.map(r=>({c:[`#${r.id}${r.is_current?' · current':''}`,new Date(r.created_at+'Z').toLocaleString('en-GB'),esc(r.created_by),pill(r.status,{succeeded:'g',failed:'r',running:'a'}[r.status]||''),r.summary?Object.entries(r.summary).map(([k,v])=>`${k}: NAV ${f(v.nav)} · ${v.passed}/${v.rules} pass`).join('; '):esc(r.error||r.note||'')],d:kvg([['Period',r.period||'—'],['Finished',r.finished_at?new Date(r.finished_at+'Z').toLocaleString('en-GB'):'—'],['Error',esc(r.error||'—')]])}))))}
 function reportModal(n){if(RR()&&n===RR().title)return regModal();const r=REPORTS().find(x=>x[0]===n),s=S(),m=$('#modal'),run=st.reports.find(x=>x.n===n&&x.s===st.s);m.className='modal wide on';$('#ov').classList.add('on');
  m.innerHTML=`<div class="rp-bar"><b>${n}</b><span style="display:flex;gap:8px;align-items:center"><span class="chip ${st.nav[st.s]==='locked'?'g':'a'}">${st.nav[st.s]==='locked'?'Built from locked '+'NAV v'+NV()+'':'Preview · NAV not locked'}</span><button class="btn sm" data-act="printrep">Print / save PDF</button><button class="btn sm" data-act="closemodal">Close</button></span></div><div class="rp-wrap"><div class="rp"><div class="rp-h"><span class="brand-mark">TF</span><div><b>${M().name}</b><small>${M().category} · ${M().regulator} ${M().reg_no}</small></div><div class="rp-d">${PL()}<br>As at ${QE()}</div></div><div class="rp-b"><h2>${n}</h2><p class="lead">Prepared for: ${r[1]} · output ${r[2].toUpperCase()}</p><div class="kp">${[['NAV',f(s.nav_close)],['NAV / unit A',f(s.classes.A.nav_per_unit)],['Called',f(-s.close_tb[3100],2)],['Net IRR',(s.expected.performance.irr*100).toFixed(2)+'%']].map(([a,b])=>`<div><small>${a}</small><b>${b}</b></div>`).join('')}</div><h3>Detail</h3>${r[3]()}<div class="sig"><div>Prepared by ${esc(MK())}, finance maker</div><div>${st.nav[st.s]==='locked'?'Approved by '+esc(CK()):'Awaiting approval by the finance checker'}</div></div></div><div class="rp-f"><span>${esc(M().name)} · ${U()}</span><span>run ${run?run.h:''}</span></div></div></div>`}
 /* ---------- administration (administrator only; the server refuses these calls for anyone else) ---------- */
@@ -1188,11 +1236,13 @@ function pwResetModal(id){const u=adminData.users.find(x=>x.id==id),m=$('#modal'
  $('#rp-go').onclick=()=>API('/api/admin/users/'+id,{method:'PATCH',body:JSON.stringify({password:$('#rp-p').value})}).then(()=>{closeAll();toast('Password reset.')}).catch(e=>$('#rp-e').textContent=e.message)}
 async function patchUser(id,body,msg){try{await API('/api/admin/users/'+id,{method:'PATCH',body:JSON.stringify(body)});toast(msg);adminData.loaded=false;render()}catch(e){toast(e.message)}}
 async function deleteModal(pre){if(!CANDEL)return;let list;try{list=await API('/api/admin/files')}catch(e){return toast(e.message)}
- const m=$('#modal');m.className='modal wide on';$('#ov').classList.add('on');let rows=list.filter(x=>x.scheme===st.s);const sel=new Set(pre&&rows.some(x=>x.file===pre&&!x.refused)?[pre]:[]);
- m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 4px;font-size:19px">Delete source files · ${esc(M().name)}</h2><p class="muted" style="margin:0 0 12px">The selected files are removed from this quarter. The books are recomputed without them and become current only if that succeeds, and a NAV draft or submission is replaced by a new draft. Each deletion is recorded in the audit log; earlier ingestion runs keep their own copies. Required files cannot be deleted (upload a corrected file instead, which replaces them), and nothing can be deleted from a locked quarter.</p>
- <input id="dlq" class="inp" placeholder="Filter by file name or type" style="width:100%;margin-bottom:10px"><div id="dll" style="max-height:44vh;overflow:auto;border:1px solid var(--line);border-radius:10px"></div><div class="uplog" id="dlog" style="display:none"></div>
- <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px"><span id="dlc" class="muted"></span><span style="display:flex;gap:8px"><button class="btn sm" data-act="closemodal">Close</button><button class="btn sm danger" id="dlgo" disabled>Delete selected</button></span></div></div>`;
- const count=()=>{$('#dlc').textContent=sel.size?`${sel.size} selected`:'Nothing selected';const b=$('#dlgo');b.disabled=!sel.size;delete b.dataset.sure;b.textContent='Delete selected'};
+ const m=$('#modal');m.className='modal wide on';$('#ov').classList.add('on');let rows=list.filter(x=>x.scheme===st.s);
+ const nAll=list.length,per={},locked=[...new Set(list.filter(x=>x.locked).map(x=>x.scheme))];list.forEach(x=>per[x.scheme]=(per[x.scheme]||0)+1);const sel=new Set(pre&&rows.some(x=>x.file===pre&&!x.refused)?[pre]:[]);
+ m.innerHTML=`<div class="modal-b"><h2 style="margin:0 0 4px;font-size:19px">Delete source files · ${esc(M().name)}</h2><p class="muted" style="margin:0 0 12px">The selected files are removed from this quarter. The books are recomputed without them and become current only if that succeeds, and a NAV draft or submission is replaced by a new draft. Each deletion is recorded in the audit log; earlier ingestion runs keep their own copies. Required files cannot be deleted (upload a corrected file instead, which replaces them), and nothing can be deleted from a locked quarter. <b>Delete all files</b> clears the whole quarter (both schemes and the opening balances) so it can be uploaded again from scratch.</p>
+ <input id="dlq" class="inp" placeholder="Filter by file name or type" style="width:100%;margin-bottom:10px"><div id="dll" style="max-height:44vh;overflow:auto;border:1px solid var(--line);border-radius:10px"></div><div class="note danger" id="dlw" style="display:none"></div><div class="uplog" id="dlog" style="display:none"></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px"><span id="dlc" class="muted"></span><span style="display:flex;gap:8px"><button class="btn sm" data-act="closemodal">Close</button><button class="btn sm danger-o" id="dlall" ${!nAll||locked.length?'disabled':''} title="${locked.length?esc(`Scheme ${locked.join(', ')}: the quarter is locked (NAV approved), so its files cannot be deleted`):`Delete all ${nAll} files of every scheme`}">Delete all files</button><button class="btn sm danger" id="dlgo" disabled>Delete selected</button></span></div></div>`;
+ const count=()=>{$('#dlc').textContent=(sel.size?`${sel.size} selected`:'Nothing selected')+(locked.length?` · scheme ${locked.join(', ')} locked: Delete all is off`:'');const b=$('#dlgo');b.disabled=!sel.size;delete b.dataset.sure;b.textContent='Delete selected';
+  const a=$('#dlall');if(a.dataset.sure){delete a.dataset.sure;a.textContent='Delete all files';$('#dlw').style.display='none'}};
  const draw=()=>{const q=$('#dlq').value.trim().toLowerCase();$('#dll').innerHTML=`<table class="t compact"><tbody>${rows.filter(x=>!q||x.file.toLowerCase().includes(q)||x.label.toLowerCase().includes(q)).map(x=>`<tr class="row"><td style="width:30px"><input type="checkbox" data-dl="${esc(x.file)}" ${sel.has(x.file)?'checked':''} ${x.refused?'disabled':''} aria-label="Select ${esc(x.file)}"></td><td><span class="mono" style="font-size:11.5px">${esc(x.file)}</span><div class="muted" style="font-size:12px">${esc(x.label)} · ${(x.size/1024).toFixed(0)} KB · ${x.parsed?'read for figures: the books change without it':'evidence document'}${x.evidence_for.length?` · <b style="color:#B45309">evidence for ${x.evidence_for.map(esc).join(', ')}: check R16 will fail without it</b>`:''}${x.refused?` · ${esc(x.refused)}`:''}</div></td></tr>`).join('')||'<tr><td class="muted" style="padding:14px">No files match.</td></tr>'}</tbody></table>`;count()};
  draw();$('#dlq').oninput=draw;
  $('#dll').onchange=e=>{const f=e.target.dataset.dl;if(f==null)return;e.target.checked?sel.add(f):sel.delete(f);count()};
@@ -1201,14 +1251,19 @@ async function deleteModal(pre){if(!CANDEL)return;let list;try{list=await API('/
   try{const r=await post('/api/admin/files/delete',{scheme:st.s,files:[...sel]});lg.innerHTML=(r.log||[]).map(([k,t])=>`<div class="${k==='g'?'':k}">${k==='g'?'✓ ':k==='r'?'✗ ':''}${esc(t)}</div>`).join('');lg.scrollTop=lg.scrollHeight;
    if(r.status==='succeeded'){sel.clear();await loadAll();rows=(await API('/api/admin/files')).filter(x=>x.scheme===st.s);draw();toast(`Run ${r.id}: ${r.summary&&r.summary[st.s]?`files deleted; ${r.summary[st.s].passed}/${r.summary[st.s].rules} checks pass, ${r.summary[st.s].failed} fail`:'files deleted'}.`)}
    else toast('Nothing deleted: '+(r.error||'see log'))}catch(e){lg.innerHTML+=`<div class="r">${esc(e.message)}</div>`}
-  count()}}
+  count()};
+ $('#dlall').onclick=async()=>{const b=$('#dlall');if(!b.dataset.sure){count();b.dataset.sure=1;b.textContent=`Confirm: delete all ${nAll} files`;const w=$('#dlw');w.style.display='block';
+   w.innerHTML=`<b>Delete all ${nAll} source files?</b> ${Object.entries(per).sort(([a],[b])=>(a==='shared')-(b==='shared')||a.localeCompare(b)).map(([k,v])=>k==='shared'?`${v} shared (opening balances)`:`scheme ${esc(k)}: ${v}`).join(' · ')}.<br>The dashboard will be empty for every user until the quarter is uploaded again. That upload builds the books from scratch and each scheme's NAV starts as a new draft. Earlier ingestion runs keep their copies, and the audit log records the deletion.`;return}
+  b.disabled=true;$('#dlgo').disabled=true;const lg=$('#dlog');lg.style.display='block';lg.innerHTML='<div class="k">Deleting all files…</div>';
+  try{await post('/api/admin/files/delete-all',{confirm:'DELETE ALL'});closeAll();await loadAll();toast(`All ${nAll} files deleted. Upload the quarter's zip to load it again.`)}
+  catch(e){lg.innerHTML=`<div class="r">✗ ${esc(e.message)}</div>`;b.disabled=false;delete b.dataset.sure;b.textContent='Delete all files';$('#dlw').style.display='none'}}}
 Object.assign(ACT,{adduser:()=>userModal(),resetpw:id=>pwResetModal(id),delfiles:a=>deleteModal(a),
  setrole:id=>patchUser(id,{role:$('#ur-'+id).value},'Role changed. It applies from their next click.'),
  toggleuser:id=>{const u=adminData.users.find(x=>x.id==id);patchUser(id,{active:!u.active},u.active?`${u.username} deactivated.`:`${u.username} activated.`)}});
 ACT.closemodal=closeAll;
 ACT.sch=a=>{st.s=a;render.keep=false;render()};
 function render(){const ex=exceptions(),od=S().obligations.filter(b=>b.status==='Open'&&days(b.due,st.clock)<0).length,r=role();
- $('#nb').textContent=ex.length;
+ $('#nb').textContent=ex.length;$('#nb').style.display='';
  $('#notif').innerHTML=`<div class="notif-h"><b>Exceptions</b><button class="link" data-act="go" data-arg="exceptions" style="font-size:13px">Open all</button></div>${ex.slice(0,6).map(e=>`<a data-act="go" data-arg="${e.go}"><span class="d"></span><span>${esc(e.title)}<small>${e.sev} · ${e.area}</small></span></a>`).join('')}`;
  $('#uchip').innerHTML=`<span class="avatar">${esc(ME.full_name).split(' ').map(x=>x[0]).slice(0,2).join('')}</span><span class="uc-t"><b>${esc(ME.full_name)}</b><small>${r[2]}</small></span><span class="role-badge">${r[0].replace('_',' ')}</span>${ic('down',14)}`;
  $('#umenu').innerHTML=`<div class="um-h"><b>${esc(ME.full_name)}</b><div class="muted" style="font-size:12.5px">${esc(ME.username)} · ${r[2]}</div></div><button class="um-i" data-act="pwd" role="menuitem">Change password<small>at least 10 characters</small></button><button class="um-i" data-act="logout" role="menuitem">Sign out<small>end this session</small></button>`;
@@ -1237,7 +1292,7 @@ window.addEventListener('hashchange',route);
 document.addEventListener('dragover',e=>{if(e.target.closest&&e.target.closest('#dropz')){e.preventDefault()}});
 document.addEventListener('drop',e=>{if(e.target.closest&&e.target.closest('#dropz')){e.preventDefault();uploadModal()}});
 /* ---------- server ---------- */
-let ME=null,BRAND={},RUN=null,CANUP=false,ACC=null,CANDEL=false;
+let ME=null,BRAND={},RUN=null,CANUP=false,ACC=null,CANDEL=false,UPSEC=20;
 async function API(path,opt={}){const h={'X-Requested-With':'trackfund',...(opt.headers||{})};if(opt.body&&typeof opt.body==='string')h['Content-Type']='application/json';
  const r=await fetch(path,{credentials:'same-origin',...opt,headers:h});let j=null;try{j=await r.json()}catch(e){}
  if(r.status===401&&!path.startsWith('/api/auth/login')){showLogin();throw new Error('Please sign in again.')}
@@ -1247,9 +1302,9 @@ function applyState(x){['nav','navv','reports','str','appr','mapOk','valOk','not
 async function doAct(name,arg){try{const r=await post('/api/actions/'+name,{scheme:st.s,arg:arg==null?null:String(arg),clock:st.clock});applyState(r.state);if(r.data)DATA=r.data;render();toast(r.message);return r}catch(e){toast(e.message);return null}}
 function showLogin(){$('#login').classList.add('on');setTimeout(()=>$('#lu').focus(),50)}
 $('#loginf').addEventListener('submit',async e=>{e.preventDefault();$('#lerr').textContent='';try{await post('/api/auth/login',{username:$('#lu').value,password:$('#lp').value});$('#lp').value='';$('#login').classList.remove('on');await loadAll()}catch(err){$('#lerr').textContent=err.message}});
-function emptyPage(){$('#main').innerHTML=`<div class="page"><div class="empty-state"><h2>No quarter loaded yet</h2><p>Upload the quarter's source files as one zip: a folder per scheme (<code>scheme_A_…</code>, <code>scheme_B_…</code>) and <code>shared/</code> with the locked opening balances.</p>${CANUP?btn('Upload files','upload','p'):'<p class="muted">Ask the finance maker to upload the files.</p>'}</div></div>`;
+function emptyPage(){$('#nb').style.display='none';$('#notif').innerHTML='';$('#main').innerHTML=`<div class="page"><div class="empty-state"><h2>No quarter loaded yet</h2><p>Upload the quarter's source files as one zip: a folder per scheme (<code>scheme_A_…</code>, <code>scheme_B_…</code>) and <code>shared/</code> with the locked opening balances.</p>${CANUP?btn('Upload files','upload','p'):'<p class="muted">Ask the finance maker to upload the files.</p>'}</div></div>`;
  $('#side').innerHTML='';$('#uchip').innerHTML=`<span class="uc-t"><b>${esc(ME.full_name)}</b><small>${role()?role()[2]:ME.role}</small></span>`;$('#umenu').innerHTML=`<button class="um-i" data-act="logout" role="menuitem">Sign out</button>`}
-async function loadAll(){const d=await API('/api/dashboard');ME=d.user;ACC=d.user.access;BRAND=d.brand||{};RUN=d.run;CANUP=d.can_ingest;CANDEL=!!d.can_delete;adminData.loaded=false;ROLES=d.directory;st.role=ME.role;applyState(d.state);DATA=d.data;
+async function loadAll(){const d=await API('/api/dashboard');ME=d.user;ACC=d.user.access;BRAND=d.brand||{};RUN=d.run;CANUP=d.can_ingest;CANDEL=!!d.can_delete;UPSEC=d.upload_progress_s??20;adminData.loaded=false;ROLES=d.directory;st.role=ME.role;applyState(d.state);DATA=d.data;
  $('#brandtag').innerHTML=esc(BRAND.client_label||'').replace(' · ','<br>');
  if(!DATA){emptyPage();return}
  if(!DATA.schemes[st.s])st.s=Object.keys(DATA.schemes)[0];route()}

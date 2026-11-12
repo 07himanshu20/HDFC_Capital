@@ -16,13 +16,13 @@ from sqlalchemy.orm import Session
 from . import __version__
 from . import access
 from .bootstrap import init_db
-from .config import COOKIE_SECURE, SESSION_HOURS, MAX_UPLOAD_MB
+from .config import COOKIE_SECURE, SESSION_HOURS, MAX_UPLOAD_MB, UPLOAD_PROGRESS_SECONDS
 from .db import get_db
 from .models import User, IngestionRun, SourceFile, Journal, BankLine, TrialBalanceLine, CapitalAccount, Setting, ReportRun
 from .security import verify_password, make_token, read_token, fingerprint, hash_password
 from .services import workflow as wf
 from .services import reports as rep
-from .services.ingest import ingest, delete_files, deletable, DeleteRefused
+from .services.ingest import ingest, delete_files, delete_all, deletable, DeleteRefused
 
 STATIC = Path(__file__).parent / 'static'
 COOKIE = 'tf_session'
@@ -151,7 +151,8 @@ def dashboard(u: User = Depends(current_user), db: Session = Depends(get_db)):
     return dict(data=data, state=st, user=_user_out(u), directory=_directory(db), brand=(prof.value.get('brand') if prof else {}) or {},
                 run=dict(id=run.id, created_at=run.created_at.isoformat(), created_by=run.created_by, period=run.period_code,
                          summary=run.summary if show_run else None) if run else None,
-                can_ingest=access.can(u, 'upload'), can_delete=access.can(u, 'delete_files'), max_upload_mb=MAX_UPLOAD_MB)
+                can_ingest=access.can(u, 'upload'), can_delete=access.can(u, 'delete_files'), max_upload_mb=MAX_UPLOAD_MB,
+                upload_progress_s=UPLOAD_PROGRESS_SECONDS)
 
 
 @app.get('/api/state')
@@ -218,7 +219,8 @@ async def upload(files: list[UploadFile] = File(...), mode: str = Form('auto'), 
 
 def _run_out(r: IngestionRun, full=False):
     d = dict(id=r.id, created_at=r.created_at.isoformat(), finished_at=r.finished_at.isoformat() if r.finished_at else None, created_by=r.created_by, status=r.status,
-             is_current=r.is_current, period=r.period_code, error=r.error, summary=r.summary)
+             is_current=r.is_current, period=r.period_code, error=r.error, summary=r.summary,
+             note=r.log[-1][1] if r.status == 'succeeded' and not r.summary and r.log else None)
     if full:
         d['log'] = r.log
     return d
@@ -436,6 +438,7 @@ def admin_files(a: User = Depends(admin_user), db: Session = Depends(get_db)):
     locked = {s: wf.is_locked(db, s, v['meta']['period']['code']) for s, v in (run.dashboard or {}).get('schemes', {}).items()}
     out = deletable(db, run)
     for x in out:
+        x['locked'] = bool(locked.get(x['scheme']))
         if not x['refused'] and locked.get(x['scheme']):
             x['refused'] = 'The quarter is locked (NAV approved).'
     return out
@@ -445,6 +448,22 @@ def admin_files(a: User = Depends(admin_user), db: Session = Depends(get_db)):
 def admin_delete_files(body: DeleteIn, a: User = Depends(admin_user), db: Session = Depends(get_db)):
     try:
         run = delete_files(db, a, body.scheme.strip().upper(), body.files)
+    except DeleteRefused as e:
+        raise HTTPException(409, str(e))
+    return _run_out(run, full=True)
+
+
+class DeleteAllIn(BaseModel):
+    confirm: str
+
+
+@app.post('/api/admin/files/delete-all')
+def admin_delete_all(body: DeleteAllIn, a: User = Depends(admin_user), db: Session = Depends(get_db)):
+    """every source file of the current quarter, all schemes: nothing is loaded until the next upload"""
+    if body.confirm != 'DELETE ALL':
+        raise HTTPException(400, 'Send confirm: "DELETE ALL" to delete every file.')
+    try:
+        run = delete_all(db, a)
     except DeleteRefused as e:
         raise HTTPException(409, str(e))
     return _run_out(run, full=True)

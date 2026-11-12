@@ -168,6 +168,40 @@ def delete_files(db, user, scheme, rels):
     return run
 
 
+def delete_all(db, user):
+    """
+    Remove every source file of the current quarter, for all schemes (administrator only). Nothing is loaded afterwards: the
+    dashboard is empty until the next upload, which then builds the books from scratch. Earlier runs keep their own copies
+    (history), the NAV draft or submission of each scheme is replaced by a new draft on that upload, and a locked quarter
+    cannot be cleared.
+    """
+    prev = current_run(db)
+    if prev is None:
+        raise DeleteRefused('No data loaded yet.')
+    schemes = {s: v['meta']['period']['code'] for s, v in (prev.dashboard or {}).get('schemes', {}).items()}
+    locked = [f"{s} ({p[:2]} {p[2:]})" for s, p in schemes.items() if is_locked(db, s, p)]
+    if locked:
+        raise DeleteRefused(f"Scheme {', '.join(locked)} is locked (NAV approved). Files of a locked quarter cannot be deleted.")
+    files = list(prev.files)
+    counts = {s: sum(1 for f in files if f.scheme == s) for s in sorted({f.scheme for f in files})}
+    up = Upload(uploaded_by=user.full_name, original_names=['delete all files'], mode='delete-all', file_count=0, bytes=0)
+    db.add(up)
+    db.flush()
+    now = datetime.utcnow()
+    note = (f"All {len(files)} source files deleted ({', '.join(f'{s} {n}' for s, n in counts.items())}) by {user.full_name}. "
+            f"Nothing is loaded until the next upload; run {prev.id} keeps its copies.")
+    run = IngestionRun(upload_id=up.id, created_by=user.full_name, status='succeeded', workspace='', period_code=prev.period_code,
+                       log=[['w', note]], finished_at=now)
+    db.add(run)
+    prev.is_current = False
+    db.flush()
+    for s in schemes:
+        audit(db, user.full_name, access.role_of(user), s, 'ALL_FILES_DELETED',
+              f"{counts.get(s, 0)} files of scheme {s} and {counts.get('shared', 0)} shared · run {run.id} (was run {prev.id})")
+    db.commit()
+    return run
+
+
 def _process(db, user, run, prev, log, scheme_hint, build):
     """build the run workspace, run the pipeline, persist, make current.  Any failure leaves the current books untouched."""
     ws = run_dir(run.id)

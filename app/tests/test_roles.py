@@ -20,18 +20,24 @@ def login(c, user, pw=PW):
     return r.json()
 
 
+def upload_quarter(c, dataset):
+    import io, zipfile
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, 'w') as z:
+        for p in dataset.rglob('*'):
+            if p.is_file() and not p.name.startswith('.'):
+                z.write(p, 'Q2FY27/' + str(p.relative_to(dataset)))
+    r = c.post('/api/uploads', files={'files': ('q.zip', buf.getvalue(), 'application/zip')}, headers=H).json()
+    assert r['status'] == 'succeeded', r.get('error')
+    return r
+
+
 @pytest.fixture(scope='module')
 def client(dataset):
     with TestClient(app) as c:
         login(c, 'admin')
         if not c.get('/api/dashboard').json()['data']:          # running this file alone: load the quarter first
-            import io, zipfile
-            buf = io.BytesIO()
-            with zipfile.ZipFile(buf, 'w') as z:
-                for p in dataset.rglob('*'):
-                    if p.is_file() and not p.name.startswith('.'):
-                        z.write(p, 'Q2FY27/' + str(p.relative_to(dataset)))
-            assert c.post('/api/uploads', files={'files': ('q.zip', buf.getvalue(), 'application/zip')}, headers=H).json()['status'] == 'succeeded'
+            upload_quarter(c, dataset)
         yield c
 
 
@@ -171,3 +177,42 @@ def test_user_administration(client):
     assert client.patch(f"/api/admin/users/{me['id']}", json={'active': False}, headers=H).status_code == 409      # not yourself
     assert client.patch(f"/api/admin/users/{me['id']}", json={'role': 'IR'}, headers=H).status_code == 409        # last administrator
     assert client.get('/api/admin/access').json()['roles'][0]['role'] == 'ADMIN'
+
+
+def test_delete_all_then_upload_again(client, dataset, monkeypatch):
+    ALL = {'confirm': 'DELETE ALL'}
+    login(client, 'renuka')
+    assert client.post('/api/admin/files/delete-all', json=ALL, headers=H).status_code == 403
+    login(client, 'admin')
+    assert client.post('/api/admin/files/delete-all', json={'confirm': 'yes'}, headers=H).status_code == 400
+    r = client.post('/api/admin/files/delete-all', json=ALL, headers=H)
+    assert r.status_code == 409 and 'locked' in r.json()['detail']                       # scheme A was approved in test_api
+    before = client.get('/api/dashboard').json()
+    run_before = before['run']['id']
+    assert before['data'] is not None
+
+    # the rest as if no quarter were locked
+    from trackfund.services import ingest
+    monkeypatch.setattr(ingest, 'is_locked', lambda *a: False)
+    r = client.post('/api/admin/files/delete-all', json=ALL, headers=H).json()
+    assert r['status'] == 'succeeded' and r['note'].startswith('All ') and not r['is_current']
+    d = client.get('/api/dashboard').json()
+    assert d['data'] is None and d['run'] is None                                       # nothing loaded, for every role
+    login(client, 'auditor')
+    assert client.get('/api/dashboard').json()['data'] is None
+    assert client.get('/api/files/B/Deal_Master_SchemeB.xlsx').status_code == 404
+    login(client, 'admin')
+    assert client.get('/api/admin/files').json() == []
+    assert client.post('/api/admin/files/delete-all', json=ALL, headers=H).status_code == 409          # nothing left to delete
+    runs = client.get('/api/runs').json()
+    assert runs[0]['id'] == r['id'] and runs[0]['note'] and not any(x['is_current'] for x in runs)
+    assert client.get(f'/api/runs/{run_before}').status_code == 200                      # history kept
+
+    # upload the quarter again: the same books
+    upload_quarter(client, dataset)
+    after = client.get('/api/dashboard').json()
+    for s, v in before['data']['schemes'].items():
+        assert after['data']['schemes'][s]['nav_close'] == v['nav_close']
+        assert {f['file'] for f in v['files']} <= {f['file'] for f in after['data']['schemes'][s]['files']}
+    assert after['state']['nav']['B'] == 'draft'
+    assert sum(e['action'] == 'ALL_FILES_DELETED' for e in after['state']['audit']) == len(before['data']['schemes'])
