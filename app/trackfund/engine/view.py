@@ -5,7 +5,7 @@ details, provider display names, investor payment banks) which is master data ke
 """
 import re
 from decimal import Decimal as D
-from datetime import date
+from datetime import date, timedelta
 
 from ..parsing.util import num, dt, dt_or_none, col, col_or, q
 from .coa import GL
@@ -40,6 +40,59 @@ def _prior_cycle(X):
             if m:
                 return dt(m.group(1))
     return None
+
+
+
+def _cp_lists(X):
+    """Conditions checklists per instrument, from CP_Checklist_<instrument>_T<n>.xlsx (or the title '... - <instrument> tranche <n>').
+    Each condition keeps the date the file gives it; the list is in date order."""
+    out = {}
+    for c in X.get('cp_checklists', []):
+        m = re.search(r'CP_Checklist_(.+?)_T(\d+)\.xlsx$', c['file']) or re.search(r'-\s*(\S+)\s+tranche\s+(\d+)', c.get('title', ''), re.I)
+        if not m:
+            continue
+        rows = []
+        for r in c['rows']:
+            dm = re.search(r'\d{1,2}-[A-Za-z]{3}-\d{4}|\d{4}-\d{2}-\d{2}', r['detail'] or '')
+            rows.append(dict(no=r['no'], condition=r['condition'], met=str(r['met'] or '').strip().lower() == 'yes', date=dt_or_none(dm.group(0)) if dm else None,
+                             detail=r['detail'] or '', evidence=r['evidence'] or ''))
+        rows.sort(key=lambda r: (r['date'] is None, r['date'] or date.min, r['no']))
+        out.setdefault(m.group(1), []).append(dict(tranche=int(m.group(2)), title=c.get('title', ''), file=c['file'], rows=rows))
+    return out
+
+
+def _filings(X):
+    """Statutory filings per instrument as the documents state them: ROC charge (CHG-9), FC-GPR, pricing certificate."""
+    out = {}
+    tr = lambda v: int(num(v)) or None
+    for f in X.get('charge_filings', []):
+        mod = dt_or_none(f.get('Date of modification') or f.get('Date of creation'))
+        out.setdefault(f.get('Instrument ID'), []).append(dict(
+            kind='charge', form=f"ROC charge ({f.get('Form') or 'CHG'})", ref=f.get('SRN', ''), tranche=None, event=mod,
+            due=mod + timedelta(days=30) if mod else None, filed=dt_or_none(f.get('Filed date')), status=f.get('Status', ''), status_date=None, file=f['file']))
+    for f in X.get('fcgpr', []):
+        ack = dt_or_none(f.get('Acknowledgement date'))
+        out.setdefault(f.get('Instrument ID'), []).append(dict(
+            kind='fema', form=f.get('Form') or 'FC-GPR', ref=f.get('Acknowledgement No', ''), tranche=tr(f.get('Tranche no')), event=dt_or_none(f.get('Allotment date')),
+            due=dt_or_none(f.get('Due date')), filed=dt_or_none(f.get('Filed date')), status='Acknowledged' if ack else (f.get('Status') or ''), status_date=ack, file=f['file']))
+    for f in X.get('pricing_certs', []):
+        out.setdefault(f.get('Instrument ID'), []).append(dict(
+            kind='pricing', form='Pricing certificate', ref=f.get('Certificate No', ''), tranche=tr(f.get('Tranche no')), event=None, due=None,
+            filed=dt_or_none(f.get('Certificate date')), status='On file', status_date=None, file=f['file']))
+    return out
+
+
+def _aml(X):
+    """FIU-IND registration, the Form 61B filing (compliance calendar) and net-worth certificates, for the KYC page."""
+    fg = X.get('fingate')
+    ob = next((r for r in X['calendar'] if '61B' in str(r.get('Obligation', ''))), None)
+    return dict(
+        fiu=dict(entity=fg.get('Reporting entity', ''), reg_no=fg.get('FIU registration no', ''), po=fg.get('Principal Officer', ''), dd=fg.get('Designated Director', ''),
+                 reg_date=dt_or_none(fg.get('Registration date')), status=fg.get('Status', ''), file=fg['file']) if fg else None,
+        form61b=dict(name=str(ob.get('Obligation', '')), period=str(ob.get('Period') or ''), due=dt_or_none(ob.get('Due date')), filed=dt_or_none(ob.get('Completed / filed date')),
+                     status=ob.get('Status') or '', evidence=ob.get('Evidence file') or '') if ob else None,
+        networth=[dict(investor=f.get('Investor ID', ''), name=f.get('Investor', ''), date=dt_or_none(f.get('Certificate date')), amount=num(f.get('Net worth certified (INR cr)')),
+                       file=f['file']) for f in X.get('networth', [])])
 
 
 def scheme_view(X, Bk, profile=None):
@@ -95,6 +148,14 @@ def scheme_view(X, Bk, profile=None):
     kreg = {r['Investor ID']: r for r in X['kyc']['register']}
     fat = {r['Investor ID']: r for r in X['kyc']['fatca']}
     banks = pp.get('investor_banks', {})
+    # KYC register sheets: documents held and screening runs per investor (dates, lists, outcome, who verified)
+    kdocs, kscreen = {}, {}
+    for d_ in X['kyc']['documents']:
+        kdocs.setdefault(d_['Investor ID'], []).append(dict(type=d_.get('Document type', ''), file=d_.get('File') or '', received=dt_or_none(d_.get('Received date')),
+                                                            refresh=dt_or_none(d_.get('Expiry / refresh date')), verified_by=d_.get('Verified by') or ''))
+    for s_ in X['kyc']['screening']:
+        kscreen.setdefault(s_['Investor ID'], []).append(dict(date=dt_or_none(s_.get('Run date')), lists=s_.get('Lists') or '', hits=int(num(s_.get('Hits'))),
+                                                              outcome=s_.get('Disposition') or '', reviewer=s_.get('Reviewer') or ''))
     investors = []
     for r in X['investor_register']['investors']:
         i = r['Investor ID']
@@ -105,6 +166,8 @@ def scheme_view(X, Bk, profile=None):
             id=i, name=r['Legal name'], type=r['Type'], country=r['Country'], cls=r['Unit class'], commit=u(col(r, 'Commitment')), wht=num(col(r, 'rate')),
             risk=k.get('Risk rating', ''), pep=k.get('PEP flag', ''), refresh=dt_or_none(k.get('Next refresh date')), fatca=fc.get('FATCA status', ''), crs=fc.get('CRS status', ''),
             bo=k.get('Beneficial ownership summary', ''), tin=fc.get('TIN / PAN', '') or '', giin=fc.get('GIIN') or '', bank=banks.get(i, ''),
+            screened=dt_or_none(k.get('Last screening date')), reportable=str(fc.get('Reportable') or '').strip().lower() == 'yes',
+            selfcert=fc.get('Self-certification file') or '', kyc_docs=kdocs.get(i, []), screening=kscreen.get(i, []),
             ca=dict(cls=c['cls'], opening=c['opening'], contributions=c['contributions'], distributions_roc=c['distributions_roc'], distributions_income=c['distributions_income'],
                     income_alloc=c['income_alloc'], fee_alloc=c['fee_alloc'], expense_alloc=c['expense_alloc'], fv_alloc=c['fv_alloc'], fx_alloc=c['fx_alloc'],
                     carry_alloc=c['carry_alloc'], closing=c['closing'], units=c['units'], units_open=c['units_open'], nav_per_unit=c['nav_per_unit'])))
@@ -112,6 +175,7 @@ def scheme_view(X, Bk, profile=None):
 
     # ---------------- instruments ----------------
     instruments = []
+    cps, filings = _cp_lists(X), _filings(X)
     summ = X['instrument_summaries']
     vin = X['valuation_inputs']
     prior_hdr = next((h for h in (next(iter(vin['summary'].values()), {}) or {}) if h.startswith('FV adjustment at')), None)
@@ -152,6 +216,7 @@ def scheme_view(X, Bk, profile=None):
             cost_total=(num(mis_rows[0]['cost']) + num(mis_rows[0]['ctc'])) if mis_rows else None,
             cov=dict(vel=mb['sold'], coll=mb['coll'], cover=mb['cover'], ds=mb['ds'], tests=tests),
             accr=[dict(a) for a in Bk['accr_hist'].get(k, [])],
+            cp=cps.get(k, []), filings=filings.get(k, []),
         ))
 
     # ---------------- journals and bank ----------------
@@ -208,11 +273,17 @@ def scheme_view(X, Bk, profile=None):
                     carry_provision=str(Bk['carry']), units_total=Bk['units_total'], units_open_total=Bk['units_open_total'],
                     nav_per_unit_fund=str(q(Bk['nav_close'] * sc / Bk['units_total'], 4)))
 
+    # rates as the files give them, for the captions of the FX, quarter-close and Tally pages
+    fx_dates = sorted(X['fx'])
+    fx_info = dict(pair=X['fx_info']['pair'], first=fx_dates[0] if fx_dates else None, last=fx_dates[-1] if fx_dates else None,
+                   close_date=P['q_end'] if A else None, close_rate=X['fx'].get(P['q_end']) if A else None, memo_rate=Bk['memo'],
+                   sources=[X['fx_info']['source'].get(d_, '') for d_ in fx_dates])
+
     out = dict(
         meta=meta, investors=investors, side_letters=side_letters, instruments=instruments, journals=journals, bank=bank, open_cash=Bk['open_bank'] / sc,
         open_tb=Bk['open_tb'], close_tb=Bk['close_tb'], nav_open=Bk['nav_open'], nav_close=Bk['nav_close'], classes=Bk['classes'], expected=expected,
         calls_perf=[[d_, a] for d_, a in Bk['calls_perf']], dists_perf=[[d_, a] for d_, a in Bk['dists_perf']], fx=[[k, v] for k, v in sorted(X['fx'].items())],
-        fx_work=Bk['fx_work'], call=call, dist=dist, invoices=invoices, tally=tally, obligations=obligations, rules=list(Bk['rules']), files=files,
+        fx_work=Bk['fx_work'], fx_info=fx_info, aml=_aml(X), call=call, dist=dist, invoices=invoices, tally=tally, obligations=obligations, rules=list(Bk['rules']), files=files,
         reg_report=regulator_report(X, Bk, meta, investors, instruments),
     )
     return jsonable(out)

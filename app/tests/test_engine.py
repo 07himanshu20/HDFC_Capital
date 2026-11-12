@@ -14,6 +14,8 @@ SNAPSHOT = json.load(open(Path(__file__).parent / 'fixtures' / 'dashboard_snapsh
 
 # rules that differ from the original demo on purpose (see docs/DATA_FLOW.md, "Checks")
 RULE_CHANGES = {('G2', 'A'), ('R20', 'all'), ('N1', 'all')}
+# keys the product added to the dashboard data (not in the original demo)
+PRODUCT_KEYS = {'reg_report', 'fx_info', 'aml', 'screened', 'reportable', 'selfcert', 'kyc_docs', 'screening', 'cp', 'filings'}
 
 
 @pytest.fixture(scope='module')
@@ -66,8 +68,10 @@ def _diff(a, b, path, out):
     if isinstance(a, dict) and isinstance(b, dict):
         for k in set(a) | set(b):
             if k not in a or k not in b:
-                # added by the product (not in the original demo): meta.period, val_dates.prior, the regulator report model
-                if not (path.endswith('.meta') and k == 'period') and not (path.endswith('.val_dates') and k == 'prior') and k != 'reg_report':
+                # added by the product (not in the original demo): meta.period, val_dates.prior, the regulator report model,
+                # fx_info (rate pair, source, quarter-end and Tally rates for the page captions), and what the KYC and Deals pages
+                # read from the files instead of fixed text: aml, investor KYC documents / screening, instrument CP checklists / filings
+                if not (path.endswith('.meta') and k == 'period') and not (path.endswith('.val_dates') and k == 'prior') and k not in PRODUCT_KEYS:
                     out.append(f"{path}.{k} missing on one side")
             else:
                 _diff(a[k], b[k], f"{path}.{k}", out)
@@ -148,3 +152,83 @@ def test_regulator_workbook(result, dataset, tmp_path):
         g.save(p2)
         ok, checks = regreport.verify_workbook(p2, books, parse_prior_report)
         assert not ok and {c[0] for c in checks if not c[3]} == {'Net asset value', 'Part C total equals the NAV line'}
+
+
+def test_fx_captions_come_from_the_files(result):
+    """The FX, quarter-close and Tally pages print the pair, source, quarter-end and Tally rates sent with the data, not fixed text."""
+    data = json.loads(json.dumps(result['data']))
+    a = data['schemes']['A']['fx_info']
+    assert a['pair'] == 'USD/INR' and a['first'] == '2026-07-01' and a['last'] == a['close_date'] == '2026-09-30'
+    assert _num(a['close_rate']) == 89.4 and _num(a['memo_rate']) == 89.4
+    assert len(a['sources']) == len(data['schemes']['A']['fx']) == 66 and set(a['sources']) == {'FBIL reference rate (synthetic)'}
+    b = data['schemes']['B']['fx_info']
+    assert b['close_rate'] is None and b['memo_rate'] is None and b['sources'] == []
+
+
+def test_fx_pik_is_converted_for_a_usd_scheme(result):
+    """PIK interest accrues in INR. A USD scheme books it, capitalises it and adds it to cost at the quarter-end rate
+    (the dataset has no PIK in scheme A, so 2% PIK is set on I-A2 here)."""
+    import copy
+    from trackfund.engine.books import compute
+    from trackfund.parsing.util import q
+
+    base = result['books']['A']
+    X = copy.deepcopy(result['bundles']['A'])
+    row = next(r for r in X['deal']['instruments'] if r['Instrument ID'] == 'I-A2')
+    row[next(k for k in row if 'PIK coupon' in k)] = 2
+    Bk = compute(X, dict(journal_seq_start=1))
+    rate = X['fx'][X['period']['q_end']]
+    s = Bk['sched']['I-A2']
+    p_inr, p_fn = s['pik'], s['pik_fn']
+    assert p_inr > 0 and p_fn == q(p_inr * 10 / rate) and p_fn < p_inr / 8           # USD m, not INR cr
+    accr = next(j for j in Bk['journals'] if j['kind'] == 'ACCR_PIK')
+    cap = next(j for j in Bk['journals'] if j['kind'] == 'PIK_CAP')
+    assert [(l['gl'], l['amt']) for l in accr['lines']] == [(1300, p_fn), (4110, -p_fn)]
+    assert [(l['gl'], l['amt']) for l in cap['lines']] == [(1200, p_fn), (1300, -p_fn)]
+    assert all(l['txn_ccy'] == 'INR' and l['txn_amt'] == p_inr and l['rate'] == rate for l in accr['lines'] + cap['lines'])
+    assert Bk['cost']['I-A2'] == base['cost']['I-A2'] + p_fn and Bk['principal']['I-A2'] == base['principal']['I-A2'] + p_inr
+    assert Bk['tq'][4110] == -p_fn and Bk['close_tb'][1300] == 0
+    assert Bk['accr_hist']['I-A2'][-1]['fn'] == s['cash_fn'] + p_fn
+    # the translation is still recomputed from INR principal and USD cost, and the FX check passes
+    assert next(r for r in Bk['rules'] if r['rule'] == 'R9')['status'] == 'PASS'
+
+
+def test_fx_file_without_quarter_end_rate_is_refused(dataset, tmp_path):
+    """The translation needs the rate of the quarter's last day: without it the upload is refused with a clear reason."""
+    import shutil
+    from trackfund.parsing.extract import ParseError
+    work = tmp_path / 'ds'
+    shutil.copytree(dataset, work)
+    p = next((work / 'scheme_A_gift').glob('FX_Rates_*.csv'))
+    lines = p.read_text().splitlines(keepends=True)
+    assert lines[-1].startswith('30-Sep-2026')
+    p.write_text(''.join(lines[:-1]))
+    with pytest.raises(ParseError, match='no rate for 30-Sep-2026'):
+        run_layout(layout_from_dir(work), PROFILE)
+
+
+def test_kyc_and_deals_pages_read_the_files(result):
+    """Screening runs, KYC documents, FIU registration, Form 61B, CP checklists and filings are sent as the files give them."""
+    data = json.loads(json.dumps(result['data']))
+    a, b = data['schemes']['A'], data['schemes']['B']
+    i3 = next(i for i in a['investors'] if i['id'] == 'LP-A3')
+    assert i3['screened'] == '2026-10-12' and i3['reportable'] is True
+    assert [(r['date'], r['hits']) for r in i3['screening']] == [('2026-10-12', 1)] and i3['screening'][0]['outcome'].startswith('False positive')
+    assert len(i3['kyc_docs']) == 5 and i3['kyc_docs'][0]['received'] == '2025-09-19' and i3['kyc_docs'][0]['file'].startswith('KYC_Pack_')
+    assert next(i for i in a['investors'] if i['id'] == 'LP-A4')['kyc_docs'] == []
+    assert a['aml']['fiu']['reg_no'] == 'FIUREID/IFSC/9999999' and a['aml']['fiu']['reg_date'] == '2025-09-18'
+    assert a['aml']['form61b']['period'] == 'CY2025' and a['aml']['form61b']['filed'] == '2026-05-28'
+    assert b['aml']['fiu'] is None and [(n['investor'], _num(n['amount'])) for n in b['aml']['networth']] == [('LP-B3', 412.6)]
+    assert not any(i['reportable'] for i in b['investors'])
+
+    ia1 = next(x for x in a['instruments'] if x['id'] == 'I-A1')
+    cp = ia1['cp'][0]
+    assert cp['tranche'] == 2 and cp['file'] == 'CP_Checklist_I-A1_T2.xlsx' and len(cp['rows']) == 8 and all(r['met'] for r in cp['rows'])
+    assert [r['date'] for r in cp['rows']] == sorted(r['date'] for r in cp['rows'])                       # in date order
+    assert cp['rows'][0]['condition'].startswith('Investment committee') and cp['rows'][0]['date'] == '2026-07-24'
+    fl = {g['kind']: g for g in ia1['filings']}
+    assert (fl['charge']['ref'], fl['charge']['event'], fl['charge']['due'], fl['charge']['filed']) == ('ZZ99990001', '2026-08-05', '2026-09-04', '2026-08-10')
+    assert (fl['fema']['ref'], fl['fema']['due'], fl['fema']['filed'], fl['fema']['status_date']) == ('FCGPR/2026/AD999/000999', '2026-09-04', '2026-08-28', '2026-09-02')
+    assert (fl['pricing']['ref'], fl['pricing']['filed']) == ('BSC/FEMA/26-27/099', '2026-08-03')
+    ib1 = next(x for x in b['instruments'] if x['id'] == 'I-B1')
+    assert len(ib1['cp'][0]['rows']) == 6 and [g['kind'] for g in ib1['filings']] == ['charge']

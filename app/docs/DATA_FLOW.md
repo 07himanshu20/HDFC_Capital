@@ -45,7 +45,7 @@ Scheme A = GIFT IFSC, USD m. Scheme B = onshore, INR cr. "Both" means one file p
 | PPM term sheet | `PPM_Term_Sheet_Scheme{A,B}.pdf` | `Key: value` lines: currency, target, commitments, fee rate, hurdle, carry, late-payment rate, single-investee limit, minimum corpus, par, tax name; header: registration no, trustee, manager | Scheme header, FX handling (non-INR currency), late-payment interest (R6), limits (R19), fee check (S2), carry |
 | Investor register | `Investor_Register_Scheme{A,B}.xlsx` | `Investors` (commitment, class, WHT/TDS rate), `Classes`, `Closes`; Scheme B also `Side Letters` | Commitment weights for allocations, Class A fee base, tax rate check (R7), investor pages |
 | Side-letter summary | `Side_Letter_Summary_SchemeA.xlsx` | clause rows | Investors page |
-| KYC register | `KYC_Register_Scheme{A,B}.xlsx` | `KYC Register` (risk, PEP, refresh date, status), `Documents`, `Screening Log`, `FATCA-CRS` | KYC page, KYC gate (R17), refresh exceptions |
+| KYC register | `KYC_Register_Scheme{A,B}.xlsx` | `KYC Register` (risk, PEP, last screening and refresh dates, status), `Documents` (type, file, received date, verified by), `Screening Log` (run date, lists, hits, disposition, reviewer), `FATCA-CRS` (status, reportable, self-certification file) | KYC page (register, document vault, screening log, reportable accounts, self-certifications, CKYC records), KYC gate (R17), refresh exceptions |
 | Unit register | `Unit_Register_Scheme{A,B}.xlsx` | `Unit Ledger`, `Holdings` (units at quarter end) | Units check (R13) |
 
 ### Money in and out
@@ -64,13 +64,13 @@ Scheme A = GIFT IFSC, USD m. Scheme B = onshore, INR cr. "Both" means one file p
 | Document | Files | Read | Drives |
 |---|---|---|---|
 | Deal master | `Deal_Master_Scheme{A,B}.xlsx` | `Instruments` (coupon, PIK, ISIN, SPV, security, RERA, homes), `Tranches` (date, INR, FX rate, units), `Covenants`, `Covenant basis` | DISB journals, coupon schedule (ACT/365 with tranche part-periods) → ACCR_INT, CPN_RCPT, ACCR_PIK, PIK_CAP; accrual history; R4, R8, R18 |
-| Daily FX (A only) | `FX_Rates_USDINR_Daily_Jul-Sep26.csv` | reference rate per day | Quarter-end translation (FX_TRANSL, GL 1220 / 4700), Tally memo-rate bridge, R9 |
+| Daily FX (A only) | `FX_Rates_USDINR_Daily_Jul-Sep26.csv` | reference rate, currency pair and source per day; must include the quarter's last day (the upload is refused otherwise) | Quarter-end translation (FX_TRANSL, GL 1220 / 4700); INR coupon and PIK accruals, PIK capitalised and valuer FV adjustments converted at the quarter-end rate; Tally memo-rate bridge; R9; the rates, pair, source and chart markers on the FX page |
 | Custody | `Demat_Holding_Statement_…pdf`, `Demat_Transaction_Statement_…csv` | holdings at quarter end, credits | R4 |
 | Valuation | `Valuation_Inputs_…xlsx` (`Summary`, `Inputs`, `Cover`), `Valuation_Report_…pdf` | fair value, FV adjustment, prior-cycle adjustment, yields, valuer notes, dates | VALUATION journals (GL 1210 / 4600), valuation page; R10 |
 | Developer MIS | `Developer_MIS_<SPV>_<Mon>.xlsx` (6 per scheme, two layouts) | units sold, cumulative, sales value, collections, escrow, construction %, cost to date, cost to complete. Headers are found by synonym, so `Units sold` and `Nos. booked` map to the same field | Project monitoring, covenant tests; R18 |
 | Covenant certificates | `Covenant_Certificate_<SPV>_30Sep26.pdf` | units sold, collections, test table | Breach flags (SPV-B2 breaches both); R18 |
-| CP checklist, FC-GPR | `CP_Checklist_…xlsx`, `FCGPR_Acknowledgement_I-A1_T2.pdf` | conditions, allotment / due / filed dates | Deals page; S1 |
-| Term summaries, advices, charge filing, pricing certificate | `DTD_Summary_*.pdf`, `CCD_Subscription_Summary_*.pdf`, `Tranche2_Disbursement_Advice_*.pdf`, `Charge_Filing_*.pdf`, `Pricing_Certificate_*.pdf` | `Instrument` name from the summaries; the rest stored as evidence | Instrument long name; Deals page |
+| CP checklist, FC-GPR | `CP_Checklist_<instrument>_T<n>.xlsx`, `FCGPR_Acknowledgement_…pdf` | each condition with its met flag, date and evidence; FC-GPR allotment / due / filed / acknowledgement dates and number | Deals page (conditions in date order, filings table); S1 |
+| Term summaries, advices, charge filing, pricing certificate | `DTD_Summary_*.pdf`, `CCD_Subscription_Summary_*.pdf`, `Tranche2_Disbursement_Advice_*.pdf`, `Charge_Filing_*.pdf`, `Pricing_Certificate_*.pdf` | `Instrument` name from the summaries; CHG-9 SRN, modification and filed dates, status (due = modification + 30 days); pricing certificate number and date; advices stored as evidence | Instrument long name; Deals page filings table |
 
 ### Books of record and compliance
 
@@ -79,7 +79,7 @@ Scheme A = GIFT IFSC, USD m. Scheme B = onshore, INR cr. "Both" means one file p
 | Tally export | `Tally_Scheme{A,B}_DayBook_Q2FY27.xml`, `…_TrialBalance_30Sep26.xlsx`, `…_LedgerMasters.xlsx` | vouchers and lines, TB by ledger and group, ledger opening balances | Tally bridge: B is the statutory book (each voucher = one journal); A is cash-basis INR at the memo rate, every difference explained as M (memo rate), A (accrual) or F (FX); R11, R12 |
 | Compliance calendar | `IFSCA_Compliance_Calendar_SchemeA.xlsx`, `SEBI_Compliance_Calendar_SchemeB.xlsx` | obligations, due dates, status, evidence file | Calendar, exceptions, breach-notice due date; R10, R16, R18 |
 | Prior report as filed | `IFSCA_Quarterly_Report_Q1FY27_as_filed.xlsx`, `SEBI_Quarterly_Activity_Report_Q1FY27_as_filed.xlsx` (next quarter: the workbook the Report centre generated, e.g. `IFSCA_Quarterly_Report_Q2FY27.xlsx`) | title, layout note, NAV, drawn, cash, investments, commitments; Investments sheet (sector); Investors sheet (drawn per investor) | R15; the layout, sectors and prior drawn of this quarter's regulator report |
-| Evidence | `Evidence/*.pdf`, KYC packs, `FATCA_CRS_SelfCert_*`, `AML_Policy_Extract.pdf`, `FINGate_…`, `CTR_FY26_extract.pdf`, `IFSCA_Q1FY27_Submission_Email.pdf`, `Form64C_Statement_*.pdf` | stored and hashed, not parsed | Calendar evidence (R16), KYC page, file previews |
+| Evidence | `Evidence/*.pdf`, KYC packs, `FATCA_CRS_SelfCert_*`, `AML_Policy_Extract.pdf`, `FINGate_…`, `CTR_FY26_extract.pdf`, `IFSCA_Q1FY27_Submission_Email.pdf`, `Form64C_Statement_*.pdf` | stored and hashed; read: `FINGate_…pdf` (FIU registration number, date, Principal Officer, Designated Director, status) and `KYC_Pack_…/NetWorth_Certificate.pdf` (investor, amount, date) | Calendar evidence (R16), KYC page (FIU registration card; the Form 61B line comes from the compliance calendar), file previews |
 
 ## Regulator report files (Report centre)
 
@@ -147,3 +147,7 @@ vouchers and bridge, obligations, investors, file register).
   new run becomes current only if it succeeds. Required files and files of a locked quarter cannot be deleted. Each deletion is audited.
 - The prior report is recognised as `<Name>_Q<n>FY<yy>_as_filed.xlsx` or as a generated `<Name>Report_Q<n>FY<yy>.xlsx`.
 - When a scheme's files change, its NAV draft or submitted version is superseded by a new draft (v2, v3, …).
+
+## Dates on the pages
+
+No date or quarter label is typed into the dashboard page. Period captions (opening and closing dates, quarter start, the next quarter's label, the waterfall's hurdle date, the tranche of the quarter) come from `meta.period`, which the opening-balances workbook and the files set; every other date is read from the file that states it. `tests/test_pages.py` fails if a fixed date or quarter label is added to `index.html`.

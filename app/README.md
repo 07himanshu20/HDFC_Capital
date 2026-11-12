@@ -79,6 +79,7 @@ locked. The audit log records it for each scheme, and the ingestion runs list sh
   back and ties (a changed figure is caught).
 - `test_roles.py`: for every role, the pages, data keys, investor fields, files, exports and actions it gets match the access
   table; the administrator gets everything; file deletion (refusals, success, failure that changes nothing); user administration.
+- `test_pages.py`: the dashboard page holds no fixed dates or quarter labels (they come from the data), and its script parses.
 - `test_api.py`: sign-in, CSRF header, upload permissions, upload, maker-checker, lock, refusal of changes to a locked quarter,
   regulator workbook (refused before lock and for other roles, generated, downloaded, hash-checked, R15 PASS), file access, path
   traversal, CSV export, user admin.

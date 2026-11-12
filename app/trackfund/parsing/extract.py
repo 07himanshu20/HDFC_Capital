@@ -164,6 +164,14 @@ def parse_fx(p):
         return {dt(r['Date']): D(r['Reference Rate']) for r in csv.DictReader(f)}
 
 
+def parse_fx_info(p):
+    """Currency pair and rate source per date, as the file states them (shown on the FX page)."""
+    with open(p) as f:
+        rows = list(csv.DictReader(f))
+    return dict(pair=next((r.get('Currency Pair') for r in rows if r.get('Currency Pair')), ''),
+                source={dt(r['Date']): (r.get('Source') or '').strip() for r in rows})
+
+
 def parse_demat_txn(p):
     with open(p) as f:
         return list(csv.DictReader(f))
@@ -370,8 +378,12 @@ def extract_scheme(sid, files, opening_path, log=None):
     B['instrument_summaries'] = {kv.get('Instrument ID'): kv for kv in (parse_instrument_summary(p) for _, p, _ in many('instrument_summary'))}
     B['units'] = parse_unit_register(one('unit_register'), q_end)
     B['fx'] = parse_fx(one('fx_rates')) if 'fx_rates' in by_type else {}
+    B['fx_info'] = parse_fx_info(one('fx_rates')) if 'fx_rates' in by_type else dict(pair='', source={})
     if fx_scheme and not B['fx']:
         raise ParseError('Daily FX rates file is required for a non-INR scheme')
+    if fx_scheme and q_end not in B['fx']:
+        raise ParseError(f"Daily FX rates file has no rate for {q_end:%d-%b-%Y}, the last day of the quarter: "
+                         f"the translation of INR assets uses that rate")
 
     # bank: every format provided is parsed; the first available of MT940 / XLS / CSV / PDF is primary
     bank = dict(formats={})
@@ -445,7 +457,12 @@ def extract_scheme(sid, files, opening_path, log=None):
     B['mis'] = mis
     B['covenant_certs'] = {m['spv']: dict(parse_covenant_cert(p), file=rel) for rel, p, m in many('covenant_cert')}
     B['cp_checklists'] = [dict(parse_cp_checklist(p), file=rel) for rel, p, _ in many('cp_checklist')]
-    B['fcgpr'] = [pdf_kv(p) for _, p, _ in many('fcgpr')]
+    B['fcgpr'] = [dict(pdf_kv(p), file=rel) for rel, p, _ in many('fcgpr')]
+    # filings and registrations shown on the Deals and KYC pages, as the documents state them
+    B['charge_filings'] = [dict(pdf_kv(p), file=rel) for rel, p, _ in many('charge_filing')]
+    B['pricing_certs'] = [dict(pdf_kv(p), file=rel) for rel, p, _ in many('pricing_certificate')]
+    B['fingate'] = dict(pdf_kv(one('fingate')), file=by_type['fingate'][0]['rel']) if 'fingate' in by_type else None
+    B['networth'] = [dict(pdf_kv(p), file=rel) for rel, p, _ in many('kyc_networth')]
 
     B['tally'] = dict(vouchers=parse_tally_daybook(one('tally_daybook')), tb=parse_tally_tb(one('tally_tb')), ledgers=parse_tally_ledgers(one('tally_ledgers')),
                       files=dict(daybook=by_type['tally_daybook'][0]['rel'], tb=by_type['tally_tb'][0]['rel'], ledgers=by_type['tally_ledgers'][0]['rel']))

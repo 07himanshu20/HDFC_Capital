@@ -77,9 +77,9 @@ CATALOG = [
     DocType('instrument_summary', r'^(DTD_Summary|CCD_Subscription_Summary)_[^/]*\.pdf$', ('instrument',), DEALS, 'Fund counsel', label='Instrument term summary'),
     DocType('cp_checklist', r'^CP_Checklist_[^/]*\.xlsx$', ('cp_item',), DEALS, 'Investment team / legal', label='CP checklist'),
     DocType('tranche_advice', r'^Tranche\d+_Disbursement_Advice_[^/]*\.pdf$', ('tranche',), DEALS, 'FME finance', parsed=False, label='Disbursement advice'),
-    DocType('charge_filing', r'^Charge_Filing_[^/]*\.pdf$', ('charge_filing', 'evidence'), DEALS, 'ROC / company secretary of the SPV', parsed=False, label='Charge filing'),
+    DocType('charge_filing', r'^Charge_Filing_[^/]*\.pdf$', ('charge_filing', 'evidence'), DEALS, 'ROC / company secretary of the SPV', label='Charge filing'),
     DocType('fcgpr', r'^FCGPR_Acknowledgement_[^/]*\.pdf$', ('fema_filing', 'evidence'), DEALS, 'AD bank / RBI reporting portal', label='FC-GPR acknowledgement'),
-    DocType('pricing_certificate', r'^Pricing_Certificate_[^/]*\.pdf$', ('evidence',), DEALS, 'Chartered accountant', parsed=False, label='Pricing certificate'),
+    DocType('pricing_certificate', r'^Pricing_Certificate_[^/]*\.pdf$', ('evidence',), DEALS, 'Chartered accountant', label='Pricing certificate'),
     # ---- Tally ----
     DocType('tally_daybook', r'^Tally_[^/]*_DayBook_[^/]*\.xml$', ('tally_voucher',), 'Tally bridge', 'Client finance team (Tally export)', True, label='Tally day book (XML)'),
     DocType('tally_ledgers', r'^Tally_[^/]*_LedgerMasters\.xlsx$', ('tally_ledger_balance', 'gl_account'), 'Tally bridge', 'Client finance team (Tally export)', True,
@@ -92,7 +92,7 @@ CATALOG = [
     DocType('submission_email', r'^[A-Z]+_Q\dFY\d\d_Submission_Email\.pdf$', ('evidence',), CAL, 'FME compliance mailbox', parsed=False, label='Submission e-mail'),
     DocType('ctr_extract', r'^CTR_[^/]*\.pdf$', ('evidence',), CAL, 'FME compliance', parsed=False, label='CTR extract'),
     DocType('aml_policy', r'^AML_Policy_[^/]*\.pdf$', ('evidence',), KYC, 'FME compliance', parsed=False, label='AML policy extract'),
-    DocType('fingate', r'^FINGate_[^/]*\.pdf$', ('evidence',), KYC, 'FIU-IND portal', parsed=False, label='FIU-IND registration'),
+    DocType('fingate', r'^FINGate_[^/]*\.pdf$', ('evidence',), KYC, 'FIU-IND portal', label='FIU-IND registration'),
     DocType('kyc_selfcert', r'^FATCA_CRS_SelfCert_[^/]*\.pdf$', ('kyc_document', 'evidence', 'fatca_crs'), KYC, 'Investor', parsed=False, label='FATCA/CRS self-certification'),
     DocType('kyc_bo', r'^KYC_Pack_[^/]+/BO_declaration\.pdf$', ('kyc_document', 'evidence'), KYC, 'Investor', parsed=False, label='KYC: BO declaration'),
     DocType('kyc_crs', r'^KYC_Pack_[^/]+/CRS_self_certification\.pdf$', ('kyc_document', 'evidence', 'fatca_crs'), KYC, 'Investor', parsed=False, label='KYC: CRS self-certification'),
@@ -100,7 +100,7 @@ CATALOG = [
     DocType('kyc_checklist', r'^KYC_Pack_[^/]+/checklist\.pdf$', ('kyc_document', 'evidence'), KYC, 'FME compliance', parsed=False, label='KYC: checklist'),
     DocType('kyc_screening', r'^KYC_Pack_[^/]+/screening_report\.pdf$', ('kyc_document', 'evidence', 'screening_log'), KYC, 'Screening vendor', parsed=False, label='KYC: screening report'),
     DocType('kyc_ckyc', r'^KYC_Pack_[^/]+/CKYC_record\.pdf$', ('kyc_document', 'evidence'), KYC, 'CKYC registry', parsed=False, label='KYC: CKYC record'),
-    DocType('kyc_networth', r'^KYC_Pack_[^/]+/NetWorth_Certificate\.pdf$', ('kyc_document', 'evidence'), KYC, 'Chartered accountant', parsed=False, label='KYC: net-worth certificate'),
+    DocType('kyc_networth', r'^KYC_Pack_[^/]+/NetWorth_Certificate\.pdf$', ('kyc_document', 'evidence'), KYC, 'Chartered accountant', label='KYC: net-worth certificate'),
 ]
 
 BY_KEY = {d.key: d for d in CATALOG}

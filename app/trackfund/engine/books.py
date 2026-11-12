@@ -268,7 +268,8 @@ def compute(X, settings=None, expected=None):
         c_inr = q(sum(p * x['cash'] * n / 365 for p, n in segs))
         p_inr = q(sum(p * x['pik'] * n / 365 for p, n in segs))
         c_fn = fn(c_inr, rate_end)
-        sched[k] = dict(cash_inr=c_inr, pik=p_inr, cash_fn=c_fn, segs=segs)
+        p_fn = fn(p_inr, rate_end)        # PIK accrues in INR like the coupon: a USD scheme books it at the quarter-end rate
+        sched[k] = dict(cash_inr=c_inr, pik=p_inr, cash_fn=c_fn, pik_fn=p_fn, segs=segs)
         m_ = {'instrument': k, **txm(c_inr, rate_end)}
         post(Q_END, 'ACCR_INT', f"ACCR/{k}/{QC}", [(1300, c_fn, dict(m_)), (4100, -c_fn, dict(m_))], 'Deal_Master Instruments + Tranches (recomputed)',
              f"Coupon accrued {k} {QC}", sortkey=(k, 0))
@@ -280,11 +281,12 @@ def compute(X, settings=None, expected=None):
         else:
             issues.append(f"coupon {k} not matched in bank (expected {c_fn})")
         if p_inr:
-            post(Q_END, 'ACCR_PIK', f"PIK/{k}/{QC}", [(1300, p_inr, {'instrument': k}), (4110, -p_inr, {'instrument': k})], 'Deal_Master (recomputed)',
+            pm = {'instrument': k, **txm(p_inr, rate_end)}
+            post(Q_END, 'ACCR_PIK', f"PIK/{k}/{QC}", [(1300, p_fn, dict(pm)), (4110, -p_fn, dict(pm))], 'Deal_Master (recomputed)',
                  f"PIK interest accrued {k} {QC}", sortkey=(k, 2))
-            post(Q_END, 'PIK_CAP', f"PIKCAP/{k}/{QC}", [(1200, p_inr, {'instrument': k}), (1300, -p_inr, {'instrument': k})], 'Deal_Master (recomputed)',
+            post(Q_END, 'PIK_CAP', f"PIKCAP/{k}/{QC}", [(1200, p_fn, dict(pm)), (1300, -p_fn, dict(pm))], 'Deal_Master (recomputed)',
                  f"PIK capitalised into principal {k} {QC}", sortkey=(k, 3))
-            cost[k] += p_inr
+            cost[k] += p_fn                # cost in the scheme currency; principal (INR) grows by p_inr below
     principal_open = dict(principal)
     for t in q_tr:
         principal[t['ins']] += t['inr']
@@ -458,8 +460,8 @@ def compute(X, settings=None, expected=None):
     gl_int = -(tq.get(4100, D(0)))
     gl_pik = -(tq.get(4110, D(0)))
     add('R8', 'Accruals: schedule (ACT/365, tranche part-periods) = GL 4100/4110 = coupon receipts; 1300 clears; PIK capitalised into principal = valuer principal',
-        cp_ok and gl_int == sum(s['cash_fn'] for s in sched.values()) and gl_pik == sum(s['pik'] for s in sched.values()) and close_tb.get(1300, 0) == 0 and all(vp[k] == principal[k] for k in ins),
-        f"schedule cash {sum(s['cash_fn'] for s in sched.values())} / PIK {sum(s['pik'] for s in sched.values())}", f"GL 4100 {gl_int} / 4110 {gl_pik} / 1300 closing {close_tb.get(1300, D(0))}",
+        cp_ok and gl_int == sum(s['cash_fn'] for s in sched.values()) and gl_pik == sum(s['pik_fn'] for s in sched.values()) and close_tb.get(1300, 0) == 0 and all(vp[k] == principal[k] for k in ins),
+        f"schedule cash {sum(s['cash_fn'] for s in sched.values())} / PIK {sum(s['pik_fn'] for s in sched.values())}", f"GL 4100 {gl_int} / 4110 {gl_pik} / 1300 closing {close_tb.get(1300, D(0))}",
         '; '.join(det), 'Deal_Master, bank narrations, journals, Valuation_Inputs Summary')
     # R9 FX
     if A:
@@ -781,9 +783,9 @@ def compute(X, settings=None, expected=None):
             p_ = q(sum(p * x['pik'] * dd / 365 for _, p, dd in segs))
             prin = opening + sum(t['inr'] for t in trs if qs < t['date'] <= qe) + p_
             rate = (rate_end if qe == Q_END else rates_known.get(qe)) if A else D(1)
-            fn_ = (fn(c_, rate) + p_ if rate else None) if A else c_ + p_
+            fn_ = (fn(c_, rate) + fn(p_, rate) if rate else None) if A else c_ + p_
             if qe == Q_END and k in sched:
-                fn_ = sched[k]['cash_fn'] + (sched[k]['pik'] if not A else D(0))
+                fn_ = sched[k]['cash_fn'] + sched[k]['pik_fn']
             elif qcode(qe) in booked.get(k, {}):
                 h_ = booked[k][qcode(qe)]
                 rate = D(str(h_['rate'])) if h_.get('rate') is not None else rate

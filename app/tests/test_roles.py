@@ -10,7 +10,7 @@ H = {'X-Requested-With': 'trackfund'}
 PW = 'test-password-123'
 USERS = {'admin': 'ADMIN', 'ishaan': 'PO', 'jaideep': 'CRO', 'pallav': 'FIN_MAKER', 'renuka': 'FIN_CHECKER', 'farhan': 'AML_PO', 'devika': 'IR',
          'nakul': 'INV_TEAM', 'trustee': 'TRUSTEE_RO', 'auditor': 'AUDITOR_RO'}
-KYC_ONLY = {'bo', 'fatca', 'giin', 'pep'}
+KYC_ONLY = {'bo', 'fatca', 'giin', 'pep', 'kyc_docs', 'screening', 'screened', 'selfcert'}
 
 
 def login(c, user, pw=PW):
